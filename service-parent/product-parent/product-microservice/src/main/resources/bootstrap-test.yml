@@ -1,0 +1,27 @@
+server:
+  port: 5053
+
+spring:
+  cloud:
+    ##nacos
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+        prefix: product-microservice
+        file-extension: yml
+        group: group_test
+      discovery:
+        server-addr: 127.0.0.1:8848
+    ##sentinel
+    sentinel:
+      #取消控制台懒加载
+      eager: true
+      transport:
+        dashboard: 127.0.0.1:8888
+#        port: 8720
+        clientIp: 127.0.0.1
+
+# Logger config
+logging:
+  config: classpath:log4j2/log4j2-test.xml

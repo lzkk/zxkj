@@ -55,11 +55,7 @@
     </build>
 
     <modules>
-        <!--<module>cloud-config-center</module>-->
-        <!--<module>cloud-gateway-server</module>-->
-        <!--<module>cloud-register-center</module>-->
-        <!--<module>cloud-turbine-server</module>-->
-        <!--<module>cloud-zipkin-server</module>-->
+        <module>cloud-gateway-server</module>
     </modules>
 
 </project>

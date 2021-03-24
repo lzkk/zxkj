@@ -2,13 +2,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>com.zxkj</groupId>
         <artifactId>zxkj-parent</artifactId>
+        <groupId>com.zxkj</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common-parent</artifactId>
     <packaging>pom</packaging>
@@ -56,18 +55,7 @@
     </build>
 
     <modules>
-        <!--<module>common-cache</module>-->
-        <!--<module>common-domain</module>-->
-        <!--<module>common-exception</module>-->
-        <!--<module>common-feign</module>-->
-        <!--<module>common-mongo</module>-->
-        <!--<module>common-mongo-domain</module>-->
-        <!--<module>common-mq</module>-->
-        <!--<module>common-practice</module>-->
-        <!--<module>common-util</module>-->
-        <!--<module>common-web</module>-->
-        <!--<module>mybatis-generator</module>-->
-        <!--<module>common-elasticsearch</module>-->
+        <module>common-util</module>
     </modules>
 
 </project>

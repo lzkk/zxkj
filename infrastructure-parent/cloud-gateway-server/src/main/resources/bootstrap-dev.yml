@@ -1,0 +1,26 @@
+server:
+  port: 5054
+
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+        prefix: gateway-server
+        file-extension: yml
+        group: group_dev
+      discovery:
+        server-addr: 127.0.0.1:8848
+    ##sentinel
+    sentinel:
+      #取消控制台懒加载
+      eager: true
+      transport:
+        dashboard: 127.0.0.1:8888
+#        port: 8719
+        clientIp: 127.0.0.1
+
+# Logger config
+logging:
+  config: classpath:log4j2/log4j2-dev.xml

@@ -42,10 +42,10 @@
 
     <modules>
         <!--<module>order-parent</module>-->
-        <!--<module>product-parent</module>-->
         <!--<module>third-party-parent</module>-->
         <!--<module>trade-parent</module>-->
         <!--<module>task-parent</module>-->
+        <module>product-parent</module>
     </modules>
 
     <!--<dependencies>-->
