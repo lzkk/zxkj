@@ -3,14 +3,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>product-parent</artifactId>
+        <artifactId>order-parent</artifactId>
         <groupId>com.zxkj</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>product-microservice</artifactId>
-    <name>product-microservice</name>
+    <artifactId>order-microservice</artifactId>
+    <name>order-microservice</name>
 
     <dependencies>
         <dependency>
@@ -44,6 +44,10 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -80,7 +84,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.zxkj.product.microservice.ProductServiceMain</mainClass>
+                    <mainClass>com.zxkj.order.microservice.OrderServiceMain</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>

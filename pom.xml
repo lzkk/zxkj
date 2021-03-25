@@ -28,57 +28,57 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-domain</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-mongo-domain</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-elasticsearch</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-exception</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-feign</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-cache</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-mq</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hckj</groupId>
+                <groupId>com.zxkj</groupId>
                 <artifactId>common-exception</artifactId>
                 <version>${project.version}</version>
             </dependency>

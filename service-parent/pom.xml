@@ -46,6 +46,7 @@
         <!--<module>trade-parent</module>-->
         <!--<module>task-parent</module>-->
         <module>product-parent</module>
+        <module>order-parent</module>
     </modules>
 
     <!--<dependencies>-->

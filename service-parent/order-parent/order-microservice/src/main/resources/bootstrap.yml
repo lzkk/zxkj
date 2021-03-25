@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: order-microservice
+  profiles:
+    active: dev
+
+#SpringCloud 2.X版本暴露接口
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

@@ -1,4 +1,4 @@
-package com.zxkj.product.microservice;
+package com.zxkj.order.microservice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,27 +8,31 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 产品微服务
+ * 订单微服务
  *
  * @author ：yuhui
  * @date ：Created in 2020/8/4 14:59
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-public class ProductServiceMain implements CommandLineRunner {
-    private static final Logger logger = LoggerFactory.getLogger(ProductServiceMain.class);
+@EnableFeignClients(basePackages = {"com.zxkj.common.feign"})
+@ComponentScan(basePackages = {"com.zxkj"})
+public class OrderServiceMain implements CommandLineRunner {
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceMain.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(ProductServiceMain.class, args);
+        SpringApplication.run(OrderServiceMain.class, args);
     }
 
     @Override
     public void run(String... strings) throws Exception {
-        System.out.println("ProductServiceMain is running!");
+        System.out.println("OrderServiceMain is running!");
     }
 
     @RestController

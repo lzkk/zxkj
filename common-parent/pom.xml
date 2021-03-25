@@ -56,6 +56,9 @@
 
     <modules>
         <module>common-util</module>
+        <module>common-feign</module>
+        <module>common-web</module>
+        <module>common-exception</module>
     </modules>
 
 </project>
