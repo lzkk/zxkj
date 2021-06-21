@@ -12,7 +12,43 @@
     <artifactId>service-parent</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>cart-service</module>
+        <module>goods-service</module>
+        <module>order-service</module>
+        <module>pay-service</module>
+        <module>search-service</module>
+        <module>sys-service</module>
+        <module>user-service</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>service-dependency</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,25 +75,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <modules>
-        <!--<module>order-parent</module>-->
-        <!--<module>third-party-parent</module>-->
-        <!--<module>trade-parent</module>-->
-        <!--<module>task-parent</module>-->
-        <module>product-parent</module>
-        <module>order-parent</module>
-    </modules>
-
-    <!--<dependencies>-->
-    <!--<dependency>-->
-    <!--<groupId>org.springframework.kafka</groupId>-->
-    <!--<artifactId>spring-kafka</artifactId>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-    <!--<groupId>org.springframework.cloud</groupId>-->
-    <!--<artifactId>spring-cloud-starter-zipkin</artifactId>-->
-    <!--</dependency>-->
-    <!--</dependencies>-->
 
 </project>

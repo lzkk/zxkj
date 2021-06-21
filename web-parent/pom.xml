@@ -12,6 +12,11 @@
     <artifactId>web-parent</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>admin-web</module>
+        <module>page-web</module>
+    </modules>
+
     <build>
         <plugins>
             <plugin>
@@ -39,10 +44,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <modules>
-        <!--<module>admin</module>-->
-        <!--<module>h5</module>-->
-    </modules>
 
 </project>

@@ -10,6 +10,7 @@
     <name>zxkj-parent</name>
 
     <modules>
+        <module>api-parent</module>
         <module>common-parent</module>
         <module>infrastructure-parent</module>
         <module>service-parent</module>
@@ -29,47 +30,47 @@
         <dependencies>
             <dependency>
                 <groupId>com.zxkj</groupId>
-                <artifactId>common-domain</artifactId>
+                <artifactId>cart-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
-                <artifactId>common-mongo-domain</artifactId>
+                <artifactId>goods-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
-                <artifactId>common-elasticsearch</artifactId>
+                <artifactId>order-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>page-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>pay-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>search-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>sys-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>user-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
                 <artifactId>common-exception</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>common-feign</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>common-web</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>common-cache</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>common-mq</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>common-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -79,7 +80,7 @@
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
-                <artifactId>common-exception</artifactId>
+                <artifactId>service-dependency</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -196,11 +197,6 @@
                 <version>2.1.6</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-                <version>2.1.8.RELEASE</version>
-            </dependency>
-            <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-seata</artifactId>
                 <version>2.2.0.RELEASE</version>
@@ -215,6 +211,11 @@
                 <groupId>io.seata</groupId>
                 <artifactId>seata-spring-boot-starter</artifactId>
                 <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>2.1.8.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba.rocketmq</groupId>

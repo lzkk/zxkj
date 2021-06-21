@@ -6,23 +6,64 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="cloud-gateway-server" />
+        <module name="admin-web" />
+        <module name="api-gateway" />
+        <module name="cart-api" />
+        <module name="cart-service" />
+        <module name="common-exception" />
         <module name="common-util" />
-        <module name="product-microservice" />
+        <module name="goods-api" />
+        <module name="goods-service" />
+        <module name="order-api" />
+        <module name="order-service" />
+        <module name="page-api" />
+        <module name="page-web" />
+        <module name="pay-api" />
+        <module name="pay-service" />
+        <module name="search-api" />
+        <module name="search-service" />
+        <module name="service-dependency" />
+        <module name="sys-api" />
+        <module name="sys-service" />
+        <module name="user-api" />
+        <module name="user-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="admin-web" target="1.8" />
+      <module name="api-gateway" target="1.8" />
+      <module name="api-parent" target="1.8" />
+      <module name="cart-api" target="1.8" />
+      <module name="cart-service" target="1.8" />
       <module name="cloud-config-center" target="1.8" />
-      <module name="cloud-gateway-server" target="1.8" />
       <module name="cloud-register-center" target="1.8" />
+      <module name="common-exception" target="1.8" />
+      <module name="common-feign" target="1.8" />
       <module name="common-parent" target="1.8" />
       <module name="common-util" target="1.8" />
+      <module name="common-web" target="1.8" />
+      <module name="goods-api" target="1.8" />
+      <module name="goods-parent" target="1.8" />
+      <module name="goods-service" target="1.8" />
       <module name="infrastructure-parent" target="1.8" />
-      <module name="product-microservice" target="1.8" />
-      <module name="product-parent" target="1.8" />
+      <module name="order-api" target="1.8" />
+      <module name="order-parent" target="1.8" />
+      <module name="order-service" target="1.8" />
+      <module name="order2-service" target="1.8" />
+      <module name="page-api" target="1.8" />
+      <module name="page-web" target="1.8" />
+      <module name="pay-api" target="1.8" />
+      <module name="pay-service" target="1.8" />
+      <module name="search-api" target="1.8" />
+      <module name="search-service" target="1.8" />
+      <module name="service-dependency" target="1.8" />
       <module name="service-parent" target="1.8" />
+      <module name="sys-api" target="1.8" />
+      <module name="sys-service" target="1.8" />
       <module name="trade-microservice" target="1.8" />
       <module name="trade-parent" target="1.8" />
+      <module name="user-api" target="1.8" />
+      <module name="user-service" target="1.8" />
       <module name="web-parent" target="1.8" />
       <module name="zxkj-parent" target="1.8" />
     </bytecodeTargetLevel>
