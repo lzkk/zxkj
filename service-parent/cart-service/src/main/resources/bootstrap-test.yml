@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: 33ac1c90-7d5f-4f1f-a6b4-dce1eee1b70b
+        prefix: cart-service
+        file-extension: yml
+        extension-configs[0]:
+          data-id: default.yml
+          group: DEFAULT_GROUP
+          refresh: true
+        extension-configs[1]:
+          data-id: db.yml
+          group: DEFAULT_GROUP
+          refresh: true

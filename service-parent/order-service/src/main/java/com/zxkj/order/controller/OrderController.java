@@ -1,16 +1,25 @@
 package com.zxkj.order.controller;
 
+import com.alibaba.rocketmq.client.producer.SendResult;
+import com.alibaba.rocketmq.client.producer.SendStatus;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.zxkj.common.rocketmq.RocketmqMessageSender;
+import com.zxkj.common.rocketmq.support.RocketmqTopicTagEnum;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.feign.ProductInnovateFeign;
-import com.zxkj.goods.model.ProductInnovateModel;
+import com.zxkj.order.model.Order;
+import com.zxkj.order.model.OrderRefund;
+import com.zxkj.order.mq.LocalTransactionRefund;
+import com.zxkj.order.pay.WeixinPayParam;
+import com.zxkj.order.service.OrderService;
+import com.zxkj.order.vo.OrderSkuVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 订单信息Controller
@@ -19,27 +28,85 @@ import org.springframework.web.bind.annotation.RestController;
  * @date ：Created in 2020/8/5 15:26
  */
 @RestController
-@RefreshScope
+@RequestMapping(value = "/order")
 public class OrderController {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${didispace.title:}")
-    private String hello;
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
-    private ProductInnovateFeign productInnovateFeign;
+    private WeixinPayParam weixinPayParam;
 
-    @PostMapping(value = "/getOrderInfo")
-    public RespResult<String> getOrderInfo(@RequestBody Integer id) {
-        logger.info("getOrderInfo，参数：" + id + "," + hello);
-        if (id == null) {
-            return RespResult.error("参数不能为空");
+    @Autowired
+    private RocketmqMessageSender rocketmqMessageSender;
+
+    @Autowired
+    private LocalTransactionRefund localTransactionRefund;
+
+    /****
+     * 申请取消订单（模拟测试退款的订单）
+     */
+    @PutMapping(value = "/refund/{id}")
+    public RespResult refund(@PathVariable(value = "id") String id, HttpServletRequest request) throws Exception {
+        //用户名
+        String username = "gp";
+        //查询订单，是否符合退款要求
+        Order order = orderService.getById(id);
+        if (order.getPayStatus().intValue() == 1 && order.getOrderStatus().intValue() == 1) {
+            //添加退款记录,更新订单状态
+            OrderRefund orderRefund = new OrderRefund(
+                    IdWorker.getIdStr(),
+                    id,
+                    1,
+                    null,
+                    username,
+                    0,//申请退款
+                    new Date(),
+                    order.getMoneys()
+            );
+            orderService.refund(orderRefund);
+
+            //向MQ发消息（申请退款）  out_trade_no（订单号）  out_refund_no（退款订单号）  total_fee（订单金额）  refund_fee（退款金额）
+            String msgInfo = weixinPayParam.weixinRefundParam(orderRefund);
+            SendResult transactionSendResult = rocketmqMessageSender.sendMessageInTransaction(RocketmqTopicTagEnum.TOPIC_TAG_TEST3, localTransactionRefund, msgInfo);
+            if (transactionSendResult.getSendStatus() == SendStatus.SEND_OK) {
+                return RespResult.ok();
+            }
         }
-        ProductInnovateModel productInnovateModel = new ProductInnovateModel();
-        productInnovateModel.setId(id);
-        String result = productInnovateFeign.sayHello(productInnovateModel).getDataWithException();
-        logger.info("result:" + result);
-        return RespResult.ok(result);
+        //不符合直接返回错误
+        return RespResult.error("当前订单不符合取消操作要求！");
+    }
+
+    /***
+     * 添加订单
+     */
+    @PostMapping(value = "/add")
+    public RespResult add(@RequestBody Order order, HttpServletRequest request) throws Exception {
+        //用户名字
+        order.setUsername("gp");
+        //下单
+        Boolean bo = orderService.add(order);
+        String result = weixinPayParam.weixinParam(order, request);
+        return bo ? RespResult.ok(result) : RespResult.error();
+    }
+
+    @GetMapping(value = "/getById")
+    public RespResult getById(@RequestParam(value = "id") String id, HttpServletRequest request) throws Exception {
+        Order order = orderService.getById(id);
+        return RespResult.ok(order);
+    }
+
+    @GetMapping(value = "/getByUserName")
+    public RespResult getByUserName(@RequestParam(value = "userName") String userName, HttpServletRequest request) throws Exception {
+        Order order = orderService.getByUserName(userName);
+        return RespResult.ok(order);
+    }
+
+    @GetMapping(value = "/getOrderSkuByUserName")
+    public RespResult<List<OrderSkuVo>> getOrderSkuByUserName(@RequestParam(value = "userName") String userName, HttpServletRequest request) throws Exception {
+        List<OrderSkuVo> orderSkuVoList = orderService.getOrderSkuByUserName(userName);
+        return RespResult.ok(orderSkuVoList);
     }
 
 }

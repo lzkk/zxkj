@@ -79,12 +79,16 @@ public class RespResult<T> implements Serializable {
         return respResult;
     }
 
+    public boolean isSuccess(){
+        return returnCode == RespCodeEnum.SUCCESS.getReturnCode();
+    }
+
     public static <T> RespResult<T> error(RespCodeEnum respCodeEnum) {
         return new RespResult(respCodeEnum);
     }
 
     @JsonIgnore
-    public T getDataWithException() {
+    public T getResultWithException() {
         if (returnCode != RespCodeEnum.SUCCESS.getReturnCode()) {
             throw new BusinessException(message);
         }

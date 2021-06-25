@@ -10,3 +10,7 @@ spring:
           data-id: default.yml
           group: DEFAULT_GROUP
           refresh: true
+        extension-configs[1]:
+          data-id: db.yml
+          group: DEFAULT_GROUP
+          refresh: true

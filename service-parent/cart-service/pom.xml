@@ -16,6 +16,14 @@
             <groupId>com.zxkj</groupId>
             <artifactId>cart-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>goods-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-mongo</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

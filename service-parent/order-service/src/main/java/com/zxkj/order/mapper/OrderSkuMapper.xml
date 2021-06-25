@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.order.mapper.OrderSkuMapper">
+
+    <select id="getOrderSkuByUserName" parameterType="java.lang.String" resultType="com.zxkj.order.vo.OrderSkuVo">
+        SELECT
+            oi.id,
+            oi.pay_type,
+            oi.username,
+            oi.order_status,
+            oi.pay_status,
+            ok.sku_id,
+            ok.name,
+            ok.price,
+            ok.num,
+            ok.money
+        FROM
+            order_info oi
+            JOIN order_sku ok ON oi.id = ok.order_id
+        WHERE
+            oi.username = #{username,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

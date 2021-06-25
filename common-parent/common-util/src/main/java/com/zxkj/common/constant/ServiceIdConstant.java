@@ -18,6 +18,11 @@ public class ServiceIdConstant {
     public static final String GOODS_SERVICE = "goods-service";
 
     /**
+     * 秒杀服务
+     */
+    public static final String SECKILL_SERVICE = "seckill-service";
+
+    /**
      * 购物车服务
      */
     public static final String CART_SERVICE = "cart-service";

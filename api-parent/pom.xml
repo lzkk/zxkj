@@ -16,17 +16,27 @@
         <module>cart-api</module>
         <module>goods-api</module>
         <module>order-api</module>
+        <module>page-api</module>
         <module>pay-api</module>
         <module>search-api</module>
+        <module>seckill-api</module>
         <module>sys-api</module>
         <module>user-api</module>
-        <module>page-api</module>
     </modules>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.zxkj</groupId>

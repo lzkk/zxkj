@@ -20,6 +20,9 @@
         <module>search-service</module>
         <module>sys-service</module>
         <module>user-service</module>
+        <module>task-service</module>
+        <module>seckill-service</module>
+        <module>canal-service</module>
     </modules>
 
     <dependencies>
