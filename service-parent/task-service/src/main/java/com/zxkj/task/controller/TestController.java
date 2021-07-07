@@ -19,7 +19,7 @@ public class TestController {
     @RequestMapping("/add")
     public Object add() {
         try {
-            dynamicTaskCreate.create("myTestJob3", "0/10 * * * * ? *", 3, new MyJob3(), "11-20", "0=0,1=1,2=2");
+            dynamicTaskCreate.create("myTestJob3", "0/10 * * * * ? *", 3, new MyJob3(), "11-20");
         } catch (Exception e) {
             e.printStackTrace();
             return "false";

@@ -3,6 +3,7 @@ package com.zxkj.search.feign;
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.model.SkuEs;
+import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,7 +16,7 @@ import java.util.Map;
  * @Author:
  * @Description:
  ****/
-@FeignClient(value = ServiceIdConstant.SEARCH_SERVICE, path = "/", fallback = SkuSearchFeignFallback.class)
+@FeignClient(value = ServiceIdConstant.SEARCH_SERVICE, path = "/", fallbackFactory = SkuSearchFeignFallback.class)
 public interface SkuSearchFeign {
 
     /***
@@ -39,21 +40,32 @@ public interface SkuSearchFeign {
 
 
 @Component
-class SkuSearchFeignFallback implements SkuSearchFeign {
-    private static final Logger LOGGER = LoggerFactory.getLogger(com.zxkj.search.feign.SkuSearchFeignFallback.class);
+class SkuSearchFeignFallback implements SkuSearchFeign, FallbackFactory<SkuSearchFeign> {
+    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.search.feign.SkuSearchFeignFallback.class);
+
+    private Throwable throwable;
+
+    @Override
+    public SkuSearchFeign create(Throwable throwable) {
+        this.throwable = throwable;
+        return this;
+    }
 
     @Override
     public RespResult<Map<String, Object>> search(Map<String, Object> searchMap) {
-        return null;
+        logger.error("SkuSearchFeignFallback -> search错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult add(SkuEs skuEs) {
-        return null;
+        logger.error("SkuSearchFeignFallback -> add错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult del(String id) {
-        return null;
+        logger.error("SeckillGoodsSearchFeignFallback -> del错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
     }
 }

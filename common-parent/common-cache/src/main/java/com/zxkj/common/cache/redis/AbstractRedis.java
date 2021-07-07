@@ -335,6 +335,34 @@ public abstract class AbstractRedis implements RedisUtil {
         return 0L;
     }
 
+    public String hget(String key, String field) {
+        key = getPreKey(key);
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            return jedis.hget(key, field);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        } finally {
+            close(jedis);
+        }
+        return null;
+    }
+
+    public Long hincre(String key, String field, Integer num) {
+        key = getPreKey(key);
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            return jedis.hincrBy(key, field, num);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        } finally {
+            close(jedis);
+        }
+        return 0L;
+    }
+
     public Long hdel(String key, String field) {
         key = getPreKey(key);
         Jedis jedis = null;

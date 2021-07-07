@@ -1,15 +1,15 @@
 package com.zxkj.common.rocketmq.support;
 
-import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.alibaba.rocketmq.client.exception.MQClientException;
-import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
-import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
-import com.alibaba.rocketmq.common.message.MessageExt;
 import com.zxkj.common.rocketmq.RocketmqMessageListener;
 import com.zxkj.common.rocketmq.RocketmqMessageSender;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -46,8 +46,6 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
     private int consumeThreadMax;
     @Value("${spring.rocketmq.consumer.consumeMessageBatchMaxSize}")
     private int consumeMessageBatchMaxSize;
-    @Value("${spring.rocketmq.consumer.topics}")
-    private String topics;
     @Value("${spring.rocketmq.producer.maxMessageSize}")
     private Integer maxMessageSize;
     @Value("${spring.rocketmq.producer.sendMsgTimeout}")
@@ -55,47 +53,7 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
     @Value("${spring.rocketmq.producer.retryTimesWhenSendFailed}")
     private Integer retryTimesWhenSendFailed;
 
-//    @Bean
-//    public DefaultMQPushConsumer getRocketMQConsumer() {
-//        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName);
-//        consumer.setNamesrvAddr(namesrvAddr);
-//        consumer.setConsumeThreadMin(consumeThreadMin);
-//        consumer.setConsumeThreadMax(consumeThreadMax);
-//        consumer.registerMessageListener(new MessageListenerConcurrently() {
-//            @Override
-//            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-//                if (CollectionUtils.isEmpty(list)) {
-//                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-//                }
-//                MessageExt messageExt = list.get(0);
-//                logger.info("接受到的消息为：" + new String(messageExt.getBody()));
-//                int reConsume = messageExt.getReconsumeTimes();
-//                // 消息已经重试了3次，如果不需要再次消费，则返回成功
-//                if (reConsume == 3) {
-//                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-//                }
-//                String content = new String(messageExt.getBody());
-//                logger.info("topic:{},tag:{},message:{}", messageExt.getTopic(), messageExt.getTags(), content);
-//                // 消息消费成功
-//                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-//            }
-//        });
-//        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-//        consumer.setConsumeMessageBatchMaxSize(consumeMessageBatchMaxSize);
-//        try {
-//            String[] topicTagsArr = topics.split(";");
-//            for (String topicTags : topicTagsArr) {
-//                String[] topicTag = topicTags.split("~");
-//                consumer.subscribe(topicTag[0], topicTag[1]);
-//            }
-//            consumer.start();
-//        } catch (MQClientException e) {
-//            e.printStackTrace();
-//        }
-//        return consumer;
-//    }
-
-    @Bean
+    @Bean(value = "defaultMQProducer")
     public DefaultMQProducer getRocketMQProducer() {
         DefaultMQProducer producer;
         producer = new DefaultMQProducer(this.groupName);
@@ -133,6 +91,12 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
         return bean;
     }
 
+    /**
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> targetClass = AopUtils.getTargetClass(bean);
@@ -140,7 +104,8 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
             RocketmqMessageListener annotation = AnnotationUtils.getAnnotation(method, RocketmqMessageListener.class);
             if (annotation != null) {
                 RocketmqTopicTagEnum handler = annotation.value();
-                DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName);
+                DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName + "_" + handler.getTopic());
+                consumer.setInstanceName(String.valueOf(System.currentTimeMillis()));
                 consumer.setNamesrvAddr(namesrvAddr);
                 consumer.setConsumeThreadMin(consumeThreadMin);
                 consumer.setConsumeThreadMax(consumeThreadMax);
@@ -151,22 +116,17 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                         }
                         MessageExt messageExt = list.get(0);
-                        logger.info("接受到的消息为：" + new String(messageExt.getBody()));
                         int reConsume = messageExt.getReconsumeTimes();
-                        // 消息已经重试了3次，如果不需要再次消费，则返回成功
                         if (reConsume == 3) {
                             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                         }
                         String content = new String(messageExt.getBody());
-                        logger.info("topic:{},tag:{},message:{}", messageExt.getTopic(), messageExt.getTags(), content);
                         try {
                             method.invoke(bean, content);
-                            logger.info("业务消息处理完成: {}", content);
                         } catch (Exception e) {
                             logger.error("业务消息处理异常: " + content + ", " + e.toString(), e);
                             throw new RuntimeException("业务消息处理异常:" + content + ", " + e.toString(), e);
                         }
-
                         // 消息消费成功
                         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                     }
@@ -183,4 +143,5 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
         }, ReflectionUtils.USER_DECLARED_METHODS);
         return bean;
     }
+
 }

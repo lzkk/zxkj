@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Data
-@Document(indexName = "shopseckill",type = "seckillgoodses")
+@Document(indexName = "seckillgoodsesindex",type = "seckillgoodses")
 public class SeckillGoodsEs implements Serializable {
 
     @Id

@@ -4,7 +4,7 @@ public enum RocketmqTopicTagEnum {
 
 
     TOPIC_TAG_TEST("topic_test", "tag1"),
-    TOPIC_TAG_TEST2("topic_test2", "tag1"),
+    TOPIC_TAG_TEST2("topic_test2", "tag2"),
     TOPIC_TAG_TEST3("topic_test3", "tag3"),
     ;
 
@@ -31,4 +31,5 @@ public enum RocketmqTopicTagEnum {
     public void setTag(String tag) {
         this.tag = tag;
     }
+
 }

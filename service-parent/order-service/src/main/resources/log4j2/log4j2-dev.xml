@@ -43,6 +43,10 @@
             <AppenderRef ref="AsyncAppender"/>
             <AppenderRef ref="Console"/>
         </Logger>
+        <!--<Logger name="RocketmqClient" level="WARN" additivity="false">-->
+            <!--<AppenderRef ref="AsyncAppender"/>-->
+            <!--<AppenderRef ref="Console"/>-->
+        <!--</Logger>-->
         <Logger name="org.springframework.boot" level="INFO" additivity="false">
             <AppenderRef ref="AsyncAppender"/>
             <AppenderRef ref="Console"/>

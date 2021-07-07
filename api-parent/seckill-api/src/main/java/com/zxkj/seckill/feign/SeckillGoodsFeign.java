@@ -3,6 +3,7 @@ package com.zxkj.seckill.feign;
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.seckill.model.SeckillGoods;
+import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(value = ServiceIdConstant.SECKILL_SERVICE, path = "/", fallback = SeckillGoodsFeignFallback.class)
+@FeignClient(value = ServiceIdConstant.SECKILL_SERVICE, path = "/", fallbackFactory = SeckillGoodsFeignFallback.class)
 public interface SeckillGoodsFeign {
 
 
@@ -34,17 +35,25 @@ public interface SeckillGoodsFeign {
 }
 
 @Component
-class SeckillGoodsFeignFallback implements SeckillGoodsFeign {
-    private static final Logger LOGGER = LoggerFactory.getLogger(com.zxkj.seckill.feign.SeckillGoodsFeignFallback.class);
+class SeckillGoodsFeignFallback implements SeckillGoodsFeign, FallbackFactory<SeckillGoodsFeign> {
+    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.seckill.feign.SeckillGoodsFeignFallback.class);
+    private Throwable throwable;
 
+    @Override
+    public SeckillGoodsFeign create(Throwable throwable) {
+        this.throwable = throwable;
+        return this;
+    }
 
     @Override
     public RespResult<List<SeckillGoods>> actGoods(String acid) {
-        return null;
+        logger.error("SeckillGoodsFeignFallback -> actGoods错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<SeckillGoods> one(String id) {
-        return null;
+        logger.error("SeckillGoodsFeignFallback -> one错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
     }
 }

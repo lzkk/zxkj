@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author ：yuhui
  * @date ：Created in 2020/8/4 14:59
  */
-@EnableRocketmqMessage
+//@EnableRocketmqMessage
 @MapperScan(basePackages = {"com.zxkj.order.mapper"})
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})

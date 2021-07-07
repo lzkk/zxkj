@@ -16,6 +16,26 @@
             <groupId>com.zxkj</groupId>
             <artifactId>page-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>seckill-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>search-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>goods-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>service-dependency</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

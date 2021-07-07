@@ -33,6 +33,11 @@ public class ServiceIdConstant {
     public static final String ORDER_SERVICE = "order-service";
 
     /**
+     * 页面生成服务
+     */
+    public static final String PAGE_WEB_SERVICE = "page-web";
+
+    /**
      * 支付服务
      */
     public static final String PAY_SERVICE = "pay-service";

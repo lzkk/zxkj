@@ -9,7 +9,7 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
 
 
     public MyDistributeOnceElasticJobListener() {
-        super(0l, 0l);
+        super(5000l, 5000l);
     }
 
 
@@ -19,7 +19,7 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
      * @param startedTimeoutMilliseconds
      */
     public MyDistributeOnceElasticJobListener(long startedTimeoutMilliseconds) {
-        super(startedTimeoutMilliseconds, 0l);
+        super(startedTimeoutMilliseconds, 5000l);
     }
 
     /**
@@ -39,7 +39,7 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
      */
     @Override
     public void doBeforeJobExecutedAtLastStarted(ShardingContexts shardingContexts) {
-        System.out.println("任务开始");
+        System.out.println("任务开始," + Thread.currentThread().getName());
     }
 
     /**
@@ -49,6 +49,6 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
      */
     @Override
     public void doAfterJobExecutedAtLastCompleted(ShardingContexts shardingContexts) {
-        System.err.println("任务结束");
+        System.out.println("任务结束," + Thread.currentThread().getName());
     }
 }

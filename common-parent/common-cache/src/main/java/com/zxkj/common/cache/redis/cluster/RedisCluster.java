@@ -1,6 +1,5 @@
 package com.zxkj.common.cache.redis.cluster;
 
-import com.zxkj.common.cache.redis.AbstractRedis;
 import com.zxkj.common.cache.redis.RedisConfig;
 import com.zxkj.common.cache.redis.RedisUtil;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -350,6 +349,32 @@ public class RedisCluster implements RedisUtil {
         key = getPreKey(key);
         try {
             return jedisCluster.hset(key, field, value);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        } finally {
+
+        }
+        return 0L;
+    }
+
+    @Override
+    public String hget(String key, String field) {
+        key = getPreKey(key);
+        try {
+            return jedisCluster.hget(key, field);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        } finally {
+
+        }
+        return null;
+    }
+
+    @Override
+    public Long hincre(String key, String field, Integer num) {
+        key = getPreKey(key);
+        try {
+            return jedisCluster.hincrBy(key, field, num);
         } catch (Exception e) {
             log.warn(e.getMessage());
         } finally {

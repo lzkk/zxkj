@@ -52,6 +52,10 @@ public interface RedisUtil {
 
     Long hset(String key, String field, String value);
 
+    String hget(String key, String field);
+
+    Long hincre(String key, String field, Integer num);
+
     Long hdel(String key, String field);
 
     String getSet(String key, String value);

@@ -13,16 +13,16 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>canal-service</module>
         <module>cart-service</module>
         <module>goods-service</module>
         <module>order-service</module>
         <module>pay-service</module>
         <module>search-service</module>
-        <module>sys-service</module>
-        <module>user-service</module>
-        <module>task-service</module>
         <module>seckill-service</module>
-        <module>canal-service</module>
+        <module>sys-service</module>
+        <module>task-service</module>
+        <module>user-service</module>
     </modules>
 
     <dependencies>

@@ -14,12 +14,12 @@ import java.util.Map;
  * @Description:
  ****/
 @Data
-@Document(indexName = "shopsearch",type = "skues")
+@Document(indexName = "skuesindex", type = "skues")
 public class SkuEs {
 
     @Id
     private String id;
-    @Field(type = FieldType.Text,analyzer = "ik_smart",searchAnalyzer = "ik_smart")
+    @Field(type = FieldType.Text, fielddata = true)
     private String name;
     private Integer price;
     private Integer num;
@@ -29,13 +29,12 @@ public class SkuEs {
     private Date updateTime;
     private String spuId;
     private Integer categoryId;
-    //Keyword：不分词
-    @Field(type= FieldType.Keyword)
+    @Field(type = FieldType.Keyword)
     private String categoryName;
     private Integer brandId;
-    @Field(type= FieldType.Keyword)
+    @Field(type = FieldType.Keyword)
     private String brandName;
-    @Field(type= FieldType.Keyword)
+    @Field(type = FieldType.Keyword)
     private String skuAttribute;
     private Integer status;
 
@@ -43,5 +42,5 @@ public class SkuEs {
     //key=就业薪资
     //value=1万
     //attrMap.就业薪资.keyword=1万
-    private Map<String,String> attrMap;
+    private Map<String, String> attrMap;
 }

@@ -1,5 +1,6 @@
 package com.zxkj.seckill;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author ：yuhui
  * @date ：Created in 2020/8/4 14:59
  */
-//@MapperScan(basePackages = {"com.zxkj.sys.mapper"})
+@MapperScan(basePackages = {"com.zxkj.seckill.mapper"})
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
 @SpringBootApplication

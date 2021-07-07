@@ -2,10 +2,22 @@ package com.zxkj.task.job;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
+import com.zxkj.common.cache.redis.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 public class MyJob3 implements SimpleJob {
+
+    private RedisUtil redisUtil;
+
+    public MyJob3() {
+
+    }
+
+    public MyJob3(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
+    }
 
     @Override
     public void execute(ShardingContext shardingContext) {
@@ -17,7 +29,7 @@ public class MyJob3 implements SimpleJob {
         int shardingParameter = Integer.parseInt(shardingContext.getShardingParameter());
         for (int k = begin; k <= end; k++) {
             if (k % shardingTotalCount == shardingParameter) {
-                log.info("shardingItem:" + shardingContext.getShardingItem() + "," + k);
+                log.info("shardingItem::::::::::::::::::::::::::::::" + shardingContext.getShardingItem() + "," + k);
             }
         }
     }
