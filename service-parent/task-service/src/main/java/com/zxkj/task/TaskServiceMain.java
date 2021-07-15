@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class TaskServiceMain implements CommandLineRunner {
 
     public static void main(String[] args) {

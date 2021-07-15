@@ -29,9 +29,6 @@ public class SkuController implements SkuFeign {
      * @return
      */
     public RespResult<Sku> one(@PathVariable(value = "id") String id) {
-        if ("No1210166545448173568".equals(id)) {
-            throw new BusinessException("错误的id");
-        }
         Sku sku = sKuService.getById(id);
         return RespResult.ok(sku);
     }

@@ -32,7 +32,7 @@ public class AdItemsHandler implements EntryHandler<AdItems> {
      * 数据库修改数据，执行该方法
      */
     @Override
-    public void update(AdItems before, AdItems after) {
+    public    void update(AdItems before, AdItems after) {
         if(before.getType().intValue()!=after.getType().intValue()){
             //重新加载变更前分类的ID对应的推广产品
             skuFeign.updateTypeItems(before.getType());

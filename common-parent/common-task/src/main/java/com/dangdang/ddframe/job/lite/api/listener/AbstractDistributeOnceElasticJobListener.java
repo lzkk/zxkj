@@ -21,11 +21,7 @@ import com.dangdang.ddframe.job.exception.JobSystemException;
 import com.dangdang.ddframe.job.executor.ShardingContexts;
 import com.dangdang.ddframe.job.lite.internal.guarantee.GuaranteeService;
 import com.dangdang.ddframe.job.util.env.TimeService;
-import com.zxkj.common.cache.redis.RedisUtil;
 import lombok.Setter;
-import org.apache.curator.framework.recipes.leader.LeaderLatch;
-import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 在分布式作业中只执行一次的监听器.
@@ -41,9 +37,6 @@ public abstract class AbstractDistributeOnceElasticJobListener implements Elasti
     private final long completedTimeoutMilliseconds;
 
     private final Object completedWait = new Object();
-
-    @Autowired
-    private RedisUtil redisUtil;
 
     @Setter
     private GuaranteeService guaranteeService;

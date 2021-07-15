@@ -1,14 +1,12 @@
-package com.zxkj.task.config;
+package com.zxkj.task.listener;
 
 import com.dangdang.ddframe.job.executor.ShardingContexts;
 import com.dangdang.ddframe.job.lite.api.listener.AbstractDistributeOnceElasticJobListener;
-import org.springframework.stereotype.Component;
 
-@Component
-public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceElasticJobListener {
+public class DistributeOnceElasticJobListener extends AbstractDistributeOnceElasticJobListener {
 
 
-    public MyDistributeOnceElasticJobListener() {
+    public DistributeOnceElasticJobListener() {
         super(5000l, 5000l);
     }
 
@@ -18,7 +16,7 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
      *
      * @param startedTimeoutMilliseconds
      */
-    public MyDistributeOnceElasticJobListener(long startedTimeoutMilliseconds) {
+    public DistributeOnceElasticJobListener(long startedTimeoutMilliseconds) {
         super(startedTimeoutMilliseconds, 5000l);
     }
 
@@ -28,7 +26,7 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
      * @param startedTimeoutMilliseconds
      * @param completedTimeoutMilliseconds
      */
-    public MyDistributeOnceElasticJobListener(long startedTimeoutMilliseconds, long completedTimeoutMilliseconds) {
+    public DistributeOnceElasticJobListener(long startedTimeoutMilliseconds, long completedTimeoutMilliseconds) {
         super(startedTimeoutMilliseconds, completedTimeoutMilliseconds);
     }
 

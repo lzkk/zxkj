@@ -21,6 +21,7 @@
         <module>common-mq-rocketmq</module>
         <module>common-mq-kafka</module>
         <module>common-practice</module>
+        <module>common-task</module>
         <module>common-util</module>
         <module>service-dependency</module>
     </modules>
