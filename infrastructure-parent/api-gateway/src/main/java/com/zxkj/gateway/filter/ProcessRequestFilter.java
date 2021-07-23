@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.gateway.hot.HotQueue;
 import com.zxkj.gateway.permission.AuthorizationInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -22,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class ApiFilter implements GlobalFilter, Ordered {
+@Slf4j
+public class ProcessRequestFilter implements GlobalFilter, Ordered {
+    private static final String START_TIME = "startTime";
 
     @Autowired
     private HotQueue hotQueue;
@@ -31,8 +34,7 @@ public class ApiFilter implements GlobalFilter, Ordered {
     private AuthorizationInterceptor authorizationInterceptor;
 
     /***
-     * 执行拦截处理      http://localhost:9001/mall/seckill/order?id&num
-     *                 JWT
+     * 执行拦截处理
      * @param exchange
      * @param chain
      * @return
@@ -40,12 +42,13 @@ public class ApiFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
         //uri
         String uri = request.getURI().getPath();
 
         //过滤uri是否有效
-        if (!authorizationInterceptor.isInvalid(uri)) {
-            return resultInfo(exchange, 404, "url bad");
+        if (!authorizationInterceptor.isValid(uri)) {
+            return errorInfo(exchange, 404, "url bad");
         }
 
         //是否需要拦截
@@ -57,18 +60,24 @@ public class ApiFilter implements GlobalFilter, Ordered {
         Map<String, Object> resultMap = authorizationInterceptor.tokenIntercept(exchange);
         if (resultMap == null || !authorizationInterceptor.rolePermission(exchange, resultMap)) {
             //令牌校验失败 或者没有权限
-            return resultInfo(exchange, 401, "Access denied");
+            return errorInfo(exchange, 401, "Access denied");
         }
 
         //秒杀过滤
         if (uri.equals("/seckill/order")) {
             boolean isHot = seckillFilter(exchange, request, resultMap.get("username").toString());
             if (isHot) {
-                return resultInfo(exchange, 0, "success");
+                return errorInfo(exchange, 0, "success");
             }
         }
         //NOT_HOT 直接由后端服务处理
-        return chain.filter(exchange);
+        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+            Long startTime = exchange.getAttribute(START_TIME);
+            if (startTime != null) {
+                Long executeTime = (System.currentTimeMillis() - startTime);
+                log.info(exchange.getRequest().getURI().getRawPath() + " : " + executeTime + "ms");
+            }
+        }));
     }
 
     /***
@@ -102,7 +111,7 @@ public class ApiFilter implements GlobalFilter, Ordered {
      * @param message  异常信息
      * @return
      */
-    public static Mono<Void> resultInfo(ServerWebExchange exchange, Integer status, String message) {
+    public static Mono<Void> errorInfo(ServerWebExchange exchange, Integer status, String message) {
         // 自定义返回格式
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("returnCode", status);
@@ -126,6 +135,6 @@ public class ApiFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 10001;
+        return -3;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.HashMap;
 import java.util.Map;
 
 //import org.redisson.api.RBloomFilter;
@@ -29,7 +30,7 @@ public class AuthorizationInterceptor {
      * @param uri
      * @return
      */
-    public Boolean isInvalid(String uri) {
+    public Boolean isValid(String uri) {
 //        RBloomFilter<String> uriBloomFilterArray = redissonClient.getBloomFilter("UriBloomFilterArray");
 //        return uriBloomFilterArray.contains(uri);
         return true;
@@ -86,10 +87,11 @@ public class AuthorizationInterceptor {
         String token = request.getHeaders().getFirst("authorization");
         if (token == null) {
             return null;
+        }else{
+            return new HashMap<>();
         }
         //令牌校验
-        Map<String, Object> resultMap = AuthorizationInterceptor.jwtVerify(token, clientIp);
-        return resultMap;
+//        Map<String, Object> resultMap = AuthorizationInterceptor.jwtVerify(token, clientIp);
     }
 
     /***

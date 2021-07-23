@@ -19,6 +19,7 @@
         <module name="common-mq-rabbitmq" />
         <module name="common-mq-rocketmq" />
         <module name="common-practice" />
+        <module name="common-task" />
         <module name="common-util" />
         <module name="goods-api" />
         <module name="goods-service" />
@@ -62,6 +63,7 @@
       <module name="common-mq-rocketmq" target="1.8" />
       <module name="common-parent" target="1.8" />
       <module name="common-practice" target="1.8" />
+      <module name="common-task" target="1.8" />
       <module name="common-util" target="1.8" />
       <module name="common-web" target="1.8" />
       <module name="goods-api" target="1.8" />
