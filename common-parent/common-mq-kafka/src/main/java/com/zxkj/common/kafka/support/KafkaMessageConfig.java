@@ -16,6 +16,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
@@ -98,11 +99,13 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public KafkaTemplate kafkaTemplate() {
         return new KafkaTemplate<String, String>(producerFactory());
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public KafkaProducer kafkaProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, environment.getProperty("spring.kafka.bootstrap-servers"));
@@ -112,6 +115,7 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public KafkaMessageSender kafkaMessageSender() {
         return new KafkaMessageSender();
     }

@@ -39,6 +39,7 @@
         <module name="task-service" />
         <module name="user-api" />
         <module name="user-service" />
+        <module name="zipkin-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -92,6 +93,7 @@
       <module name="user-api" target="1.8" />
       <module name="user-service" target="1.8" />
       <module name="web-parent" target="1.8" />
+      <module name="zipkin-server" target="1.8" />
       <module name="zxkj-parent" target="1.8" />
     </bytecodeTargetLevel>
   </component>

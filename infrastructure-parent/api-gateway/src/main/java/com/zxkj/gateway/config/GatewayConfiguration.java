@@ -9,6 +9,7 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
+import com.zxkj.common.kafka.support.EnableKafkaMessage;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @Configuration
+@EnableKafkaMessage
 public class GatewayConfiguration {
 
     private final List<ViewResolver> viewResolvers;
