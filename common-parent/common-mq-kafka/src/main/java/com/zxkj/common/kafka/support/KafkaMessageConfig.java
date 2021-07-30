@@ -22,8 +22,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;

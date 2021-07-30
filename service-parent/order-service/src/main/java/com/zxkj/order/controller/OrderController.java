@@ -146,4 +146,10 @@ public class OrderController {
         return RespResult.ok(orderSkuVoList);
     }
 
+    @GetMapping(value = "/getCartTest")
+    public RespResult<List<OrderSkuVo>> getCart(@RequestBody List<String> ids) throws Exception {
+        List<OrderSkuVo> orderSkuVoList = orderService.getCart(ids);
+        return RespResult.ok(orderSkuVoList);
+    }
+
 }

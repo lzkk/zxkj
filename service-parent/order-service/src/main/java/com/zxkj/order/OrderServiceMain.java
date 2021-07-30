@@ -1,6 +1,5 @@
 package com.zxkj.order;
 
-import com.zxkj.common.rocketmq.support.EnableRocketmqMessage;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

@@ -3,3 +3,8 @@ spring:
     name: goods-service
   profiles:
     active: dev
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 5053

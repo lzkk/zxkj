@@ -21,9 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring.cloud.version>Finchley.RELEASE</spring.cloud.version>
-        <spring.cloud.alibaba.version>2.0.2.RELEASE</spring.cloud.alibaba.version>
-        <spring.boot.version>2.0.4.RELEASE</spring.boot.version>
+        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <spring.cloud.alibaba.version>2.2.1.RELEASE</spring.cloud.alibaba.version>
+        <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
     </properties>
 
     <dependencyManagement>
@@ -145,9 +145,44 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>2.2.2.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+                <version>2.2.2.RELEASE</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-mongodb</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>2.2.10.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
+                <version>2.2.10.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-zipkin</artifactId>
+                <version>2.2.2.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-spring-boot-starter</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>2.3.6.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>2.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -242,32 +277,6 @@
                 <version>2.1.6</version>
             </dependency>
             <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-seata</artifactId>
-                <version>2.2.0.RELEASE</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.seata</groupId>
-                        <artifactId>seata-spring-boot-starter</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-spring-boot-starter</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-                <version>2.1.8.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-spring-boot-starter</artifactId>
-                <version>2.0.2</version>
-            </dependency>
-            <dependency>
                 <groupId>com.dangdang</groupId>
                 <artifactId>elastic-job-lite-spring</artifactId>
                 <version>2.1.5</version>
@@ -310,6 +319,11 @@
                 <groupId>top.javatool</groupId>
                 <artifactId>canal-spring-boot-starter</artifactId>
                 <version>1.2.1-RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.12</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

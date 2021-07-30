@@ -19,10 +19,10 @@ import com.zxkj.order.model.OrderRefund;
 import com.zxkj.order.model.OrderSku;
 import com.zxkj.order.service.OrderService;
 import com.zxkj.order.vo.OrderSkuVo;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     /***
      * 添加订单
      */
-    @GlobalTransactional
+//    @GlobalTransactional
     @Override
     public Boolean add(Order order) {
         //数据完善
@@ -115,7 +115,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setMoneys(moneys);
         orderMapper.insert(order);
 
-//        int q=10/0;
+//        int q = 10 / 0;
 
         //5、删除购物车数据
         cartFeign.delete(order.getCartIds());
@@ -162,6 +162,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 System.out.println(JsonUtil.jsonFromObject(respResult));
             }
         }
+        return orderSkuVoList;
+    }
+
+    @Override
+    public List<OrderSkuVo> getCart(List<String> ids) {
+        List<OrderSkuVo> orderSkuVoList = new ArrayList<>();
+        RespResult<List<Cart>> respResult = cartFeign.list(ids);
+        System.out.println(JsonUtil.jsonFromObject(respResult));
         return orderSkuVoList;
     }
 }

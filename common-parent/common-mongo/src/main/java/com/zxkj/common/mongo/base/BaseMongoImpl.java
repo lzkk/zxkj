@@ -171,7 +171,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         if (orderList == null || orderList.size() == 0) {
             return find();
         }
-        return mongoTemplate.find(new Query().with(new Sort(orderList)), getEntityClass());
+        return mongoTemplate.find(new Query().with(Sort.by(orderList)), getEntityClass());
     }
 
     /**
@@ -200,7 +200,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         query.addCriteria(Criteria.where(propName).is(value));
         List<Order> orderList = parseOrder(order);
         if (orderList != null && orderList.size() > 0) {
-            query.with(new Sort(orderList));
+            query.with(Sort.by(orderList));
         }
         return mongoTemplate.find(query, getEntityClass());
     }
@@ -257,7 +257,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
             query.addCriteria(criteria);
         }
         if (orderList != null && orderList.size() > 0) {
-            query.with(new Sort(orderList));
+            query.with(Sort.by(orderList));
         }
         return mongoTemplate.find(query, getEntityClass());
     }
@@ -295,13 +295,13 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
      * @return
      */
     public MPage<T> findByPage(Criteria criteria, String order, int pageNo, int pageSize) {
-        List<Order> orderList = parseOrder(order);
+        List<Sort.Order> orderList = parseOrder(order);
         Query query = new Query();
         if (criteria != null) {
             query.addCriteria(criteria);
         }
         if (orderList != null && orderList.size() > 0) {
-            query.with(new Sort(orderList));
+            query.with(Sort.by(orderList));
         }
         return findByPage(query, pageNo, pageSize);
     }
@@ -488,7 +488,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         }
         List<Order> orderList = parseOrder(order);
         if (orderList != null && orderList.size() > 0) {
-            query.with(new Sort(orderList));
+            query.with(Sort.by(orderList));
         }
         return query;
     }

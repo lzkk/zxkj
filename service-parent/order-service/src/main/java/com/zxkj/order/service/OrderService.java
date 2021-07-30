@@ -33,4 +33,6 @@ public interface OrderService extends IService<Order> {
     Order getByUserName(String username);
 
     List<OrderSkuVo> getOrderSkuByUserName(String username);
+
+    List<OrderSkuVo> getCart(List<String> ids);
 }

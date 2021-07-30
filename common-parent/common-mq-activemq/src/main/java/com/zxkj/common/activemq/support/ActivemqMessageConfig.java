@@ -6,6 +6,7 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -43,6 +44,7 @@ public class ActivemqMessageConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ActiveMQConnectionFactory factory() {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(userName, password, brokenUrl);
         factory.setRedeliveryPolicy(redeliveryPolicy());
@@ -50,11 +52,12 @@ public class ActivemqMessageConfig {
     }
 
     @Bean
-    public JmsTemplate jmsTemplate(ActiveMQConnectionFactory factory) {
+    @ConditionalOnMissingBean
+    public JmsTemplate jmsTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
         //设置持久化，1 非持久， 2 持久化
         jmsTemplate.setDeliveryMode(2);
-        jmsTemplate.setConnectionFactory(factory);
+        jmsTemplate.setConnectionFactory(factory());
         /*
           SESSION_TRANSACTED = 0  事物提交并确认
           AUTO_ACKNOWLEDGE = 1    自动确认
@@ -68,14 +71,16 @@ public class ActivemqMessageConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ActivemqMessageSender activemqMessageSender() {
         return new ActivemqMessageSender();
     }
 
     @Bean
-    public DefaultJmsListenerContainerFactory listener(ActiveMQConnectionFactory factory) {
+    @ConditionalOnMissingBean
+    public DefaultJmsListenerContainerFactory listener() {
         DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
-        listener.setConnectionFactory(factory);
+        listener.setConnectionFactory(factory());
         listener.setConcurrency("1-10");//设置连接数
         listener.setRecoveryInterval(1000L);//重连间隔时间
         listener.setSessionAcknowledgeMode(4);

@@ -11,12 +11,15 @@ import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
 import com.zxkj.common.kafka.support.EnableKafkaMessage;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableKafkaMessage
@@ -45,7 +49,6 @@ public class GatewayConfiguration {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SentinelGatewayBlockExceptionHandler sentinelGatewayBlockExceptionHandler() {
-        // Register the block exception handler for Spring Cloud Gateway.
         return new SentinelGatewayBlockExceptionHandler(viewResolvers, serverCodecConfigurer);
     }
 
@@ -124,5 +127,11 @@ public class GatewayConfiguration {
                 .setIntervalSec(2));
         //手动加载规则配置
         GatewayRuleManager.loadRules(rules);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+        return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
 }

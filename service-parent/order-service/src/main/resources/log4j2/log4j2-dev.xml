@@ -53,5 +53,7 @@
         </Logger>
         <Logger name="com.alibaba.nacos" level="WARN">
         </Logger>
+        <Logger name="org.apache.kafka" level="WARN">
+        </Logger>
     </Loggers>
 </Configuration>
