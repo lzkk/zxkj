@@ -53,11 +53,11 @@ public class ActivemqMessageConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public JmsTemplate jmsTemplate() {
+    public JmsTemplate jmsTemplate(ActiveMQConnectionFactory factory) {
         JmsTemplate jmsTemplate = new JmsTemplate();
         //设置持久化，1 非持久， 2 持久化
         jmsTemplate.setDeliveryMode(2);
-        jmsTemplate.setConnectionFactory(factory());
+        jmsTemplate.setConnectionFactory(factory);
         /*
           SESSION_TRANSACTED = 0  事物提交并确认
           AUTO_ACKNOWLEDGE = 1    自动确认
@@ -78,9 +78,9 @@ public class ActivemqMessageConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultJmsListenerContainerFactory listener() {
+    public DefaultJmsListenerContainerFactory listener(ActiveMQConnectionFactory factory) {
         DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
-        listener.setConnectionFactory(factory());
+        listener.setConnectionFactory(factory);
         listener.setConcurrency("1-10");//设置连接数
         listener.setRecoveryInterval(1000L);//重连间隔时间
         listener.setSessionAcknowledgeMode(4);

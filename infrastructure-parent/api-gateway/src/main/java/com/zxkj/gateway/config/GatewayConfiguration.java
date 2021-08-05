@@ -9,7 +9,6 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
-import com.zxkj.common.kafka.support.EnableKafkaMessage;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -30,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
-@EnableKafkaMessage
 public class GatewayConfiguration {
 
     private final List<ViewResolver> viewResolvers;
@@ -134,4 +132,5 @@ public class GatewayConfiguration {
     public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
         return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
+
 }
