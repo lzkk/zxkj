@@ -92,7 +92,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
     }
 
     @Bean
-    public List<Declarable> declarableBusiList() {
+    public Declarables declarableBusiList() {
         List<Declarable> list = new ArrayList<>();
         for (BusiTypeHandler handler : BusiTypeHandler.values()) {
             BusiType dest = handler.getBusiType();
@@ -103,7 +103,8 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
             Binding binding = BindingBuilder.bind(queue).to(exchange);
             list.add(binding);
         }
-        return list;
+        Declarables declarables = new Declarables(list);
+        return declarables;
     }
 
     @Override
@@ -113,6 +114,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+
         return bean;
     }
 
