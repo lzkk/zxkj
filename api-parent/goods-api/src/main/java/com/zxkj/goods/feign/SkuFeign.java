@@ -53,6 +53,12 @@ public interface SkuFeign {
     @PutMapping(value = "/sku/aditems/type")
     RespResult updateTypeItems(@RequestParam(value = "id") Integer id);
 
+    /****
+     * 根据推广分类查询推广产品列表
+     */
+    @PutMapping(value = "/sku/skuUpdateTest")
+    RespResult updateTest(@RequestParam(value = "skuId") String skuId, @RequestParam(value = "spuId") String spuId);
+
 }
 
 @Component
@@ -93,6 +99,12 @@ class SkuFeignFallback implements SkuFeign, FallbackFactory<SkuFeign> {
     @Override
     public RespResult updateTypeItems(Integer id) {
         logger.error("SkuFeignFallback -> updateTypeItems错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
+    }
+
+    @Override
+    public RespResult updateTest(String skuId, String spuId) {
+        logger.error("SkuFeignFallback -> updateTest错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 

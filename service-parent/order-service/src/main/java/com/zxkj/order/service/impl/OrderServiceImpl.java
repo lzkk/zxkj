@@ -19,10 +19,13 @@ import com.zxkj.order.model.OrderRefund;
 import com.zxkj.order.model.OrderSku;
 import com.zxkj.order.service.OrderService;
 import com.zxkj.order.vo.OrderSkuVo;
+import com.zxkj.seckill.feign.SeckillGoodsFeign;
+import com.zxkj.seckill.model.SeckillGoods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private SkuFeign skuFeign;
+
+    @Autowired
+    private SeckillGoodsFeign seckillGoodsFeign;
 
     /****
      * 退款申请
@@ -171,5 +177,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         RespResult<List<Cart>> respResult = cartFeign.list(ids);
         System.out.println(JsonUtil.jsonFromObject(respResult));
         return orderSkuVoList;
+    }
+
+    @Override
+    public void ribbonTest() {
+        RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
+        System.out.println("1--" + JsonUtil.jsonFromObject(respResult1));
+        RespResult<List<Cart>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
+        System.out.println("2--" + JsonUtil.jsonFromObject(respResult2));
+        RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
+        System.out.println("3--" + JsonUtil.jsonFromObject(respResult3));
     }
 }

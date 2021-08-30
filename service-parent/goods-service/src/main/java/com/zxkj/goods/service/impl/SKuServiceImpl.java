@@ -3,23 +3,24 @@ package com.zxkj.goods.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zxkj.cart.model.Cart;
+import com.zxkj.common.exception.BusinessException;
 import com.zxkj.goods.mapper.AdItemsMapper;
 import com.zxkj.goods.mapper.SkuMapper;
+import com.zxkj.goods.mapper.SpuMapper;
 import com.zxkj.goods.model.AdItems;
 import com.zxkj.goods.model.Sku;
+import com.zxkj.goods.model.Spu;
 import com.zxkj.goods.service.SKuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CacheConfig(cacheNames = "ad-items-skus")
 @Service
 public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuService {
 
@@ -28,6 +29,9 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
 
     @Autowired
     private SkuMapper skuMapper;
+
+    @Autowired
+    private SpuMapper spuMapper;
 
     /***
      * 库存递减
@@ -39,8 +43,8 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
         for (Cart cart : carts) {
             //库存递减
             int dcount = skuMapper.dcount(cart.getSkuId(), cart.getNum());
-            System.out.println("dcount:"+dcount);
-            if(dcount<=0){
+            System.out.println("dcount:" + dcount);
+            if (dcount <= 0) {
                 throw new RuntimeException("库存不足！");
             }
             return dcount;
@@ -54,18 +58,16 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
      * @return
      * ad-items-skus::1
      */
-    //@Cacheable(cacheNames = "ad-items-skus",key ="#id" )
-    @Cacheable(key ="#id" )
     @Override
     public List<Sku> typeSkuItems(Integer id) {
         //1.查询当前分类下的所有列表信息
         QueryWrapper<AdItems> adItemsQueryWrapper = new QueryWrapper<AdItems>();
-        adItemsQueryWrapper.eq("type",id);
+        adItemsQueryWrapper.eq("type", id);
         List<AdItems> adItems = adItemsMapper.selectList(adItemsQueryWrapper);
 
         //2.根据推广列表查询产品列表信息
-        List<String> skuids = adItems.stream().map(adItem->adItem.getSkuId()).collect(Collectors.toList());
-        return skuids==null || skuids.size()<=0? null : skuMapper.selectBatchIds(skuids);
+        List<String> skuids = adItems.stream().map(adItem -> adItem.getSkuId()).collect(Collectors.toList());
+        return skuids == null || skuids.size() <= 0 ? null : skuMapper.selectBatchIds(skuids);
     }
 
     /***
@@ -73,28 +75,60 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
      * @param id
      * @return
      */
-    //@CacheEvict(cacheNames = "ad-items-skus",key ="#id" )
-    @CacheEvict(key ="#id" )
     @Override
-    public void delTypeSkuItems(Integer id) {}
+    public void delTypeSkuItems(Integer id) {
+    }
 
     /****
      * 修改缓存
      * @param id
      * @return
      */
-    //@CachePut(cacheNames = "ad-items-skus",key = "#id")
-    @CachePut(key = "#id")
     @Override
     public List<Sku> updateTypeSkuItems(Integer id) {
         //1.查询当前分类下的所有列表信息
         QueryWrapper<AdItems> adItemsQueryWrapper = new QueryWrapper<AdItems>();
-        adItemsQueryWrapper.eq("type",id);
+        adItemsQueryWrapper.eq("type", id);
         List<AdItems> adItems = adItemsMapper.selectList(adItemsQueryWrapper);
 
         //2.根据推广列表查询产品列表信息
-        List<String> skuids = adItems.stream().map(adItem->adItem.getSkuId()).collect(Collectors.toList());
-        return skuids==null || skuids.size()<=0? null : skuMapper.selectBatchIds(skuids);
+        List<String> skuids = adItems.stream().map(adItem -> adItem.getSkuId()).collect(Collectors.toList());
+        return skuids == null || skuids.size() <= 0 ? null : skuMapper.selectBatchIds(skuids);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateTest(String skuId, String spuId) {
+        Sku sku = new Sku();
+        sku.setUpdateTime(new Date());
+        sku.setId(skuId);
+        int res = skuMapper.updateById(sku);
+        if (res != 1) {
+            throw new BusinessException("sku update error");
+        }
+        Spu spu = new Spu();
+        spu.setId(spuId);
+        spu.setIntro(System.currentTimeMillis() + "");
+        int res2 = spuMapper.updateById(spu);
+        if (res2 != 1) {
+            throw new BusinessException("spu update error");
+        }
+        System.out.println("ok");
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCompletion(int status) {
+                super.afterCompletion(status);
+                if (status == STATUS_COMMITTED) {
+                    Sku sku = new Sku();
+                    sku.setSpuId(spuId);
+                    sku.setId(skuId);
+                    int res = skuMapper.updateById(sku);
+                    System.out.println("yingxiang-" + res);
+                }
+            }
+        });
+
     }
 
 }

@@ -152,4 +152,10 @@ public class OrderController {
         return RespResult.ok(orderSkuVoList);
     }
 
+    @GetMapping(value = "/ribbonTest")
+    public RespResult<Boolean> ribbonTest(@RequestBody List<String> ids) throws Exception {
+        orderService.ribbonTest();
+        return RespResult.ok(true);
+    }
+
 }

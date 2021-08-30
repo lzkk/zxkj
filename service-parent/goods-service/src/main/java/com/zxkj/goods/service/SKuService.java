@@ -15,4 +15,6 @@ public interface SKuService extends IService<Sku> {
     void delTypeSkuItems(Integer id);
 
     List<Sku> updateTypeSkuItems(Integer id);
+
+    void updateTest(String skuId, String spuId);
 }

@@ -1,0 +1,160 @@
+#SpringCloud 2.X
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /
+
+# Logger config
+logging:
+  config: classpath:log4j2/log4j2-dev.xml
+  level:
+    com.alibaba.nacos.client.config.impl: WARN
+
+# ====================MybatisPlus====================
+mybatis-plus:
+  mapper-locations: classpath*:com/zxkj/**/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+##feign sentinel
+feign:
+  sentinel:
+    enabled: true
+  client:
+    config:
+      default:
+        connect-timeout: 1000
+        read-timeout: 5000
+
+#ribbon的超时时间
+ribbon:
+  ConnectTimeout: 2000
+  ReadTimeout: 5000
+  MaxAutoRetries: 0 #同一台实例最大重试次数,不包括首次调用
+  MaxAutoRetriesNextServer: 1 #重试负载均衡其他的实例最大重试次数,不包括首次调用
+  OkToRetryOnAllOperations: false  #是否所有操作都重试
+  MaxConnectionsPerHost: 5000
+  MaxTotalConnections: 50000
+
+
+spring:
+  client:
+    healthcheck:
+      enabled: true #开启健康检查（需要spring-boot-starter-actuator依赖）
+  # 上传文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  #定义一致时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+    time-zone: GMT+8
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+  cloud:
+    config:
+      override-none: true
+      allow-override: true
+      override-system-properties: false
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+    sentinel:
+      eager: true
+      transport:
+        dashboard: 127.0.0.1:8888
+  ###zipkin
+  zipkin:
+    discoveryClientEnabled: false
+    sender:
+      type: kafka
+    kafka:
+      topic: myZipkin
+  sleuth:
+    enabled: true
+    messaging:
+      jms:
+        enabled: false
+    sampler:
+      probability: 0.2 # 采样比例为: 0.1(即10%),设置的值介于0.0到1.0之间，1.0则表示全部采集
+  ###rocketmq
+  rocketmq:
+    producer:
+      maxMessageSize: 4096
+      sendMsgTimeout: 3000
+      retryTimesWhenSendFailed: 2
+    consumer:
+      groupName: myRocket
+      namesrvAddr: 127.0.0.1:9876
+      consumeThreadMin: 20
+      consumeThreadMax: 64
+      consumeMessageBatchMaxSize: 1
+  ###rabbitmq
+  rabbitmq:
+    addresses: localhost:5672
+    username: root
+    password: 123456
+    virtual-host: /
+    connection-timeout: 15000
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 5
+        max-concurrency: 10
+  ###kafka
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      retries: 0
+      linger: 1
+      batch.size: 4096
+      buffer.memory: 40960
+    consumer:
+      enable-auto-commit: true
+      auto.commit.interval: 100
+      auto.offset.reset: earliest
+      session.timeout: 6000
+      group-id: default_consumer_group #群组ID
+      concurrency: 10
+      max.pollrecordes: 100
+  ###activemq
+  activemq:
+    broker-url: tcp://127.0.0.1:61616
+    user: admin
+    password: admin
+  data:
+    ###mongodb
+    mongodb:
+      uri: mongodb://127.0.0.1:27017/test
+    ###elasticsearch
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: 172.17.53.138:9300
+      repositories:
+        enabled: true
+
+##Redis
+redis:
+  cluster:
+    address: 192.168.10.241:7000,192.168.10.241:7001,192.168.10.241:7002,192.168.10.241:7003,192.168.10.241:7004,192.168.10.241:7005
+  sentinel:
+    master: redis-master
+    nodes: 192.168.10.241:25379
+  single:
+    ip: 127.0.0.1
+    port: 6379
+  password: foobared
+  timeout: 6000
+  maxTotal: 30
+  maxIdle: 30
+  minIdle: 5
+  maxWaitMillis: 1000
+  maxRedirections: 5
+
+

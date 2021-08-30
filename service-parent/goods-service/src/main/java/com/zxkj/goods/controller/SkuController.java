@@ -61,4 +61,10 @@ public class SkuController implements SkuFeign {
         return RespResult.ok();
     }
 
+    public RespResult updateTest(@RequestParam(value = "skuId") String skuId, @RequestParam(value = "spuId") String spuId) {
+        //修改
+        sKuService.updateTest(skuId, spuId);
+        return RespResult.ok();
+    }
+
 }
