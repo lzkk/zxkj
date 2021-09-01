@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: monitor-server
+  profiles:
+    active: dev
+
+server:
+  port: 12345
+
+# Logger config
+logging:
+  config: classpath:log4j2.xml

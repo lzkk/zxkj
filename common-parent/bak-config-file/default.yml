@@ -5,6 +5,9 @@ management:
       exposure:
         include: '*'
       base-path: /
+  endpoint:
+    health:
+      show-details: always
 
 # Logger config
 logging:
@@ -65,6 +68,9 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
         namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+        metadata:
+          management:
+            context-path: ${server.servlet.context-path}/
     sentinel:
       eager: true
       transport:
