@@ -10,4 +10,6 @@ spring:
           data-id: default.yml
           group: DEFAULT_GROUP
           refresh: true
+      discovery:
+        register-enabled: false
 
