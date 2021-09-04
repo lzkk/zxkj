@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -16,7 +17,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @Slf4j
@@ -38,18 +39,20 @@ public class ProcessResponseFilter implements GlobalFilter, Ordered {
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
                 if (body instanceof Flux) {
                     Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
-                    return super.writeWith(fluxBody.map(dataBuffer -> {
-                        byte[] content = new byte[dataBuffer.readableByteCount()];
-                        dataBuffer.read(content);
+                    return super.writeWith(fluxBody.buffer().map(dataBuffer -> {
+                        DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
+                        DataBuffer join = dataBufferFactory.join(dataBuffer);
+                        byte[] content = new byte[join.readableByteCount()];
+                        join.read(content);
                         //释放掉内存
-                        DataBufferUtils.release(dataBuffer);
-                        String s = new String(content, Charset.forName("UTF-8"));
-                        //TODO，s就是response的值，想修改、查看就随意而为了
-                        byte[] uppedContent = new String(content, Charset.forName("UTF-8")).getBytes();
-                        return bufferFactory.wrap(uppedContent);
+                        DataBufferUtils.release(join);
+                        String responseResult = new String(content, StandardCharsets.UTF_8);
+                        Object startTimeObj = exchange.getAttributes().get("startTime");
+                        log.info(startTimeObj + ",response plain:" + responseResult);
+                        content = new String(responseResult.getBytes(), StandardCharsets.UTF_8).getBytes();
+                        return bufferFactory.wrap(content);
                     }));
                 }
-                // if body is not a flux. never got there.
                 return super.writeWith(body);
             }
         };

@@ -71,13 +71,7 @@ public class ProcessRequestFilter implements GlobalFilter, Ordered {
             }
         }
         //NOT_HOT 直接由后端服务处理
-        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-            Long startTime = exchange.getAttribute(START_TIME);
-            if (startTime != null) {
-                Long executeTime = (System.currentTimeMillis() - startTime);
-                log.info(exchange.getRequest().getURI().getRawPath() + " : " + executeTime + "ms");
-            }
-        }));
+        return chain.filter(exchange);
     }
 
     /***
