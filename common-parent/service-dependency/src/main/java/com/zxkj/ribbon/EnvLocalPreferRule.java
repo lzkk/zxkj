@@ -41,7 +41,7 @@ public class EnvLocalPreferRule extends AbstractLoadBalancerRule {
 
     public Server choose(Object key) {
         ILoadBalancer loadBalancer = getLoadBalancer();
-        log.info("ILoadBalancer:"+loadBalancer.toString());
+//        log.info("ILoadBalancer:"+loadBalancer.toString());
         return choose(loadBalancer, key);
     }
 
