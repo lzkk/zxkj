@@ -205,18 +205,34 @@ public class Job {
     @JsonIgnore
     private JobProperties jobProperties = new JobProperties();
 
-    public Job(String jobName, String cron, String jobParameter, Integer shardingTotalCount, String jobClass) {
-        this.jobName = jobName;
-        this.cron = cron;
-        this.jobParameter = jobParameter;
-        this.shardingTotalCount = shardingTotalCount;
-        this.jobClass = jobClass;
-        if (shardingTotalCount > 0 && shardingItemParameters == null) {
+    public static Job getInstance(String jobName, String jobClass, String cron, String jobParameter, Integer shardingTotalCount) {
+        String shardingItemParameters = null;
+        if (shardingTotalCount > 1) {
             shardingItemParameters = "0=0";
             for (int k = 1; k < shardingTotalCount; k++) {
                 shardingItemParameters += "," + k + "=" + k;
             }
         }
+        Job job = new Job();
+        job.setJobName(jobName);
+        job.setJobClass(jobClass);
+        job.setCron(cron);
+        job.setJobParameter(jobParameter);
+        job.setShardingItemParameters(shardingItemParameters);
+        job.setShardingTotalCount(shardingTotalCount);
+        return job;
+    }
+
+    public static Job getInstance(Class<?> clz, String cron, String jobParameter, Integer shardingTotalCount) {
+        return getInstance(clz.getSimpleName(), clz.getName(), cron, jobParameter, shardingTotalCount);
+    }
+
+    public static Job getInstance(Class<?> clz, String cron, String jobParameter) {
+        return getInstance(clz, cron, jobParameter, 1);
+    }
+
+    public static Job getInstance(Class<?> clz, String cron) {
+        return getInstance(clz, cron, null, 1);
     }
 
 }

@@ -1,41 +1,53 @@
 package com.zxkj.task.task;
 
-import com.dangdang.ddframe.job.api.ShardingContext;
-import com.dangdang.ddframe.job.api.simple.SimpleJob;
-import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
+import com.zxkj.task.bean.Job;
+import com.zxkj.task.config.ElasticJobService;
+import com.zxkj.task.job.MyJob2;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@ElasticSimpleJob(jobName = "firstJob",
-        cron = "0/2 * * * * ?",
-        jobParameter = "测试参数",
-        shardingTotalCount = 2,
-        shardingItemParameters = "0=A,1=B")
 @Slf4j
-public class StaticJobTask implements SimpleJob {
+@Component
+public class StaticJobTask implements InitializingBean {
+
+    @Autowired
+    private ElasticJobService elasticJobService;
+
+    private void method1() {
+        try {
+            elasticJobService.processSimpleJob(Job.getInstance(MyJob2.class, "0/3 * * * * ? *"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void method2() {
+        try {
+            elasticJobService.processSimpleJob(Job.getInstance(MyJob2.class, "0/3 * * * * ? *"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    public void execute(ShardingContext shardingContext) {
-        System.out.println(String.format("------Thread ID: %s, 任务总片数: %s, " +
-                        "当前分片项: %s,当前参数: %s," +
-                        "当前任务名称: %s,当前任务参数: %s," +
-                        "当前任务的id: %s"
-                ,
-                //获取当前线程的id
-                Thread.currentThread().getId(),
-                //获取任务总片数
-                shardingContext.getShardingTotalCount(),
-                //获取当前分片项
-                shardingContext.getShardingItem(),
-                //获取当前的参数
-                shardingContext.getShardingParameter(),
-                //获取当前的任务名称
-                shardingContext.getJobName(),
-                //获取当前任务参数
-                shardingContext.getJobParameter(),
-                //获取任务的id
-                shardingContext.getTaskId()
-        ));
+    public void afterPropertiesSet() throws Exception {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                method1();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                method2();
+            }
+        }).start();
+
+
     }
 }
 

@@ -78,7 +78,10 @@ public class DynamicJobInitialization extends AbstractJobInitialization {
                 configuration.setShardingTotalCount(jobSetting.getShardingTotalCount());
                 configuration.setShardingItemParameters(jobSetting.getShardingItemParameters());
                 configuration.setJobClass(jobSetting.getJobClass());
-                configuration.setListener(getDistributedListener());
+                ElasticJobProperties.JobConfiguration.Listener listener = getDistributedListener();
+                if (listener != null) {
+                    configuration.setListener(listener);
+                }
                 super.initJob(jobName, JobType.valueOf(jobSetting.getJobType()), configuration);
             }
         } catch (Exception e) {
@@ -92,11 +95,11 @@ public class DynamicJobInitialization extends AbstractJobInitialization {
      * @return
      */
     public ElasticJobProperties.JobConfiguration.Listener getDistributedListener() {
-        ElasticJobProperties.JobConfiguration.Listener listener = new ElasticJobProperties.JobConfiguration.Listener();
-        listener.setDistributedListenerClass(DistributeOnceElasticJobListener.class.getCanonicalName());
-        listener.setStartedTimeoutMilliseconds(100l);
-        listener.setCompletedTimeoutMilliseconds(100l);
-        return listener;
+//        ElasticJobProperties.JobConfiguration.Listener listener = new ElasticJobProperties.JobConfiguration.Listener();
+//        listener.setDistributedListenerClass(DistributeOnceElasticJobListener.class.getCanonicalName());
+//        listener.setStartedTimeoutMilliseconds(100l);
+//        listener.setCompletedTimeoutMilliseconds(100l);
+        return null;
     }
 
     public JobTypeConfiguration getJobTypeConfiguration(String jobName, JobType jobType, ElasticJobProperties.JobConfiguration jobConfiguration, JobCoreConfiguration jobCoreConfiguration) {

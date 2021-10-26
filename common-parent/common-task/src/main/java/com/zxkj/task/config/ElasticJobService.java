@@ -32,7 +32,6 @@ public class ElasticJobService {
     private ZookeeperRegistryCenter zookeeperRegistryCenter;
     @Autowired
     private DynamicJobInitialization dynamicJobInitialization;
-
     @Autowired
     private ApplicationContext ctx;
 
@@ -52,23 +51,6 @@ public class ElasticJobService {
      */
     public void processDataFlowJob(Job job) {
         processJob(job, JobType.DATAFLOW);
-    }
-
-    /**
-     * 保存/更新任务
-     *
-     * @param job
-     * @param jobType
-     */
-    private void processJob(Job job, JobType jobType) {
-        ElasticJobProperties.JobConfiguration configuration = new ElasticJobProperties.JobConfiguration();
-        configuration.setJobClass(job.getJobClass());
-        configuration.setCron(job.getCron());
-        configuration.setJobParameter(job.getJobParameter());
-        configuration.setShardingTotalCount(job.getShardingTotalCount());
-        configuration.setShardingItemParameters(job.getShardingItemParameters());
-        configuration.setListener(dynamicJobInitialization.getDistributedListener());
-        dynamicJobInitialization.initJob(job.getJobName(), jobType, configuration);
     }
 
     /**
@@ -107,6 +89,26 @@ public class ElasticJobService {
     private void removeJob(String jobName) throws Exception {
         CuratorFramework client = zookeeperRegistryCenter.getClient();
         client.delete().deletingChildrenIfNeeded().forPath("/" + jobName);
+    }
+
+    /**
+     * 保存/更新任务
+     *
+     * @param job
+     * @param jobType
+     */
+    private void processJob(Job job, JobType jobType) {
+        ElasticJobProperties.JobConfiguration configuration = new ElasticJobProperties.JobConfiguration();
+        configuration.setJobClass(job.getJobClass());
+        configuration.setCron(job.getCron());
+        configuration.setJobParameter(job.getJobParameter());
+        configuration.setShardingTotalCount(job.getShardingTotalCount());
+        configuration.setShardingItemParameters(job.getShardingItemParameters());
+        ElasticJobProperties.JobConfiguration.Listener listener = dynamicJobInitialization.getDistributedListener();
+        if (listener != null) {
+            configuration.setListener(listener);
+        }
+        dynamicJobInitialization.initJob(job.getJobName(), jobType, configuration);
     }
 
     @PostConstruct

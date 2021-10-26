@@ -2,6 +2,7 @@ package com.zxkj.task.controller;
 
 import com.zxkj.task.bean.Job;
 import com.zxkj.task.config.ElasticJobService;
+import com.zxkj.task.job.MyJob2;
 import com.zxkj.task.job.MyJob3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ public class TestController {
     @RequestMapping("/add")
     public Object add() {
         try {
-            elasticJobService.processSimpleJob(new Job("myJob3", "0/5 * * * * ? *", "1-3", 2, MyJob3.class.getName()));
+            elasticJobService.processSimpleJob(Job.getInstance(MyJob2.class, "0/5 * * * * ? *"));
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
@@ -27,7 +28,7 @@ public class TestController {
     @RequestMapping("/update")
     public Object update() {
         try {
-            elasticJobService.processSimpleJob(new Job("myJob3", "0/3 * * * * ? *", "1-3", 2, MyJob3.class.getName()));
+            elasticJobService.processSimpleJob(Job.getInstance(MyJob3.class, "0/4 * * * * ? *","1-3",2));
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
@@ -38,7 +39,7 @@ public class TestController {
     @RequestMapping("/delete")
     public Object delete() {
         try {
-            elasticJobService.deleteJob("myJob3");
+            elasticJobService.deleteJob(MyJob2.class.getSimpleName());
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
