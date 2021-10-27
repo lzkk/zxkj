@@ -1,6 +1,5 @@
 package com.zxkj.order;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
  * @date ：Created in 2020/8/4 14:59
  */
 //@EnableRocketmqMessage
-@MapperScan(basePackages = {"com.zxkj.order.mapper"})
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
 @SpringBootApplication

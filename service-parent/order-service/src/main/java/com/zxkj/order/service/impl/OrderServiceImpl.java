@@ -21,6 +21,7 @@ import com.zxkj.order.service.OrderService;
 import com.zxkj.order.vo.OrderSkuVo;
 import com.zxkj.seckill.feign.SeckillGoodsFeign;
 import com.zxkj.seckill.model.SeckillGoods;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ import java.util.List;
  * @Description:
  ****/
 @Service
+@Slf4j
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Autowired
@@ -165,7 +167,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (orderSkuVoList != null && orderSkuVoList.size() > 0) {
             for (OrderSkuVo OrderSkuVo : orderSkuVoList) {
                 RespResult<Sku> respResult = skuFeign.one(OrderSkuVo.getSkuId());
-                System.out.println(JsonUtil.jsonFromObject(respResult));
+                log.info(JsonUtil.jsonFromObject(respResult));
             }
         }
         return orderSkuVoList;
@@ -175,17 +177,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<OrderSkuVo> getCart(List<String> ids) {
         List<OrderSkuVo> orderSkuVoList = new ArrayList<>();
         RespResult<List<Cart>> respResult = cartFeign.list(ids);
-        System.out.println(JsonUtil.jsonFromObject(respResult));
+        log.info(JsonUtil.jsonFromObject(respResult));
         return orderSkuVoList;
     }
 
     @Override
     public void ribbonTest() {
         RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
-        System.out.println("1--" + JsonUtil.jsonFromObject(respResult1));
+        log.info("1--" + JsonUtil.jsonFromObject(respResult1));
         RespResult<List<Cart>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
-        System.out.println("2--" + JsonUtil.jsonFromObject(respResult2));
+        log.info("2--" + JsonUtil.jsonFromObject(respResult2));
         RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
-        System.out.println("3--" + JsonUtil.jsonFromObject(respResult3));
+        log.info("3--" + JsonUtil.jsonFromObject(respResult3));
     }
 }

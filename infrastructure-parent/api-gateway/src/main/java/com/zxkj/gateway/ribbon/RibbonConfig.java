@@ -1,6 +1,5 @@
-package com.zxkj.config;
+package com.zxkj.gateway.ribbon;
 
-import com.zxkj.ribbon.EnvLocalPreferRule;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

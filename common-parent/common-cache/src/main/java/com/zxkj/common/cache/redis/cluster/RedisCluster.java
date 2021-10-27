@@ -1,7 +1,7 @@
 package com.zxkj.common.cache.redis.cluster;
 
 import com.zxkj.common.cache.redis.RedisConfig;
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * redis集群对象
  */
-public class RedisCluster implements RedisUtil {
+public class RedisCluster implements Cache {
     private static final Logger log = LoggerFactory.getLogger(RedisCluster.class);
     private static String REDIS_FLAG = "redis-cluster";
     private static final String CONN_TEST_KEY = "conn_test";

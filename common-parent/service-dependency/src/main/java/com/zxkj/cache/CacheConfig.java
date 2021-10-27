@@ -1,9 +1,10 @@
-package com.zxkj.config;
+package com.zxkj.cache;
 
+import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.cache.redis.RedisConfig;
-import com.zxkj.common.cache.redis.RedisUtil;
 import com.zxkj.common.cache.redis.codis.RedisCodis;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,7 +54,8 @@ public class CacheConfig {
     private Integer singlePort;
 
     @Bean(initMethod = "init")
-    public RedisUtil redis() {
+    @ConditionalOnMissingBean
+    public Cache redis() {
         RedisConfig redisConfig = new RedisConfig();
         redisConfig.setTimeout(timeout);
         redisConfig.setMaxTotal(maxTotal);

@@ -3,7 +3,7 @@
 	<properties>
 		<property name="app.log">monitor-server-12345</property>
 		<property name="LOG_HOME">/opt/logs/${sys:app.log}</property>
-		<property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %C %t (%F:%L) - %m%n</property>
+		<property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p [%X{traceId}] %C %t (%F:%L) - %m%n</property>
 	</properties>
 	<Appenders>
 		<!--Console -->

@@ -1,7 +1,7 @@
 package com.zxkj.seckill.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.seckill.mapper.SeckillGoodsMapper;
 import com.zxkj.seckill.mapper.SeckillOrderMapper;
 import com.zxkj.seckill.model.SeckillGoods;
@@ -28,7 +28,7 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
     private SeckillOrderMapper seckillOrderMapper;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private Cache cache;
 
     @Autowired
     private SeckillGoodsMapper seckillGoodsMapper;
@@ -58,10 +58,10 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
             /**
              * 库存足够
              */
-            Object storecount = redisUtil.hget("HotSeckillGoods", id);
+            Object storecount = cache.hget("HotSeckillGoods", id);
             if (storecount == null || Integer.valueOf(storecount.toString()) < num) {
                 //移除排队标识
-                redisUtil.del("OrderQueue" + username);
+                cache.del("OrderQueue" + username);
                 return STORE_NOT_FULL;
             }
 
@@ -83,7 +83,7 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
             /*****
              * 库存递减
              */
-            Long lastStoreCount = redisUtil.hincre("HotSeckillGoods", id, -num);
+            Long lastStoreCount = cache.hincre("HotSeckillGoods", id, -num);
 
             if (lastStoreCount == 0) {
                 //将数据同步到数据库
@@ -93,10 +93,10 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
                 //将当前商品添加到Redis布隆过滤器->作业->用户下次抢购该商品，去布隆过滤器中判断该商品是否在布隆过滤器中，如果在，则表明售罄
                 seckillGoodsMapper.updateById(seckillGoods);
                 //删除Redis缓存
-                redisUtil.hdel("HotSeckillGoods", id);
+                cache.hdel("HotSeckillGoods", id);
             }
             //移除排队标识
-            redisUtil.del("OrderQueue" + username);
+            cache.del("OrderQueue" + username);
             lock.unlock();
         } catch (NumberFormatException e) {
             lock.unlock();

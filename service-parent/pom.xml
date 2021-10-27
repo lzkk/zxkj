@@ -15,6 +15,7 @@
     <modules>
         <module>canal-service</module>
         <module>cart-service</module>
+        <module>customer-service</module>
         <module>goods-service</module>
         <module>order-service</module>
         <module>pay-service</module>
@@ -22,7 +23,6 @@
         <module>seckill-service</module>
         <module>sys-service</module>
         <module>task-service</module>
-        <module>user-service</module>
     </modules>
 
     <dependencies>

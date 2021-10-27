@@ -14,6 +14,7 @@
 
     <modules>
         <module>cart-api</module>
+        <module>customer-api</module>
         <module>goods-api</module>
         <module>order-api</module>
         <module>page-api</module>
@@ -21,7 +22,6 @@
         <module>search-api</module>
         <module>seckill-api</module>
         <module>sys-api</module>
-        <module>user-api</module>
     </modules>
 
     <dependencies>

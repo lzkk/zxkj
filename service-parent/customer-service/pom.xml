@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>user-service</artifactId>
+    <artifactId>customer-service</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.zxkj</groupId>
-            <artifactId>user-api</artifactId>
+            <artifactId>customer-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -24,7 +24,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.zxkj.user.UserServiceMain</mainClass>
+                    <mainClass>com.zxkj.customer.CustomerServiceMain</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>

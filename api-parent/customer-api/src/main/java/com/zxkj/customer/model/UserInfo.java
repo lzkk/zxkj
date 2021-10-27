@@ -1,4 +1,4 @@
-package com.zxkj.user.model;
+package com.zxkj.customer.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

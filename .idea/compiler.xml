@@ -21,6 +21,8 @@
         <module name="common-practice" />
         <module name="common-task" />
         <module name="common-util" />
+        <module name="customer-api" />
+        <module name="customer-service" />
         <module name="goods-api" />
         <module name="goods-service" />
         <module name="monitor-server" />
@@ -38,8 +40,6 @@
         <module name="sys-api" />
         <module name="sys-service" />
         <module name="task-service" />
-        <module name="user-api" />
-        <module name="user-service" />
         <module name="zipkin-server" />
       </profile>
     </annotationProcessing>
@@ -68,6 +68,8 @@
       <module name="common-task" target="1.8" />
       <module name="common-util" target="1.8" />
       <module name="common-web" target="1.8" />
+      <module name="customer-api" target="1.8" />
+      <module name="customer-service" target="1.8" />
       <module name="goods-api" target="1.8" />
       <module name="goods-parent" target="1.8" />
       <module name="goods-service" target="1.8" />
@@ -92,8 +94,6 @@
       <module name="task-service" target="1.8" />
       <module name="trade-microservice" target="1.8" />
       <module name="trade-parent" target="1.8" />
-      <module name="user-api" target="1.8" />
-      <module name="user-service" target="1.8" />
       <module name="web-parent" target="1.8" />
       <module name="zipkin-server" target="1.8" />
       <module name="zxkj-parent" target="1.8" />

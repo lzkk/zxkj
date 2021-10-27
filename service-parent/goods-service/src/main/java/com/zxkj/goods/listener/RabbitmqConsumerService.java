@@ -1,7 +1,7 @@
 //package com.zxkj.goods.listener;
 //
 //import com.rabbitmq.client.Channel;
-//import com.zxkj.common.cache.redis.RedisUtil;
+//import com.zxkj.common.cache.redis.Cache;
 //import com.zxkj.common.rabbitmq.RabbitmqMessageListener;
 //import com.zxkj.common.rabbitmq.RabbitmqMessageSender;
 //import com.zxkj.common.rabbitmq.delay.constant.DelayQueuePrefix;
@@ -31,7 +31,7 @@
 //    @Autowired
 //    private RabbitmqMessageSender rabbitmqMessageSender;
 //    @Autowired
-//    private RedisUtil redisUtil;
+//    private Cache cache;
 //
 //    @RabbitmqMessageListener(value = BusiTypeHandler.ORDER_CREATE_BUSI_TASK, concurrentConsumers = "1", maxConcurrentConsumers = "1", prefetchCount = 1)
 //    public void processMessage(String key, String value) {

@@ -2,7 +2,7 @@ package com.zxkj.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.seckill.mapper.SeckillGoodsMapper;
 import com.zxkj.seckill.model.SeckillGoods;
 import com.zxkj.seckill.service.SeckillGoodsService;
@@ -18,7 +18,7 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
     private SeckillGoodsMapper seckillGoodsMapper;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private Cache cache;
 
 
     /****
@@ -42,7 +42,7 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
             seckillGoods = seckillGoodsMapper.selectById(uri);
             // HotSeckillGoods
             //                1:5
-            redisUtil.hincre("HotSeckillGoods", uri, seckillGoods.getStoreCount());
+            cache.hincre("HotSeckillGoods", uri, seckillGoods.getStoreCount());
         }
     }
 

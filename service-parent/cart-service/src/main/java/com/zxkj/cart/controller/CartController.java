@@ -3,7 +3,9 @@ package com.zxkj.cart.controller;
 import com.zxkj.cart.feign.CartFeign;
 import com.zxkj.cart.model.Cart;
 import com.zxkj.cart.service.CartService;
+import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * @Description:
  ****/
 @RestController
+@Slf4j
 public class CartController implements CartFeign {
 
     @Autowired
@@ -34,6 +37,7 @@ public class CartController implements CartFeign {
      */
     public RespResult<List<Cart>> list(@RequestBody List<String> ids) {
         List<Cart> carts = cartService.list(ids);
+        log.info("carts--" + JsonUtil.jsonFromObject(carts));
         return RespResult.ok(carts);
     }
 

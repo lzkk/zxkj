@@ -1,7 +1,7 @@
 package com.zxkj.common.rabbitmq;
 
 import com.zxkj.common.cache.constant.CacheKeyPrefix;
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.rabbitmq.delay.constant.DelayQueuePrefix;
 import com.zxkj.common.rabbitmq.support.RabbitmqCorrelationData;
 import com.zxkj.common.rabbitmq.support.RabbitmqMessageHelper;
@@ -25,7 +25,7 @@ public class RabbitmqMessageSender {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private Cache cache;
 
     /**
      * 发送事件消息
@@ -41,8 +41,8 @@ public class RabbitmqMessageSender {
         String json = RabbitmqMessageHelper.toJson(busiKey, busiObject);
         String idKey = CacheKeyPrefix.BUSI_MESSAGE_ID + busiType.toString();
         String bodyKey = CacheKeyPrefix.BUSI_MESSAGE_BODY + busiType.toString();
-        redisUtil.zadd(idKey, System.currentTimeMillis(), busiKey);
-        redisUtil.hset(bodyKey, busiKey, json);
+        cache.zadd(idKey, System.currentTimeMillis(), busiKey);
+        cache.hset(bodyKey, busiKey, json);
         logger.info("业务消息发送开始: {} - {}", busiObject, busiKey);
         rabbitTemplate.convertAndSend(busiType.toString(), null,
                 json, new RabbitmqCorrelationData(busiKey, busiType));

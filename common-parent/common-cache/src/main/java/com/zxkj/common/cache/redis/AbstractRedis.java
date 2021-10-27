@@ -13,7 +13,7 @@ import java.util.List;
  * @author ：yuhui
  * @date ：Created in 2021/2/1 9:37
  */
-public abstract class AbstractRedis implements RedisUtil {
+public abstract class AbstractRedis implements Cache {
     private static final Logger log = LoggerFactory.getLogger(AbstractRedis.class);
     private String REDIS_PRE_KEY = "";
 

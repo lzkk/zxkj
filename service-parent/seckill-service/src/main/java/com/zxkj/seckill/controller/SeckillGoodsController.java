@@ -1,9 +1,11 @@
 package com.zxkj.seckill.controller;
 
+import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.seckill.feign.SeckillGoodsFeign;
 import com.zxkj.seckill.model.SeckillGoods;
 import com.zxkj.seckill.service.SeckillGoodsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class SeckillGoodsController implements SeckillGoodsFeign {
 
     @Autowired
@@ -33,6 +36,7 @@ public class SeckillGoodsController implements SeckillGoodsFeign {
      */
     public RespResult<SeckillGoods> one(@PathVariable("id") String id) {
         SeckillGoods seckillGoods = seckillGoodsService.getById(id);
+        log.info("seckillGoods--" + JsonUtil.jsonFromObject(seckillGoods));
         return RespResult.ok(seckillGoods);
     }
 

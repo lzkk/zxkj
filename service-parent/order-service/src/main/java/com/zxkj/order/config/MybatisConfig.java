@@ -2,6 +2,7 @@ package com.zxkj.order.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,12 +20,13 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableTransactionManagement
+@MapperScan(basePackages = {"com.zxkj.order.mapper"})
 public class MybatisConfig implements TransactionManagementConfigurer {
 
     @Autowired
     private Environment environment;
 
-    @Bean
+    @Bean(initMethod = "init")
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource druidDataSource() {
         String envPrefix = environment.getProperty("spring.application.name");

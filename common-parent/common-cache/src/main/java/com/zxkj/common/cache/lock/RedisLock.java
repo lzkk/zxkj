@@ -1,6 +1,6 @@
 package com.zxkj.common.cache.lock;
 
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock extends AbstractLock {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisLock.class);
 
-    private RedisUtil redisUtil;
+    private Cache cache;
 
     private Random retryMillisRandom;
 
@@ -19,8 +19,8 @@ public class RedisLock extends AbstractLock {
     // 锁的有效时长(毫秒)
     protected long lockExpires;
 
-    public RedisLock(RedisUtil redisUtil, String lockKey, long lockExpires) {
-        this.redisUtil = redisUtil;
+    public RedisLock(Cache cache, String lockKey, long lockExpires) {
+        this.cache = cache;
         this.lockKey = lockKey;
         this.lockExpires = lockExpires;
         this.retryMillisRandom = new Random(System.currentTimeMillis());
@@ -72,7 +72,7 @@ public class RedisLock extends AbstractLock {
         if (locked) {
             return true;
         } else {
-            String value = redisUtil.get(lockKey);
+            String value = cache.get(lockKey);
             return !isTimeExpired(value);
         }
     }
@@ -80,7 +80,7 @@ public class RedisLock extends AbstractLock {
     @Override
     protected void unlock0() {
         // 判断锁是否过期
-        String value = redisUtil.get(lockKey);
+        String value = cache.get(lockKey);
         if (!isTimeExpired(value)) {
             doUnlock();
         }
@@ -97,7 +97,7 @@ public class RedisLock extends AbstractLock {
     }
 
     private void doUnlock() {
-        redisUtil.del(lockKey);
+        cache.del(lockKey);
     }
 
     public String getLockKey() {
@@ -105,15 +105,15 @@ public class RedisLock extends AbstractLock {
     }
 
     private String get(final String key) {
-        return redisUtil.get(key);
+        return cache.get(key);
     }
 
     private boolean setNX(final String key, final String value) {
-        return redisUtil.setnx(key, value);
+        return cache.setnx(key, value);
     }
 
     private String getSet(final String key, final String value) {
-        return redisUtil.getSet(key, value);
+        return cache.getSet(key, value);
     }
 
 }

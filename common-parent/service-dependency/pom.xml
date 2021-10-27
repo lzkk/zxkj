@@ -46,14 +46,6 @@
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.zxkj</groupId>
-            <artifactId>common-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
-            <artifactId>common-cache</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
@@ -76,6 +68,14 @@
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-cache</artifactId>
         </dependency>
     </dependencies>
 

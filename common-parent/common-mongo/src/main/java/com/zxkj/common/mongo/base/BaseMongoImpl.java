@@ -12,12 +12,17 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+/**
+ * @author Guo Mengya
+ * @version 1.0.0
+ * @desc mongo实现类
+ * @date 2021-09-26 13:44:05
+ */
 
 public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
 
@@ -34,6 +39,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         mongoTemplate.save(entity);
     }
 
+
     /**
      * 根据主键ID修改数据
      *
@@ -42,7 +48,22 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     @Override
     public void updateById(T entity) {
         Update update = new Update();
-        Query query = initialUpdate(entity, update);
+        Query query = initialUpdateById(entity, update, false);
+        if (query == null) {
+            throw new RuntimeException("没有主键ID，无法修改");
+        }
+        mongoTemplate.updateMulti(query, update, getEntityClass());
+    }
+
+    /**
+     * 根据主键ID修改数据
+     *
+     * @param entity
+     */
+    @Override
+    public void updateDynamicById(T entity) {
+        Update update = new Update();
+        Query query = initialUpdateById(entity, update, true);
         if (query == null) {
             throw new RuntimeException("没有主键ID，无法修改");
         }
@@ -60,7 +81,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     public void updateByCondition(String[] propName, Object[] values, T entity) {
         Query query = createQuery(propName, values, null);
         Update update = new Update();
-        initialUpdate(entity, update);
+        flushUpdate(entity, update, false);
         mongoTemplate.updateMulti(query, update, getEntityClass());
     }
 
@@ -73,7 +94,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     @Override
     public void updateByCondition(Criteria criteria, T entity) {
         Update update = new Update();
-        initialUpdate(entity, update);
+        flushUpdate(entity, update, false);
         Query query = new Query();
         if (criteria != null) {
             query.addCriteria(criteria);
@@ -90,7 +111,20 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     @Override
     public void updateByCondition(Query query, T entity) {
         Update update = new Update();
-        initialUpdate(entity, update);
+        flushUpdate(entity, update, false);
+        mongoTemplate.updateMulti(query, update, getEntityClass());
+    }
+
+    /**
+     * 根据查询修改数据
+     *
+     * @param query
+     * @param entity
+     */
+    @Override
+    public void updateDynamicByCondition(Query query, T entity) {
+        Update update = new Update();
+        flushUpdate(entity, update, true);
         mongoTemplate.updateMulti(query, update, getEntityClass());
     }
 
@@ -104,10 +138,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     public void deleteById(Serializable... ids) {
         if (ids != null && ids.length > 0) {
             for (Serializable id : ids) {
-                T t = mongoTemplate.findById(id, getEntityClass());
-                if (t != null) {
-                    mongoTemplate.remove(t);
-                }
+                mongoTemplate.remove(mongoTemplate.findById(id, getEntityClass()));
             }
         }
     }
@@ -281,6 +312,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
      * @param pageSize
      * @return
      */
+    @Override
     public MPage<T> findByPage(Criteria criteria, int pageNo, int pageSize) {
         return findByPage(criteria, null, pageNo, pageSize);
     }
@@ -294,8 +326,9 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
      * @param pageSize
      * @return
      */
+    @Override
     public MPage<T> findByPage(Criteria criteria, String order, int pageNo, int pageSize) {
-        List<Sort.Order> orderList = parseOrder(order);
+        List<Order> orderList = parseOrder(order);
         Query query = new Query();
         if (criteria != null) {
             query.addCriteria(criteria);
@@ -314,6 +347,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
      * @param pageSize
      * @return
      */
+    @Override
     public MPage<T> findByPage(Query query, int pageNo, int pageSize) {
         long total = this.countByCondition(query);
         MPage<T> page = new MPage<T>(pageNo, pageSize, total);
@@ -321,6 +355,19 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         List<T> rows = this.findByCondition(query);
         page.setList(rows);
         return page;
+    }
+
+    /**
+     * 根据Id查询记录
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public T findById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        return mongoTemplate.findOne(query, getEntityClass());
     }
 
     /**
@@ -427,14 +474,21 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         return total.longValue();
     }
 
+
+    @Override
+    public void insertAll(Collection<T> collection) {
+        mongoTemplate.insertAll(collection);
+    }
+
     /**
      * 初始化修改对象，若有主键ID则返回
      *
      * @param t
      * @param update
+     * @param dynamic
      * @return
      */
-    protected Query initialUpdate(T t, Update update) {
+    protected Query initialUpdateById(T t, Update update, boolean dynamic) {
         try {
             String id = null;
             Object value = null;
@@ -447,18 +501,7 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
                     break;
                 }
             }
-
-            Method[] declaredMethods = getEntityClass().getDeclaredMethods();
-            for (Method method : declaredMethods) {
-                String methodName = method.getName();
-                if (methodName.startsWith("get") && method.getModifiers() == Modifier.PUBLIC) {
-                    String name = methodName.replace("get", "");
-                    name = name.substring(0, 1).toLowerCase() + name.substring(1);
-                    if (!name.equals(id)) {
-                        update.set(name, method.invoke(t));
-                    }
-                }
-            }
+            updateHelp(t, update, id, dynamic);
             if (id == null) {
                 return null;
             }
@@ -468,6 +511,98 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 初始化修改对象，若有主键ID则返回
+     *
+     * @param t
+     * @param update
+     * @param dynamic
+     * @return
+     */
+    protected void flushUpdate(T t, Update update, boolean dynamic) {
+        try {
+            String id = null;
+            Field[] declaredFields = getEntityClass().getDeclaredFields();
+            for (Field field : declaredFields) {
+                if (field.isAnnotationPresent(Id.class)) {
+                    id = field.getName();
+                    break;
+                }
+            }
+            updateHelp(t, update, id, dynamic);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void flushUpdate(Object t, Update update, boolean dynamic, Class<?> entityClass) {
+        try {
+            String id = null;
+            Field[] declaredFields = entityClass.getDeclaredFields();
+            for (Field field : declaredFields) {
+                if (field.isAnnotationPresent(Id.class)) {
+                    id = field.getName();
+                    break;
+                }
+            }
+            updateHelp(t, update, id, dynamic, entityClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 修改辅助
+     *
+     * @param t
+     * @param update
+     * @param id
+     * @param dynamic
+     */
+    private void updateHelp(T t, Update update, String id, boolean dynamic) throws InvocationTargetException, IllegalAccessException {
+        Method[] declaredMethods = getEntityClass().getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            String methodName = method.getName();
+            if (methodName.startsWith("get") && method.getModifiers() == Modifier.PUBLIC) {
+                String name = methodName.replace("get", "");
+                name = name.substring(0, 1).toLowerCase() + name.substring(1);
+                if (name.equals(id)) {
+                    continue;
+                }
+                Object object = method.invoke(t);
+                if (dynamic) {
+                    if (object != null) {
+                        update.set(name, object);
+                    }
+                } else {
+                    update.set(name, object);
+                }
+            }
+        }
+    }
+
+    private void updateHelp(Object t, Update update, String id, boolean dynamic, Class<?> entityClass) throws InvocationTargetException, IllegalAccessException {
+        Method[] declaredMethods = entityClass.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            String methodName = method.getName();
+            if (methodName.startsWith("get") && method.getModifiers() == Modifier.PUBLIC) {
+                String name = methodName.replace("get", "");
+                name = name.substring(0, 1).toLowerCase() + name.substring(1);
+                if (name.equals(id)) {
+                    continue;
+                }
+                Object object = method.invoke(t);
+                if (dynamic) {
+                    if (object != null) {
+                        update.set(name, object);
+                    }
+                } else {
+                    update.set(name, object);
+                }
+            }
         }
     }
 
@@ -533,4 +668,5 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
         Class<T> tClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         return tClass;
     }
+
 }

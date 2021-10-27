@@ -5,19 +5,29 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
+/**
+ * @version 1.0.0
+ * @desc mongo接口
+ * @date 2021-09-26 13:44:05
+ */
 public interface IBaseMongo<T> {
 
     void save(T entity);
 
     void updateById(T entity);
 
+    void updateDynamicById(T entity);
+
     void updateByCondition(String[] propName, Object[] values, T entity);
 
     void updateByCondition(Criteria criteria, T entity);
 
     void updateByCondition(Query query, T entity);
+
+    void updateDynamicByCondition(Query query, T entity);
 
     void deleteById(Serializable... ids);
 
@@ -51,6 +61,8 @@ public interface IBaseMongo<T> {
 
     MPage<T> findByPage(Query query, int pageNo, int pageSize);
 
+    T findById(String id);
+
     T uniqueById(Serializable id);
 
     T uniqueByCondition(String propName, Object value);
@@ -66,5 +78,10 @@ public interface IBaseMongo<T> {
     long countByCondition(Criteria criteria);
 
     long countByCondition(Query query);
+
+    /**
+     * 批量插入
+     */
+    void insertAll(Collection<T> collection);
 
 }

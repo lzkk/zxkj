@@ -3,7 +3,7 @@
 //import com.alibaba.fastjson.JSON;
 //import com.zxkj.common.activemq.ActivemqMessageSender;
 //import com.zxkj.common.activemq.support.ActivemqDestinationEnum;
-//import com.zxkj.common.cache.redis.RedisUtil;
+//import com.zxkj.common.cache.redis.Cache;
 //import com.zxkj.common.kafka.KafkaMessageSender;
 //import com.zxkj.common.kafka.support.KafkaTopicTypeEnum;
 //import com.zxkj.common.rabbitmq.RabbitmqMessageSender;
@@ -32,7 +32,7 @@
 //    private Logger logger = LoggerFactory.getLogger(getClass());
 //
 //    @Autowired
-//    private RedisUtil redisUtil;
+//    private Cache cache;
 //
 //    @Autowired
 //    private RabbitmqMessageSender rabbitmqMessageSender;
@@ -52,8 +52,8 @@
 //    @PostMapping("/test")
 //    public RespResult<String> test(@RequestBody String name) {
 //        // 测试Redis
-//        redisUtil.set(name, "test_" + name);
-//        logger.info("test_redis:" + redisUtil.get(name));
+//        cache.set(name, "test_" + name);
+//        logger.info("test_redis:" + cache.get(name));
 //
 //        if (rocketmqMessageSender != null) {
 //            SendResult sendResult = rocketmqMessageSender.send(RocketmqTopicTagEnum.TOPIC_TAG_TEST, name);

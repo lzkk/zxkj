@@ -49,16 +49,6 @@
         <!--</dependency>-->
         <dependency>
             <groupId>com.zxkj</groupId>
-            <artifactId>common-util</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.tomcat.embed</groupId>
-                    <artifactId>tomcat-embed-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
             <artifactId>common-mq-kafka</artifactId>
         </dependency>
         <dependency>
@@ -68,6 +58,14 @@
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-cache</artifactId>
         </dependency>
     </dependencies>
 

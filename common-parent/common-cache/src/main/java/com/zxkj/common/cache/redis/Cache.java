@@ -8,7 +8,7 @@ import java.util.List;
  * @author ：yuhui
  * @date ：Created in 2021/2/1 9:37
  */
-public interface RedisUtil {
+public interface Cache {
 
     String get(String key);
 

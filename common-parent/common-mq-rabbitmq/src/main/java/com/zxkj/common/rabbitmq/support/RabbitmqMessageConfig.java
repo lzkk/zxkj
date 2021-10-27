@@ -3,7 +3,7 @@ package com.zxkj.common.rabbitmq.support;
 import com.alibaba.fastjson.JSON;
 import com.zxkj.common.cache.constant.CacheKeyPrefix;
 import com.zxkj.common.cache.lock.RedisLock;
-import com.zxkj.common.cache.redis.RedisUtil;
+import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.rabbitmq.RabbitmqMessageListener;
 import com.zxkj.common.rabbitmq.RabbitmqMessageSender;
 import com.zxkj.common.rabbitmq.delay.DelayedRabbitMqConfig;
@@ -62,7 +62,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
     private ConnectionFactory connectionFactory;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private Cache cache;
 
     @Value("${server.port}")
     private String serverPort;
@@ -76,8 +76,8 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
             if (ack) {
                 String idKey = CacheKeyPrefix.BUSI_MESSAGE_ID + data.getBusiType().toString();
                 String bodyKey = CacheKeyPrefix.BUSI_MESSAGE_BODY + data.getBusiType().toString();
-                redisUtil.zrem(idKey, data.getId());
-                redisUtil.hdel(bodyKey, data.getId());
+                cache.zrem(idKey, data.getId());
+                cache.hdel(bodyKey, data.getId());
                 logger.info("业务消息发送成功: {} - {}", data.getBusiType(), data.getId());
             } else {
                 logger.warn("业务消息发送失败: {} - {}, {}", data.getBusiType(), data.getId(), cause);
@@ -156,7 +156,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                 if (isSequentialExec) {
                     String tmpKey = CacheKeyPrefix.SEQUENCE_QUEUE_PRE + handler.toString();
                     String localAddress = getLocalAddress();
-                    boolean flag = redisUtil.setnx(tmpKey, localAddress);
+                    boolean flag = cache.setnx(tmpKey, localAddress);
                     if (!flag) {
                         logger.error("该顺序消费队列已经存在消费者，忽略: {},{}", tmpKey, localAddress);
                         return;
@@ -171,17 +171,17 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
 
     @Override
     public void destroy() throws Exception {
-        List<String> sequenceQueueList = redisUtil.scan(CacheKeyPrefix.SEQUENCE_QUEUE_PRE);
+        List<String> sequenceQueueList = cache.scan(CacheKeyPrefix.SEQUENCE_QUEUE_PRE);
         logger.info("服务销毁，redis顺序消费队列待清除key列表: {}", JSON.toJSONString(sequenceQueueList));
         if (sequenceQueueList == null || sequenceQueueList.size() == 0) {
             return;
         }
         for (String tmp : sequenceQueueList) {
-            String sequenceData = redisUtil.get(tmp);
+            String sequenceData = cache.get(tmp);
             String localAddress = getLocalAddress();
             if (sequenceData != null && sequenceData.equals(localAddress)) {
                 logger.info("顺序消费队列清除key:{}，value:{}", tmp, localAddress);
-                redisUtil.del(tmp);
+                cache.del(tmp);
             }
         }
     }
@@ -214,7 +214,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
             if (!isSequentialExec) {
                 key += ":" + transferObject.getBusiKey();
             }
-            RedisLock redisLock = new RedisLock(redisUtil, key, LOCK_EXPIRES);
+            RedisLock redisLock = new RedisLock(cache, key, LOCK_EXPIRES);
             if (!redisLock.tryLock(LOCK_TRY_MS, TimeUnit.MILLISECONDS)) {
                 logger.warn("业务消息接收超时: {}", key);
                 throw new RuntimeException("事件消息接收超时: " + key);
