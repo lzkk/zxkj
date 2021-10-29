@@ -13,9 +13,9 @@ import com.dangdang.ddframe.job.lite.lifecycle.domain.JobSettings;
 import com.dangdang.ddframe.job.lite.lifecycle.internal.settings.JobSettingsAPIImpl;
 import com.dangdang.ddframe.job.lite.lifecycle.internal.statistics.JobStatisticsAPIImpl;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
-import com.zxkj.task.listener.DistributeOnceElasticJobListener;
 import com.zxkj.task.support.ElasticJobProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
 import org.quartz.CronExpression;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -35,31 +35,34 @@ public class DynamicJobInitialization extends AbstractJobInitialization {
 
     private JobStatisticsAPI jobStatisticsAPI;
     private JobSettingsAPI jobSettingsAPI;
+    private ZookeeperRegistryCenter zookeeperRegistryCenter;
 
     public DynamicJobInitialization(ZookeeperRegistryCenter zookeeperRegistryCenter) {
+        this.zookeeperRegistryCenter = zookeeperRegistryCenter;
         this.jobStatisticsAPI = new JobStatisticsAPIImpl(zookeeperRegistryCenter);
         this.jobSettingsAPI = new JobSettingsAPIImpl(zookeeperRegistryCenter);
     }
 
     public void init() {
         Collection<JobBriefInfo> allJob = jobStatisticsAPI.getAllJobsBriefInfo();
-        if (!CollectionUtils.isEmpty(allJob)) {
-            allJob.forEach(jobInfo -> {
-                if (JobBriefInfo.JobStatus.CRASHED.equals(jobInfo.getStatus()) || JobBriefInfo.JobStatus.OK.equals(jobInfo.getStatus())) {
-                    try {
-                        Date currentDate = new Date();
-                        CronExpression cronExpression = new CronExpression(jobInfo.getCron());
-                        Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(currentDate);
-                        // 表达式还生效的任务
-                        if (!ObjectUtils.isEmpty(nextValidTimeAfter)) {
-                            this.initJobHandler(jobInfo.getJobName());
-                        }
-                    } catch (ParseException e) {
-                        log.error(e.getMessage(), e);
-                    }
-                }
-            });
+        if (CollectionUtils.isEmpty(allJob)) {
+            return;
         }
+        allJob.forEach(jobInfo -> {
+            if (JobBriefInfo.JobStatus.CRASHED.equals(jobInfo.getStatus()) || JobBriefInfo.JobStatus.OK.equals(jobInfo.getStatus())) {
+                try {
+                    Date currentDate = new Date();
+                    CronExpression cronExpression = new CronExpression(jobInfo.getCron());
+                    Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(currentDate);
+                    if (!ObjectUtils.isEmpty(nextValidTimeAfter)) {
+                        // 表达式还生效的任务
+                        this.initJobHandler(jobInfo.getJobName());
+                    }
+                } catch (ParseException e) {
+                    log.error("加载历史任务," + jobInfo.getJobName() + ",message:" + e.getMessage(), e);
+                }
+            }
+        });
     }
 
     /**
@@ -68,25 +71,47 @@ public class DynamicJobInitialization extends AbstractJobInitialization {
      * @param jobName 任务名
      */
     private void initJobHandler(String jobName) {
-        try {
-            JobSettings jobSetting = jobSettingsAPI.getJobSettings(jobName);
-            if (!ObjectUtils.isEmpty(jobSetting)) {
-                ElasticJobProperties.JobConfiguration configuration = new ElasticJobProperties.JobConfiguration();
-                configuration.setDescription(jobSetting.getDescription());
-                configuration.setCron(jobSetting.getCron());
-                configuration.setJobParameter(jobSetting.getJobParameter());
-                configuration.setShardingTotalCount(jobSetting.getShardingTotalCount());
-                configuration.setShardingItemParameters(jobSetting.getShardingItemParameters());
-                configuration.setJobClass(jobSetting.getJobClass());
-                ElasticJobProperties.JobConfiguration.Listener listener = getDistributedListener();
-                if (listener != null) {
-                    configuration.setListener(listener);
-                }
-                super.initJob(jobName, JobType.valueOf(jobSetting.getJobType()), configuration);
-            }
-        } catch (Exception e) {
-            log.error("初始化任务操作失败: {}", e.getMessage(), e);
+        JobSettings jobSetting = jobSettingsAPI.getJobSettings(jobName);
+        if (ObjectUtils.isEmpty(jobSetting)) {
+            log.error("无效的任务," + jobName);
+            return;
         }
+        try {
+            this.getClass().getClassLoader().loadClass(jobSetting.getJobClass());
+        } catch (ClassNotFoundException e) {
+            log.error("无效的任务," + jobName);
+            removeJob(jobName);
+            return;
+        }
+        ElasticJobProperties.JobConfiguration configuration = new ElasticJobProperties.JobConfiguration();
+        configuration.setDescription(jobSetting.getDescription());
+        configuration.setCron(jobSetting.getCron());
+        configuration.setJobParameter(jobSetting.getJobParameter());
+        configuration.setShardingTotalCount(jobSetting.getShardingTotalCount());
+        configuration.setShardingItemParameters(jobSetting.getShardingItemParameters());
+        configuration.setJobClass(jobSetting.getJobClass());
+        ElasticJobProperties.JobConfiguration.Listener listener = getDistributedListener();
+        if (listener != null) {
+            configuration.setListener(listener);
+        }
+        super.initJob(jobName, JobType.valueOf(jobSetting.getJobType()), configuration);
+    }
+
+    /**
+     * 删除任务
+     *
+     * @param jobName
+     * @throws Exception
+     */
+    public void removeJob(String jobName) {
+        try {
+            CuratorFramework client = zookeeperRegistryCenter.getClient();
+            client.delete().deletingChildrenIfNeeded().forPath("/" + jobName);
+            log.info("删除任务成功:{}", jobName);
+        } catch (Exception e) {
+            log.error("删除任务失败:" + jobName, e);
+        }
+
     }
 
     /**

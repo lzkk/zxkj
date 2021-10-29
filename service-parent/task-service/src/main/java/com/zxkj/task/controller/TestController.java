@@ -28,7 +28,7 @@ public class TestController {
     @RequestMapping("/update")
     public Object update() {
         try {
-            elasticJobService.processSimpleJob(Job.getInstance(MyJob3.class, "0/4 * * * * ? *","1-3",2));
+            elasticJobService.processSimpleJob(Job.getInstance(MyJob3.class, "0/4 * * * * ? *", "1-3", 2));
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
@@ -39,7 +39,7 @@ public class TestController {
     @RequestMapping("/delete")
     public Object delete() {
         try {
-            elasticJobService.deleteJob(MyJob2.class.getSimpleName());
+            elasticJobService.removeJob(MyJob2.class.getSimpleName());
         } catch (Exception e) {
             e.printStackTrace();
             return "false";

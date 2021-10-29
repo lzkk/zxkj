@@ -54,44 +54,6 @@ public class ElasticJobService {
     }
 
     /**
-     * 删除任务
-     *
-     * @param jobName
-     */
-    public void deleteJob(String jobName) {
-        String errMsg = null;
-        int count = 3;
-        do {
-            try {
-                removeJob(jobName);
-                errMsg = null;
-                log.info(jobName + " delete finish!");
-            } catch (Exception e) {
-                errMsg = e.getMessage();
-                count--;
-                log.error(e.getMessage(), e);
-            } finally {
-                try {
-                    Thread.sleep(1000l);
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-        } while (errMsg != null && count > 0);
-    }
-
-    /**
-     * 移除任务
-     *
-     * @param jobName
-     * @throws Exception
-     */
-    private void removeJob(String jobName) throws Exception {
-        CuratorFramework client = zookeeperRegistryCenter.getClient();
-        client.delete().deletingChildrenIfNeeded().forPath("/" + jobName);
-    }
-
-    /**
      * 保存/更新任务
      *
      * @param job
@@ -109,6 +71,16 @@ public class ElasticJobService {
             configuration.setListener(listener);
         }
         dynamicJobInitialization.initJob(job.getJobName(), jobType, configuration);
+    }
+
+    /**
+     * 移除任务
+     *
+     * @param jobName
+     * @throws Exception
+     */
+    public void removeJob(String jobName) {
+        dynamicJobInitialization.removeJob(jobName);
     }
 
     @PostConstruct

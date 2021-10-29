@@ -40,12 +40,12 @@ public class StaticJobTask implements InitializingBean {
             }
         }).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                method2();
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                method2();
+//            }
+//        }).start();
 
 
     }

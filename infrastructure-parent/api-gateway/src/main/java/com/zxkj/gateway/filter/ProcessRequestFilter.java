@@ -36,6 +36,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         ServerHttpRequest request = exchange.getRequest();
         exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
         String uri = request.getURI().getPath();
+        log.info("请求uri:{}", uri);
         //过滤uri是否有效
         if (!authorizationInterceptor.isValid(uri)) {
             return error(exchange, 404, "url bad");

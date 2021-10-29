@@ -205,6 +205,10 @@ public class Job {
     @JsonIgnore
     private JobProperties jobProperties = new JobProperties();
 
+    private Job() {
+
+    }
+
     public static Job getInstance(String jobName, String jobClass, String cron, String jobParameter, Integer shardingTotalCount) {
         String shardingItemParameters = null;
         if (shardingTotalCount > 1) {
