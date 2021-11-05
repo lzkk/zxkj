@@ -3,8 +3,8 @@ package com.zxkj.canal.listener;
 import com.alibaba.fastjson.JSON;
 import com.zxkj.goods.model.Sku;
 import com.zxkj.page.feign.PageFeign;
+import com.zxkj.search.condition.SkuEsCondition;
 import com.zxkj.search.feign.SkuSearchFeign;
-import com.zxkj.search.model.SkuEs;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class SkuHandler implements EntryHandler<Sku> {
     public void insert(Sku sku) {
         if(sku.getStatus().intValue()==1){
             //将Sku转成JSON，再将JSON转成SkuEs
-            skuSearchFeign.add(JSON.parseObject(JSON.toJSONString(sku), SkuEs.class));
+            skuSearchFeign.add(JSON.parseObject(JSON.toJSONString(sku), SkuEsCondition.class));
         }
         //生成静态页
         pageFeign.html(sku.getSpuId());
@@ -53,7 +53,7 @@ public class SkuHandler implements EntryHandler<Sku> {
             skuSearchFeign.del(after.getId());
         }else{
             //更新
-            skuSearchFeign.add(JSON.parseObject(JSON.toJSONString(after), SkuEs.class));
+            skuSearchFeign.add(JSON.parseObject(JSON.toJSONString(after), SkuEsCondition.class));
         }
         //生成静态页
         pageFeign.html(after.getSpuId());

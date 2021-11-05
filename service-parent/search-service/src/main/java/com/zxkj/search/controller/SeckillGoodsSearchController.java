@@ -1,6 +1,8 @@
 package com.zxkj.search.controller;
 
+import com.zxkj.common.util.url.BeanUtil;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.search.condition.SeckillGoodsEsCondition;
 import com.zxkj.search.feign.SeckillGoodsSearchFeign;
 import com.zxkj.search.model.SeckillGoodsEs;
 import com.zxkj.search.service.SeckillGoodsSearchService;
@@ -18,7 +20,11 @@ public class SeckillGoodsSearchController implements SeckillGoodsSearchFeign {
      * 将秒杀商品导入索引库
      * http://localhost:8084/seckill/goods/import
      */
-    public RespResult add(@RequestBody SeckillGoodsEs seckillGoodsEs) {
+    public RespResult add(@RequestBody SeckillGoodsEsCondition seckillGoodsEsCondition) {
+        if (seckillGoodsEsCondition == null) {
+            return RespResult.error();
+        }
+        SeckillGoodsEs seckillGoodsEs = BeanUtil.copyObject(seckillGoodsEsCondition, SeckillGoodsEs.class);
         seckillGoodsSearchService.add(seckillGoodsEs);
         return RespResult.ok();
     }

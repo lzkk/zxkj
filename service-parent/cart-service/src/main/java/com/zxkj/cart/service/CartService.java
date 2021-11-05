@@ -1,6 +1,6 @@
 package com.zxkj.cart.service;
 
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.vo.CartVo;
 
 import java.util.List;
 
@@ -16,19 +16,19 @@ public interface CartService {
     void delete(List<String> ids);
 
     /***
+     * 加入购物车
+     */
+    void add(String id, String userName, Integer num);
+
+    /***
      * 查询指定购物车ID集合的列表
      */
-    List<Cart> list(List<String> ids);
+    List<CartVo> list(List<String> ids);
 
     /***
      * 购物车列表
      */
-    List<Cart> list(String userName);
-
-    /***
-     * 加入购物车
-     */
-    void add(String id, String userName, Integer num);
+    List<CartVo> list(String userName);
 
 
 }

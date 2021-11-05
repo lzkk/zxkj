@@ -1,6 +1,6 @@
 package com.zxkj.goods.feign;
 
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.model.Sku;
@@ -24,7 +24,7 @@ public interface SkuFeign {
      * 库存递减
      */
     @PostMapping(value = "/sku/dcount")
-    RespResult<Integer> dcount(@RequestBody List<Cart> carts);
+    RespResult<Integer> dcount(@RequestBody List<CartCondition> carts);
 
     /***
      * 根据ID查询商品详情
@@ -73,7 +73,7 @@ class SkuFeignFallback implements SkuFeign, FallbackFactory<SkuFeign> {
     }
 
     @Override
-    public RespResult dcount(List<Cart> carts) {
+    public RespResult dcount(List<CartCondition> carts) {
         logger.error("SkuFeignFallback -> dcount错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

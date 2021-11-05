@@ -1,15 +1,16 @@
 package com.zxkj.goods.controller;
 
-import com.zxkj.cart.model.Cart;
-import com.zxkj.common.exception.BusinessException;
-import com.zxkj.common.web.JsonUtil;
+import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
 import com.zxkj.goods.model.Sku;
 import com.zxkj.goods.service.SKuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class SkuController implements SkuFeign {
     /***
      * 库存递减
      */
-    public RespResult<Integer> dcount(@RequestBody List<Cart> carts) {
+    public RespResult<Integer> dcount(@RequestBody List<CartCondition> carts) {
         return RespResult.ok(sKuService.dcount(carts));
     }
 
@@ -33,7 +34,6 @@ public class SkuController implements SkuFeign {
      */
     public RespResult<Sku> one(@PathVariable(value = "id") String id) {
         Sku sku = sKuService.getById(id);
-        log.info("sku--" + JsonUtil.jsonFromObject(sku));
         return RespResult.ok(sku);
     }
 

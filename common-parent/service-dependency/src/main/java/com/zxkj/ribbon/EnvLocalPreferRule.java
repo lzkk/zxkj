@@ -21,12 +21,12 @@ public class EnvLocalPreferRule extends AbstractLoadBalancerRule {
 
     public Server choose(ILoadBalancer lb, Object key) {
         if (lb == null) {
-            log.warn("no load balancer");
+//            log.warn("no load balancer");
             return null;
         }
         List<Server> serverList = lb.getReachableServers();
         if (serverList.size() == 0) {
-            log.warn("No up servers available from load balancer: " + lb);
+//            log.warn("No up servers available from load balancer: " + lb);
             return null;
         }
         List<String> localIpList = getLocalIp();

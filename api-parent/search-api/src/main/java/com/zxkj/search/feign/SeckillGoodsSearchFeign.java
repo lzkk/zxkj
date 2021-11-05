@@ -2,7 +2,7 @@ package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.search.model.SeckillGoodsEs;
+import com.zxkj.search.condition.SeckillGoodsEsCondition;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public interface SeckillGoodsSearchFeign {
      * 将秒杀商品导入索引库
      */
     @PostMapping("/seckill/goods/import")
-    RespResult add(@RequestBody SeckillGoodsEs seckillGoodsEs);
+    RespResult add(@RequestBody SeckillGoodsEsCondition seckillGoodsEsCondition);
 }
 
 @Component
@@ -38,7 +38,7 @@ class SeckillGoodsSearchFeignFallback implements SeckillGoodsSearchFeign, Fallba
     }
 
     @Override
-    public RespResult add(SeckillGoodsEs seckillGoodsEs) {
+    public RespResult add(SeckillGoodsEsCondition seckillGoodsEsCondition) {
         logger.error("SeckillGoodsSearchFeignFallback -> add错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

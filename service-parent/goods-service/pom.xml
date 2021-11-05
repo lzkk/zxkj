@@ -38,7 +38,8 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/*</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>

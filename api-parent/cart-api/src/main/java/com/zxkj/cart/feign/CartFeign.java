@@ -1,6 +1,6 @@
 package com.zxkj.cart.feign;
 
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
 import feign.hystrix.FallbackFactory;
@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,7 +33,7 @@ public interface CartFeign {
      * http://localhost:8087/cart/list
      */
     @PostMapping(value = "/cart/list/ids")
-    RespResult<List<Cart>> list(@RequestBody List<String> ids);
+    RespResult<List<CartVo>> list(@RequestBody List<String> ids);
 }
 
 @Component
@@ -55,7 +54,7 @@ class CartFeignFallback implements CartFeign, FallbackFactory<CartFeign> {
     }
 
     @Override
-    public RespResult<List<Cart>> list(List<String> ids) {
+    public RespResult<List<CartVo>> list(List<String> ids) {
         logger.error("CartFeignFallback -> list错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

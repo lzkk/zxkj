@@ -24,6 +24,10 @@
             <groupId>com.zxkj</groupId>
             <artifactId>common-mongo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-util</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

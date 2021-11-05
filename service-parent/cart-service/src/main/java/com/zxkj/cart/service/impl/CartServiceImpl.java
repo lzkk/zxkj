@@ -2,7 +2,9 @@ package com.zxkj.cart.service.impl;
 
 import com.zxkj.cart.model.Cart;
 import com.zxkj.cart.service.CartService;
+import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.mongo.base.BaseMongoImpl;
+import com.zxkj.common.util.url.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
 import com.zxkj.goods.model.Sku;
@@ -31,30 +33,6 @@ public class CartServiceImpl extends BaseMongoImpl<Cart> implements CartService 
     }
 
     /***
-     * 查询指定购物车ID集合的列表
-     */
-    @Override
-    public List<Cart> list(List<String> ids) {
-        if (ids != null && ids.size() > 0) {
-            //根据ID集合查询
-            return findByCondition(Query.query(Criteria.where("_id").in(ids)));
-        }
-        return null;
-    }
-
-    /***
-     * 购物车列表
-     */
-    @Override
-    public List<Cart> list(String userName) {
-        //条件构建
-        Query query = Query.query(Criteria.where("userName").is(userName));
-        query.with(Sort.by("_id"));
-        log.info("query："+query.toString());
-        return findByCondition(query);
-    }
-
-    /***
      * 加入购物车
      * @param id
      * @param userName
@@ -77,4 +55,32 @@ public class CartServiceImpl extends BaseMongoImpl<Cart> implements CartService 
             save(cart);
         }
     }
+
+    /***
+     * 查询指定购物车ID集合的列表
+     */
+    @Override
+    public List<CartVo> list(List<String> ids) {
+        if (ids == null || ids.size() == 0) {
+            return null;
+        }
+        //根据ID集合查询
+        List<Cart> cartList = findByCondition(Query.query(Criteria.where("_id").in(ids)));
+        return BeanUtil.copyList(cartList, CartVo.class);
+    }
+
+    /***
+     * 购物车列表
+     */
+    @Override
+    public List<CartVo> list(String userName) {
+        //条件构建
+        Query query = Query.query(Criteria.where("userName").is(userName));
+        query.with(Sort.by("_id"));
+        log.info("query：" + query.toString());
+        //根据ID集合查询
+        List<Cart> cartList = findByCondition(query);
+        return BeanUtil.copyList(cartList, CartVo.class);
+    }
+
 }

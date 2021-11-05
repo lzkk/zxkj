@@ -1,8 +1,8 @@
 package com.zxkj.cart.controller;
 
 import com.zxkj.cart.feign.CartFeign;
-import com.zxkj.cart.model.Cart;
 import com.zxkj.cart.service.CartService;
+import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +31,6 @@ public class CartController implements CartFeign {
     }
 
 
-    /***
-     * 指定ID集合的购物车数据
-     * http://localhost:8087/cart/list
-     */
-    public RespResult<List<Cart>> list(@RequestBody List<String> ids) {
-        List<Cart> carts = cartService.list(ids);
-        log.info("carts--" + JsonUtil.jsonFromObject(carts));
-        return RespResult.ok(carts);
-    }
-
     /****
      * 增加购物车方法
      */
@@ -52,14 +42,24 @@ public class CartController implements CartFeign {
         return RespResult.ok();
     }
 
+    /***
+     * 指定ID集合的购物车数据
+     * http://localhost:8087/cart/list
+     */
+    public RespResult<List<CartVo>> list(@RequestBody List<String> ids) {
+        List<CartVo> cartVoList = cartService.list(ids);
+        log.info("carts--" + JsonUtil.jsonFromObject(cartVoList));
+        return RespResult.ok(cartVoList);
+    }
+
 
     /****
      * 购物车列表
      */
     @GetMapping(value = "/cart/list")
-    public RespResult<List<Cart>> list() {
+    public RespResult<List<CartVo>> list() {
         String userName = "gp";
-        List<Cart> list = cartService.list(userName);
+        List<CartVo> list = cartService.list(userName);
         return RespResult.ok(list);
     }
 }

@@ -1,6 +1,8 @@
 package com.zxkj.search.controller;
 
+import com.zxkj.common.util.url.BeanUtil;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.search.condition.SkuEsCondition;
 import com.zxkj.search.feign.SkuSearchFeign;
 import com.zxkj.search.model.SkuEs;
 import com.zxkj.search.service.SkuSearchService;
@@ -34,7 +36,11 @@ public class SkuSearchController implements SkuSearchFeign {
     /*****
      * 增加索引
      */
-    public RespResult add(@RequestBody SkuEs skuEs) {
+    public RespResult add(@RequestBody SkuEsCondition skuEsCondition) {
+        if (skuEsCondition == null) {
+            return RespResult.error();
+        }
+        SkuEs skuEs = BeanUtil.copyObject(skuEsCondition, SkuEs.class);
         skuSearchService.add(skuEs);
         return RespResult.ok();
     }

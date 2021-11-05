@@ -1,12 +1,13 @@
 package com.zxkj.order.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.cart.feign.CartFeign;
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.exception.BusinessException;
+import com.zxkj.common.util.url.BeanUtil;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
@@ -92,20 +93,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setUpdateTime(order.getCreateTime());
 
         //1、查询购物车数据
-        List<Cart> carts = cartFeign.list(order.getCartIds()).getResultWithException();
+        List<CartVo> carts = cartFeign.list(order.getCartIds()).getResultWithException();
         if (carts == null || carts.size() == 0) {
             throw new BusinessException("请选择商品再下单");
         }
 
         //2、递减库存
-        skuFeign.dcount(carts).getResultWithException();
+        List<CartCondition> cartConditions = BeanUtil.copyList(carts, CartCondition.class);
+        skuFeign.dcount(cartConditions).getResultWithException();
 
         //3、添加订单明细
         int totalNum = 0;
         int moneys = 0;
-        for (Cart cart : carts) {
+        for (CartVo cart : carts) {
             //将Cart转成OrderSku
-            OrderSku orderSku = JSON.parseObject(JSON.toJSONString(cart), OrderSku.class);
+            OrderSku orderSku = BeanUtil.copyObject(cart, OrderSku.class);
             orderSku.setId(IdWorker.getIdStr());
             orderSku.setOrderId(order.getId()); //提前赋值
             orderSku.setMoney(orderSku.getPrice() * orderSku.getNum());
@@ -176,7 +178,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public List<OrderSkuVo> getCart(List<String> ids) {
         List<OrderSkuVo> orderSkuVoList = new ArrayList<>();
-        RespResult<List<Cart>> respResult = cartFeign.list(ids);
+        RespResult<List<CartVo>> respResult = cartFeign.list(ids);
         log.info(JsonUtil.jsonFromObject(respResult));
         return orderSkuVoList;
     }
@@ -185,7 +187,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void ribbonTest() {
         RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
         log.info("1--" + JsonUtil.jsonFromObject(respResult1));
-        RespResult<List<Cart>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
+        RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
         log.info("2--" + JsonUtil.jsonFromObject(respResult2));
         RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
         log.info("3--" + JsonUtil.jsonFromObject(respResult3));

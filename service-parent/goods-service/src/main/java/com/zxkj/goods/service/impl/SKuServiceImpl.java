@@ -2,7 +2,7 @@ package com.zxkj.goods.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.goods.mapper.AdItemsMapper;
 import com.zxkj.goods.mapper.SkuMapper;
@@ -39,8 +39,8 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int dcount(List<Cart> carts) {
-        for (Cart cart : carts) {
+    public int dcount(List<CartCondition> carts) {
+        for (CartCondition cart : carts) {
             //库存递减
             int dcount = skuMapper.dcount(cart.getSkuId(), cart.getNum());
             System.out.println("dcount:" + dcount);

@@ -2,7 +2,7 @@ package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.search.model.SkuEs;
+import com.zxkj.search.condition.SkuEsCondition;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public interface SkuSearchFeign {
      * 增加索引
      */
     @PostMapping(value = "/search/add")
-    RespResult add(@RequestBody SkuEs skuEs);
+    RespResult add(@RequestBody SkuEsCondition skuEsCondition);
 
     /***
      * 删除索引
@@ -58,7 +58,7 @@ class SkuSearchFeignFallback implements SkuSearchFeign, FallbackFactory<SkuSearc
     }
 
     @Override
-    public RespResult add(SkuEs skuEs) {
+    public RespResult add(SkuEsCondition skuEsCondition) {
         logger.error("SkuSearchFeignFallback -> add错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

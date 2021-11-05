@@ -2,9 +2,8 @@ package com.zxkj.task.controller;
 
 import com.zxkj.task.bean.Job;
 import com.zxkj.task.config.ElasticJobService;
-import com.zxkj.task.job.MyJob2;
-import com.zxkj.task.job.MyJob3;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,9 +14,9 @@ public class TestController {
     private ElasticJobService elasticJobService;
 
     @RequestMapping("/add")
-    public Object add() {
+    public Object add(@RequestBody Job job) {
         try {
-            elasticJobService.processSimpleJob(Job.getInstance(MyJob2.class, "0/5 * * * * ? *"));
+            elasticJobService.processSimpleJob(Job.getInstance(job.getJobName(), job.getJobClass(), job.getCron(), job.getJobParameter(), job.getShardingTotalCount()));
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
@@ -26,9 +25,9 @@ public class TestController {
     }
 
     @RequestMapping("/update")
-    public Object update() {
+    public Object update(@RequestBody Job job) {
         try {
-            elasticJobService.processSimpleJob(Job.getInstance(MyJob3.class, "0/4 * * * * ? *", "1-3", 2));
+            elasticJobService.processSimpleJob(Job.getInstance(job.getJobName(), job.getJobClass(), job.getCron(), job.getJobParameter(), job.getShardingTotalCount()));
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
@@ -37,9 +36,9 @@ public class TestController {
     }
 
     @RequestMapping("/delete")
-    public Object delete() {
+    public Object delete(@RequestBody Job job) {
         try {
-            elasticJobService.removeJob(MyJob2.class.getSimpleName());
+            elasticJobService.removeJob(job.getJobName());
         } catch (Exception e) {
             e.printStackTrace();
             return "false";
