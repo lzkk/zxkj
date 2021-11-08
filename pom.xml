@@ -21,9 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring.boot.version>2.0.4.RELEASE</spring.boot.version>
-        <spring.cloud.version>Finchley.RELEASE</spring.cloud.version>
-        <spring.cloud.alibaba.version>2.0.2.RELEASE</spring.cloud.alibaba.version>
+        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <spring.cloud.alibaba.version>2.2.1.RELEASE</spring.cloud.alibaba.version>
+        <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
     </properties>
 
     <dependencyManagement>
@@ -147,7 +147,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-zipkin</artifactId>
-                <version>2.0.0.RELEASE</version>
+                <version>2.2.2.RELEASE</version>
                 <exclusions>
                     <exclusion>
                         <groupId>io.zipkin.reporter2</groupId>
@@ -162,7 +162,7 @@
             <dependency>
                 <groupId>org.springframework.kafka</groupId>
                 <artifactId>spring-kafka</artifactId>
-                <version>2.1.8.RELEASE</version>
+                <version>2.3.6.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.rocketmq</groupId>

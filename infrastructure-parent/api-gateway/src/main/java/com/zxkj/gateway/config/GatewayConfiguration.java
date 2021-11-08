@@ -4,8 +4,9 @@ import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.BlockRequestHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
@@ -22,11 +23,11 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 public class GatewayConfiguration {
@@ -78,14 +79,9 @@ public class GatewayConfiguration {
     }
 
     @Bean
-    public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        //设置日期格式
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleDateFormat smt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        objectMapper.setDateFormat(smt);
-        mappingJackson2HttpMessageConverter.setObjectMapper(objectMapper);
-        return mappingJackson2HttpMessageConverter;
+    @ConditionalOnMissingBean
+    public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+        return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
     }
 
 }

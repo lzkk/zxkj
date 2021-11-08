@@ -1,7 +1,7 @@
 package com.zxkj.common.rabbitmq.support;
 
 import com.zxkj.common.rabbitmq.support.enums.BusiType;
-import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 
 public class RabbitmqCorrelationData extends CorrelationData {
     private BusiType busiType;
