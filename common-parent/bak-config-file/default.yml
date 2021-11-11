@@ -26,22 +26,32 @@ mybatis-plus:
 feign:
   sentinel:
     enabled: true
+  hystrix:
+    enabled: false
+  httpclient:
+    enabled: false
+    max-connections: 200
+    max-connections-per-route: 20
+  okhttp:
+    enabled: true
   client:
     config:
       default:
         connect-timeout: 1000
-        read-timeout: 5000
+        read-timeout: 3000
 
 #ribbon的超时时间
 ribbon:
-  ConnectTimeout: 2000
-  ReadTimeout: 5000
+  eager-load:
+    enabled: true
+    clients: cart-service,goods-service,seckill-service,order-service
+  ConnectTimeout: 1000
+  ReadTimeout: 3000
   MaxAutoRetries: 0 #同一台实例最大重试次数,不包括首次调用
-  MaxAutoRetriesNextServer: 1 #重试负载均衡其他的实例最大重试次数,不包括首次调用
+  MaxAutoRetriesNextServer: 0 #重试负载均衡其他的实例最大重试次数,不包括首次调用
   OkToRetryOnAllOperations: false  #是否所有操作都重试
   MaxConnectionsPerHost: 5000
   MaxTotalConnections: 50000
-
 
 spring:
   client:
@@ -70,11 +80,29 @@ spring:
         namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
         metadata:
           management:
-            context-path: ${server.servlet.context-path}/
+            context-path: /
     sentinel:
       eager: true
       transport:
         dashboard: 127.0.0.1:8888
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+            group-id: SENTINEL_GROUP
+            data-type: json
+            data-id: flow-rules-${spring.application.name}.json
+            rule-type: flow
+        ds2:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            namespace: b3f308b2-f9d1-4495-81a2-d808539a5db2
+            group-id: SENTINEL_GROUP
+            data-type: json
+            data-id: degrade-rules-${spring.application.name}.json
+            rule-type: degrade
+
   ###zipkin
   zipkin:
     discoveryClientEnabled: false
@@ -83,7 +111,7 @@ spring:
     kafka:
       topic: myZipkin
   sleuth:
-    enabled: true
+    enabled: false
     messaging:
       jms:
         enabled: false

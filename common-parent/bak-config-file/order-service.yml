@@ -1,0 +1,28 @@
+#支付配置
+payconfig:
+  #支付安全校验(验签)
+  aes:
+    #AES加密秘钥
+    skey: ab2cc473d3334c39
+    #验签盐
+    salt: XPYQZb1kMES8HNaJWW8+TDu/4JdBK4owsU9eXCXZDOI=
+
+spring:
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: order_tx_shop
+
+#阿里分布式事务配置
+seata:
+  service:
+    vgroup-mapping:
+      #这里的组名order_tx_group就是上面已经配置过的
+      # seata-server 对应的就是register.conf里的application选项的内容
+      order_tx_shop: seata-server
+    grouplist:
+      #这里对应的就是上面的seata-server，后面的才是seata服务的IP地址和端口号
+      seata-server: 127.0.0.1:9091
+    enable-degrade: false
+    disable-global-transaction: true
+

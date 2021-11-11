@@ -1,0 +1,7 @@
+server:
+  port: 7779
+
+#Canal配置
+canal:
+  server: 127.0.0.1:11111
+  destination: example

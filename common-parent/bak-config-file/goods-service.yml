@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: product_tx_shop
+
+#阿里分布式事务配置
+seata:
+  service:
+    vgroup-mapping:
+      #这里的组名product_tx_shop就是上面已经配置过的
+      # seata-server 对应的就是register.conf里的application选项的内容
+      product_tx_shop: seata-server
+    grouplist:
+      #这里对应的就是上面的seata-server，后面的才是seata服务的IP地址和端口号
+      seata-server: 127.0.0.1:9091
+    enable-degrade: false
+    disable-global-transaction: true
+
+
+
