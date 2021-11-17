@@ -7,10 +7,14 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiPredicateItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.GatewayApiDefinitionManager;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
+import com.alibaba.csp.sentinel.slots.system.SystemRule;
+import com.alibaba.csp.sentinel.slots.system.SystemRuleManager;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -21,8 +25,9 @@ public class RuleConfiguration {
      */
     @PostConstruct
     public void doInit() {
-        initCustomizedApis();
-        initGatewayRules();
+//        initCustomizedApis();
+//        initGatewayRules();
+//        initSystemRules();
     }
 
     /****
@@ -33,14 +38,9 @@ public class RuleConfiguration {
         Set<ApiDefinition> definitions = new HashSet<ApiDefinition>();
 
         //创建每个Api，并配置相关规律
-        ApiDefinition cartApi = new ApiDefinition("mall_cart_api")
+        ApiDefinition cartApi = new ApiDefinition("goods_api")
                 .setPredicateItems(new HashSet<ApiPredicateItem>() {{
-                    // /cart/list
-                    add(new ApiPathPredicateItem().setPattern("/cart/list"));
-                    // /cart/*/*
-                    add(new ApiPathPredicateItem().setPattern("/cart/**")
-                            //根据前缀匹配
-                            .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
+                    add(new ApiPathPredicateItem().setPattern("/api-goods/**").setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
                 }});
 
         //将创建好的Api添加到Api集合中
@@ -58,11 +58,11 @@ public class RuleConfiguration {
         Set<GatewayFlowRule> rules = new HashSet<GatewayFlowRule>();
 
         //创建新的规则，并添加到集合中
-        rules.add(new GatewayFlowRule("goods_route")
+        rules.add(new GatewayFlowRule("order_route")
                 //请求的阈值
-                .setCount(6)
+                .setCount(1)
                 //突发流量额外允许并发数量
-                .setBurst(2)
+                .setBurst(1)
                 //限流行为
                 //CONTROL_BEHAVIOR_RATE_LIMITER  匀速排队
                 //CONTROL_BEHAVIOR_DEFAULT  直接失败
@@ -70,16 +70,25 @@ public class RuleConfiguration {
                 //排队时间
                 //.setMaxQueueingTimeoutMs(10000)
                 //统计时间窗口，单位：秒，默认为1秒
-                .setIntervalSec(30));
+                .setIntervalSec(1));
 
         //创建新的规则，并添加到集合中
-        rules.add(new GatewayFlowRule("mall_cart_api")
+        rules.add(new GatewayFlowRule("goods_api")
                 //请求的阈值
-                .setCount(2)
+                .setCount(1)
                 //统计时间窗口，单位：秒，默认为1秒
-                .setIntervalSec(2));
+                .setIntervalSec(1));
         //手动加载规则配置
         GatewayRuleManager.loadRules(rules);
+    }
+
+    public void initSystemRules() {
+        List<SystemRule> list = new ArrayList<>();
+        SystemRule systemRule = new SystemRule();
+        systemRule.setMaxThread(100);
+        list.add(systemRule);
+        SystemRuleManager.loadRules(list);
+
     }
 
 }

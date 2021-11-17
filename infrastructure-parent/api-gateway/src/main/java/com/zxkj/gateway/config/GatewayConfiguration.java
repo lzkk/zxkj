@@ -5,6 +5,7 @@ import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.BlockRequestHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
+@Slf4j
 public class GatewayConfiguration {
 
     /***
@@ -42,6 +44,8 @@ public class GatewayConfiguration {
                 resultMap.put("returnCode", 0);
                 resultMap.put("message", "对不起，接口限流了！");
                 resultMap.put("result", null);
+                String uri = serverWebExchange.getRequest().getURI().getPath();
+                log.warn("uri:{}，接口限流了!", uri);
                 return ServerResponse.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromObject(resultMap));
             }
         };
@@ -72,7 +76,7 @@ public class GatewayConfiguration {
      * @return
      */
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(-1)
     public GlobalFilter sentinelGatewayFilter() {
         return new SentinelGatewayFilter();
     }
