@@ -35,16 +35,23 @@ public class RuleConfiguration {
      */
     private void initCustomizedApis() {
         //定义集合存储要定义的API组
-        Set<ApiDefinition> definitions = new HashSet<ApiDefinition>();
+        Set<ApiDefinition> definitions = new HashSet<>();
 
         //创建每个Api，并配置相关规律
-        ApiDefinition cartApi = new ApiDefinition("goods_api")
+        ApiDefinition cartApi = new ApiDefinition("goods_api3")
                 .setPredicateItems(new HashSet<ApiPredicateItem>() {{
                     add(new ApiPathPredicateItem().setPattern("/api-goods/**").setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
                 }});
 
         //将创建好的Api添加到Api集合中
         definitions.add(cartApi);
+        ApiDefinition cartApi2 = new ApiDefinition("order_api3")
+                .setPredicateItems(new HashSet<ApiPredicateItem>() {{
+                    add(new ApiPathPredicateItem().setPattern("/api-order/**").setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
+                }});
+
+        //将创建好的Api添加到Api集合中
+        definitions.add(cartApi2);
         //手动加载Api到Sentinel
         GatewayApiDefinitionManager.loadApiDefinitions(definitions);
     }
@@ -55,40 +62,34 @@ public class RuleConfiguration {
      */
     public void initGatewayRules() {
         //创建集合存储所有规则
-        Set<GatewayFlowRule> rules = new HashSet<GatewayFlowRule>();
+        Set<GatewayFlowRule> rules = new HashSet<>();
 
         //创建新的规则，并添加到集合中
-        rules.add(new GatewayFlowRule("order_route")
-                //请求的阈值
-                .setCount(1)
-                //突发流量额外允许并发数量
-                .setBurst(1)
-                //限流行为
-                //CONTROL_BEHAVIOR_RATE_LIMITER  匀速排队
-                //CONTROL_BEHAVIOR_DEFAULT  直接失败
-                //.setControlBehavior(RuleConstant.CONTROL_BEHAVIOR_RATE_LIMITER)
-                //排队时间
-                //.setMaxQueueingTimeoutMs(10000)
-                //统计时间窗口，单位：秒，默认为1秒
-                .setIntervalSec(1));
-
-        //创建新的规则，并添加到集合中
-        rules.add(new GatewayFlowRule("goods_api")
+        rules.add(new GatewayFlowRule("order_api3").setGrade(1)
                 //请求的阈值
                 .setCount(1)
                 //统计时间窗口，单位：秒，默认为1秒
                 .setIntervalSec(1));
-        //手动加载规则配置
+
+        //创建新的规则，并添加到集合中
+        rules.add(new GatewayFlowRule("goods_api3").setGrade(1)
+                //请求的阈值
+                .setCount(1)
+                //统计时间窗口，单位：秒，默认为1秒
+                .setIntervalSec(1));
+
         GatewayRuleManager.loadRules(rules);
     }
 
+    /**
+     * 系统规则定义
+     */
     public void initSystemRules() {
-        List<SystemRule> list = new ArrayList<>();
+        List<SystemRule> list1 = new ArrayList<>();
         SystemRule systemRule = new SystemRule();
         systemRule.setMaxThread(100);
-        list.add(systemRule);
-        SystemRuleManager.loadRules(list);
-
+        list1.add(systemRule);
+        SystemRuleManager.loadRules(list1);
     }
 
 }

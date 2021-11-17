@@ -76,7 +76,7 @@ public class GatewayConfiguration {
      * @return
      */
     @Bean
-    @Order(-1)
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public GlobalFilter sentinelGatewayFilter() {
         return new SentinelGatewayFilter();
     }
