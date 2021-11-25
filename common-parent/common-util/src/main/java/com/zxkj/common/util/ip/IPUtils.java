@@ -1,6 +1,12 @@
 package com.zxkj.common.util.ip;
 
+import org.springframework.http.HttpHeaders;
+
 import javax.servlet.http.HttpServletRequest;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /*****
  * @Author:
@@ -41,6 +47,55 @@ public class IPUtils {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    /***
+     * 获取IP
+     * @param headers
+     * @param hostAddress
+     * @return
+     */
+    public static String getIpAddr(HttpHeaders headers, String hostAddress) {
+        String ip = headers.getFirst("x-forwarded-for");
+        if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+            if (ip.indexOf(",") != -1) {
+                ip = ip.split(",")[0];
+            }
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = hostAddress;
+        }
+        return ip;
+    }
+
+
+    public static List<String> getNacosLocalIp() {
+        List<String> ipList = new ArrayList<String>();
+        InetAddress localHost = null;
+        try {
+            localHost = Inet4Address.getLocalHost();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String ip = localHost.getHostAddress();  // 返回格式为：xxx.xxx.xxx
+        ipList.add(ip);
+        return ipList;
     }
 
 }

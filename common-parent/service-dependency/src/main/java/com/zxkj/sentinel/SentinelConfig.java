@@ -102,7 +102,8 @@ public class SentinelConfig {
             } else if (ex instanceof AuthorityException) {
                 msg = "授权规则不通过";
             }
-            String json = JsonUtil.jsonFromObject(RespResult.error(msg));
+            log.warn("接口调用异常,{}", msg);
+            String json = JsonUtil.toJsonString(RespResult.error(msg));
             httpServletResponse.getWriter().write(json);
             httpServletResponse.getWriter().flush();
             httpServletResponse.getWriter().close();
@@ -304,7 +305,7 @@ public class SentinelConfig {
                     }
                 }
             }
-            String degradeRuleJson = JsonUtil.jsonFromObject(normalMap.values());
+            String degradeRuleJson = JsonUtil.toJsonString(normalMap.values());
             ConfigService configService = nacosConfigManager.getConfigService();
             String applicationName = environment.getProperty(APPLICATION_NAME);
             String dataId = DEGRADE_RULES_PREFIX + applicationName + DEGRADE_RULES_SUFFIX;

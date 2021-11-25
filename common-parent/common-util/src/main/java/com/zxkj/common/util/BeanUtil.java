@@ -1,4 +1,4 @@
-package com.zxkj.common.util.url;
+package com.zxkj.common.util;
 
 import org.springframework.beans.BeanUtils;
 

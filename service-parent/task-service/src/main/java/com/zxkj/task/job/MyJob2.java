@@ -20,7 +20,7 @@ public class MyJob2 implements SimpleJob {
     @Override
     public void execute(ShardingContext shardingContext) {
         RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
-        log.info("1--" + JsonUtil.jsonFromObject(respResult1));
+        log.info("1--" + JsonUtil.toJsonString(respResult1));
     }
 }
 

@@ -1,28 +1,57 @@
 package com.zxkj.config;
 
-import com.zxkj.exception.support.ServiceExceptionHandler;
-import com.zxkj.feign.decoder.BusinessDecoder;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import com.zxkj.common.context.support.CustomerContextConfig;
+import com.zxkj.common.exception.BusinessException;
+import com.zxkj.common.web.RespCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 微服务通用配置类
  *
  * @author yuhui
  */
+@Slf4j
 @Configuration
+@Import(CustomerContextConfig.class)
 public class MicroServiceConfig {
 
+    /**
+     * 异常统一处理类
+     *
+     * @return
+     */
     @Bean
-    public BusinessDecoder businessDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
-        return new BusinessDecoder(messageConverters);
+    public HandlerExceptionResolver serviceExceptionHandler() {
+        return (HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) -> {
+            Integer code;
+            String message;
+            // 根据不同错误转向不同页面
+            if (ex instanceof BusinessException) {
+                BusinessException businessException = (BusinessException) ex;
+                code = businessException.getErrorCode();
+                if (null == code) {
+                    code = RespCodeEnum.ERROR.getReturnCode();
+                }
+                message = businessException.getMessage();
+            } else {
+                code = RespCodeEnum.SYSTEM_ERROR.getReturnCode();
+                message = ex.getMessage();
+            }
+            log.error(ex.getMessage(), ex);
+            MappingJackson2JsonView view = new MappingJackson2JsonView();
+            view.addStaticAttribute("returnCode", code);
+            view.addStaticAttribute("message", message);
+            view.addStaticAttribute("result", null);
+            return new ModelAndView(view);
+        };
     }
-
-    @Bean
-    public ServiceExceptionHandler serviceExceptionHandler() {
-        return new ServiceExceptionHandler();
-    }
-
 }

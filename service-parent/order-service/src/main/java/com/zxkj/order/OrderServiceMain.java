@@ -12,7 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
  * @author ：yuhui
  * @date ：Created in 2020/8/4 14:59
  */
-//@EnableRocketmqMessage
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
 @SpringBootApplication

@@ -2,9 +2,9 @@ package com.zxkj.gateway.permission;
 
 //import com.gupaoedu.vip.mall.permission.model.Permission;
 
+import com.zxkj.common.util.ip.IPUtils;
 import com.zxkj.common.util.security.JwtToken;
 import com.zxkj.common.util.security.MD5;
-import com.zxkj.gateway.util.IpUtil;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -82,12 +82,12 @@ public class AuthorizationInterceptor {
     public Map<String, Object> tokenIntercept(ServerWebExchange exchange) {
         ServerHttpRequest request = exchange.getRequest();
         //校验其他地址
-        String clientIp = IpUtil.getIp(request);
+        String clientIp = IPUtils.getIpAddr(request.getHeaders(), request.getRemoteAddress().getAddress().getHostAddress());
         //获取令牌
         String token = request.getHeaders().getFirst("authorization");
         if (token == null) {
             return null;
-        }else{
+        } else {
             return new HashMap<>();
         }
         //令牌校验

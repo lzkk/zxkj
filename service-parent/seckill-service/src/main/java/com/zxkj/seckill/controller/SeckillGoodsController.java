@@ -36,7 +36,7 @@ public class SeckillGoodsController implements SeckillGoodsFeign {
      */
     public RespResult<SeckillGoods> one(@PathVariable("id") String id) {
         SeckillGoods seckillGoods = seckillGoodsService.getById(id);
-        log.info("seckillGoods--" + JsonUtil.jsonFromObject(seckillGoods));
+        log.info("seckillGoods--" + JsonUtil.toJsonString(seckillGoods));
         return RespResult.ok(seckillGoods);
     }
 

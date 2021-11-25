@@ -8,9 +8,7 @@ import java.io.Serializable;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class RespResult<T> implements Serializable {
-
     private static final long serialVersionUID = 2456967161175690965L;
-    private static final int SUCCESS_CODE = 0;
 
     private int returnCode;// 返回码
 
@@ -57,7 +55,7 @@ public class RespResult<T> implements Serializable {
     }
 
     public String toJsonString() {
-        return JsonUtil.jsonFromObject(this);
+        return JsonUtil.toJsonString(this);
     }
 
     public static <T> RespResult<T> ok() {
@@ -77,10 +75,6 @@ public class RespResult<T> implements Serializable {
         respResult.setReturnCode(RespCodeEnum.ERROR.getReturnCode());
         respResult.setMessage(message);
         return respResult;
-    }
-
-    public boolean isSuccess(){
-        return returnCode == RespCodeEnum.SUCCESS.getReturnCode();
     }
 
     public static <T> RespResult<T> error(RespCodeEnum respCodeEnum) {

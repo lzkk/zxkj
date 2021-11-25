@@ -1,4 +1,4 @@
-package com.zxkj.cache;
+package com.zxkj.config;
 
 import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.cache.redis.RedisConfig;

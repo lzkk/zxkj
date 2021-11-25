@@ -9,7 +9,7 @@ public enum RespCodeEnum {
     ERROR(-1, "处理失败"),
     SYSTEM_ERROR(9999, "系统异常");
 
-    private RespCodeEnum(int returnCode, String message) {
+    RespCodeEnum(int returnCode, String message) {
         this.returnCode = returnCode;
         this.message = message;
     }

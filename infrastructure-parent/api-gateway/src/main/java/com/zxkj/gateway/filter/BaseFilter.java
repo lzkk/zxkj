@@ -10,13 +10,18 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +31,20 @@ import java.util.Map;
  */
 public abstract class BaseFilter {
     private static final Logger log = LoggerFactory.getLogger(BaseFilter.class);
+
+    /**
+     * 是否需要过滤
+     *
+     * @param exchange
+     * @return
+     */
+    public Boolean shouldFilter(ServerWebExchange exchange) {
+        MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
+        if (MediaType.MULTIPART_FORM_DATA.includes(mediaType)) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * 返回response
@@ -57,6 +76,76 @@ public abstract class BaseFilter {
         });
     }
 
+    /**
+     * get方式请求组装
+     *
+     * @param exchange
+     * @param query
+     * @param myHeaders
+     * @param cachedFlux
+     * @return
+     */
+    public ServerHttpRequest getServerHttpRequest(ServerWebExchange exchange, StringBuilder query, HttpHeaders myHeaders, Flux<DataBuffer> cachedFlux) {
+        ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+            @Override
+            public URI getURI() {
+                URI newUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
+                        .replaceQuery(query.toString()).build(true).toUri();
+                return newUri;
+            }
+
+            @Override
+            public HttpHeaders getHeaders() {
+                long contentLength = myHeaders.getContentLength();
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.putAll(myHeaders);
+                if (contentLength > 0) {
+                    httpHeaders.setContentLength(contentLength);
+                } else {
+                    httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
+                }
+                return httpHeaders;
+            }
+
+            @Override
+            public Flux<DataBuffer> getBody() {
+                return cachedFlux;
+            }
+        };
+        return mutatedRequest;
+    }
+
+    /**
+     * post方式请求组装
+     *
+     * @param exchange
+     * @param headers
+     * @param cachedFlux
+     * @return
+     */
+    public ServerHttpRequest postServerHttpRequest(ServerWebExchange exchange, HttpHeaders headers, Flux<DataBuffer> cachedFlux) {
+        ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+            @Override
+            public HttpHeaders getHeaders() {
+                long contentLength = headers.getContentLength();
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.putAll(headers);
+                if (contentLength > 0) {
+                    httpHeaders.setContentLength(contentLength);
+                } else {
+                    httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
+                }
+                return httpHeaders;
+            }
+
+            @Override
+            public Flux<DataBuffer> getBody() {
+                return cachedFlux;
+            }
+        };
+        return mutatedRequest;
+    }
+
     public ServerHttpResponseDecorator responseDecorator(ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
         DataBufferFactory bufferFactory = response.bufferFactory();
@@ -75,6 +164,7 @@ public abstract class BaseFilter {
                         String responseResult = new String(content, StandardCharsets.UTF_8);
                         long startTimeObj = (long) exchange.getAttributes().get("startTime");
                         log.info("response plain:{},spend:{}", responseResult, System.currentTimeMillis() - startTimeObj);
+                        // 此处结合实际情况进行加密返回
                         content = new String(responseResult.getBytes(), StandardCharsets.UTF_8).getBytes();
                         return bufferFactory.wrap(content);
                     }));

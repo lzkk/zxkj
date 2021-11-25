@@ -153,7 +153,7 @@ public class OrderController {
     }
 
     @GetMapping(value = "/ribbonTest")
-    public RespResult<Boolean> ribbonTest(@RequestBody List<String> ids) throws Exception {
+    public RespResult<Boolean> ribbonTest(@RequestParam(value = "info") String info) throws Exception {
         orderService.ribbonTest();
         return RespResult.ok(true);
     }

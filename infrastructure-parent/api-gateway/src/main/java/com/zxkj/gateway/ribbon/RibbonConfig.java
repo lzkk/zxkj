@@ -2,7 +2,6 @@ package com.zxkj.gateway.ribbon;
 
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 /**
  * Ribbon配置
@@ -10,9 +9,8 @@ import org.springframework.context.annotation.Profile;
  * @author ：yuhui
  * @date ：Created in 2021/8/16 13:47
  */
-@Profile("dev")
 @Configuration
-@RibbonClients(defaultConfiguration = EnvLocalPreferRule.class)
+@RibbonClients(defaultConfiguration = MyZoneAvoidanceRule.class)
 public class RibbonConfig {
 
 }

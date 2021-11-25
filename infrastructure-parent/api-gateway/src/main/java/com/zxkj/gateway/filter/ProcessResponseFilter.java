@@ -21,6 +21,10 @@ public class ProcessResponseFilter extends BaseFilter implements GlobalFilter, O
      */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        boolean shouldFilter = super.shouldFilter(exchange);
+        if (!shouldFilter) {
+            return chain.filter(exchange);
+        }
         ServerHttpResponseDecorator decoratedResponse = responseDecorator(exchange);
         return chain.filter(exchange.mutate().response(decoratedResponse).build());
     }

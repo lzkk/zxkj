@@ -7,7 +7,7 @@ import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.cart.feign.CartFeign;
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.exception.BusinessException;
-import com.zxkj.common.util.url.BeanUtil;
+import com.zxkj.common.util.BeanUtil;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
@@ -169,7 +169,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (orderSkuVoList != null && orderSkuVoList.size() > 0) {
             for (OrderSkuVo OrderSkuVo : orderSkuVoList) {
                 RespResult<Sku> respResult = skuFeign.one(OrderSkuVo.getSkuId());
-                log.info(JsonUtil.jsonFromObject(respResult));
+                log.info(JsonUtil.toJsonString(respResult));
             }
         }
         return orderSkuVoList;
@@ -179,17 +179,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<OrderSkuVo> getCart(List<String> ids) {
         List<OrderSkuVo> orderSkuVoList = new ArrayList<>();
         RespResult<List<CartVo>> respResult = cartFeign.list(ids);
-        log.info(JsonUtil.jsonFromObject(respResult));
+        log.info(JsonUtil.toJsonString(respResult));
         return orderSkuVoList;
     }
 
     @Override
     public void ribbonTest() {
         RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
-        log.info("1--" + JsonUtil.jsonFromObject(respResult1));
+        log.info("1--" + JsonUtil.toJsonString(respResult1));
         RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
-        log.info("2--" + JsonUtil.jsonFromObject(respResult2));
+        log.info("2--" + JsonUtil.toJsonString(respResult2));
         RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
-        log.info("3--" + JsonUtil.jsonFromObject(respResult3));
+        log.info("3--" + JsonUtil.toJsonString(respResult3));
     }
 }

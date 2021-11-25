@@ -48,7 +48,7 @@ public class CartController implements CartFeign {
      */
     public RespResult<List<CartVo>> list(@RequestBody List<String> ids) {
         List<CartVo> cartVoList = cartService.list(ids);
-        log.info("carts--" + JsonUtil.jsonFromObject(cartVoList));
+        log.info("carts--" + JsonUtil.toJsonString(cartVoList));
         return RespResult.ok(cartVoList);
     }
 

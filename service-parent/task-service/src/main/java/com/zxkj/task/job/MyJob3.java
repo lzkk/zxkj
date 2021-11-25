@@ -48,7 +48,7 @@ public class MyJob3 implements SimpleJob {
         while (it.hasNext()) {
             Integer tmpKey = it.next();
             List<Integer> dataList = dataMap.get(tmpKey);
-            log.info("当前分片:{},参数值:{}", tmpKey, JsonUtil.jsonFromObject(dataList));
+            log.info("当前分片:{},参数值:{}", tmpKey, JsonUtil.toJsonString(dataList));
         }
     }
 }
