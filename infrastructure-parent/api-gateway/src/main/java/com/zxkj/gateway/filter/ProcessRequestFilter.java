@@ -1,14 +1,17 @@
 package com.zxkj.gateway.filter;
 
 import com.zxkj.common.context.constants.ContextConstant;
+import com.zxkj.common.context.domain.CustomerInfo;
 import com.zxkj.common.exception.gateway.GatewayExceptionCodes;
-import com.zxkj.common.util.RegionPublishUtil;
+import com.zxkj.common.util.greyPublish.GreyPublishUtil;
 import com.zxkj.gateway.hot.HotQueue;
 import com.zxkj.gateway.permission.AuthorizationInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Configuration
+@RefreshScope
 @Slf4j
 public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Ordered {
     private static final String START_TIME = "startTime";
@@ -40,6 +44,9 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
     private ApplicationArguments applicationArguments;
     @Autowired
     private AuthorizationInterceptor authorizationInterceptor;
+
+    @Value("${greyPublish}")
+    private String greyPublish;
 
     /***
      * 执行拦截处理
@@ -80,8 +87,6 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         }
         HttpHeaders newHttpHeader = new HttpHeaders();
         newHttpHeader.putAll(exchange.getRequest().getHeaders());
-        boolean regionPublish = RegionPublishUtil.isRegionPublish(applicationArguments.getSourceArgs());
-        newHttpHeader.put(ContextConstant.REGION_PUBLISH, getEncodedString(regionPublish));
         try {
             if (HttpMethod.GET == request.getMethod()) {
                 return doGet(exchange, chain, newHttpHeader);
@@ -128,6 +133,11 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             exchange.getAttributes().put("requestBody", json);
             HttpHeaders headers = new HttpHeaders();
             headers.putAll(newHttpHeader);
+            String version = newHttpHeader.getFirst("version");
+            String grp = newHttpHeader.getFirst("grp");
+            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo(applicationArguments.getSourceArgs(), greyPublish, version, grp);
+            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(customerInfo.getRegionPublish()));
+            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(customerInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
             ServerHttpRequest mutatedRequest = getServerHttpRequest(exchange, query, headers, cachedFlux);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
@@ -159,6 +169,11 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             exchange.getAttributes().put("requestBody", json);
             HttpHeaders headers = new HttpHeaders();
             headers.putAll(newHttpHeader);
+            String version = newHttpHeader.getFirst("version");
+            String grp = newHttpHeader.getFirst("grp");
+            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo(applicationArguments.getSourceArgs(), greyPublish, version, grp);
+            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(customerInfo.getRegionPublish()));
+            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(customerInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
             ServerHttpRequest mutatedRequest = postServerHttpRequest(exchange, headers, cachedFlux);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

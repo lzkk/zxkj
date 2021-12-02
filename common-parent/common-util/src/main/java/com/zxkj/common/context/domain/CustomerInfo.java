@@ -24,8 +24,16 @@ public class CustomerInfo {
      */
     private String version;
     /**
-     * 是否区域发布
+     * 客户端来源
      */
-    private boolean regionPublish;
+    private String grp;
+    /**
+     * 区域发布标识
+     */
+    private String regionPublish;
+    /**
+     * 灰度发布标识
+     */
+    private String greyPublish;
 
 }

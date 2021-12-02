@@ -6,25 +6,24 @@ import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
-import com.zxkj.common.context.CustomerContext;
 import com.zxkj.common.context.constants.ContextConstant;
-import com.zxkj.common.util.RegionPublishUtil;
+import com.zxkj.common.context.domain.CustomerInfo;
+import com.zxkj.common.util.greyPublish.GreyPublishUtil;
 import com.zxkj.common.util.ip.IPUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.core.env.Environment;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
+    private static final String ENVIRONMENT_DEV = "dev";
     private AbstractServerPredicate predicate;
 
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private ApplicationArguments applicationArguments;
+    @Value("${spring.profiles.active}")
+    private String currentEnv;
 
     public MyZoneAvoidanceRule() {
         super();
@@ -38,8 +37,6 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
 
     private class MyServerPredicate extends AbstractServerPredicate {
         private AbstractServerPredicate myPredicate;
-        private static final String CURRENT_ENVIRONMENT_PRE = "spring.profiles.active";
-        private static final String ENVIRONMENT_DEV = "dev";
 
         public MyServerPredicate(AbstractServerPredicate compositePredicate) {
             this.myPredicate = compositePredicate;
@@ -56,13 +53,15 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (serverList == null || serverList.size() == 0) {
                 return serverList;
             }
-            boolean regionPublish = RegionPublishUtil.isRegionPublish(applicationArguments.getSourceArgs());
-            String activeEnv = environment.getProperty(CURRENT_ENVIRONMENT_PRE);
+            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo();
+            String greyPublish = customerInfo.getGreyPublish();
+            String regionPublish = customerInfo.getRegionPublish();
+            boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv) ? true : false;
             List<Server> matchResults = Lists.newArrayList();
             Iterator var4 = serverList.iterator();
             while (var4.hasNext()) {
                 Server server = (Server) var4.next();
-                if (ENVIRONMENT_DEV.equals(activeEnv)) {
+                if (isDevEnv) {
                     // 开发环境，本地优先
                     String host = server.getHost();
                     List<String> localIpList = IPUtils.getNacosLocalIp();
@@ -73,6 +72,9 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 }
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
+                    if (!greyMatch(nacosServer, greyPublish)) {
+                        continue;
+                    }
                     if (!regionMatch(nacosServer, regionPublish)) {
                         continue;
                     }
@@ -81,17 +83,39 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             if (matchResults.size() == 0) {
                 // 这一步慎用，本区域无节点时是否允许跨节点访问
-                 matchResults.addAll(serverList);
+                matchResults.addAll(serverList);
             }
             return matchResults;
         }
 
-        private boolean regionMatch(NacosServer nacosServer, boolean regionPublish) {
-            Map<String, String> tmpMap = new HashMap<>();
-            tmpMap.put(ContextConstant.REGION_PUBLISH, String.valueOf(regionPublish));
-            final Set<Map.Entry<String, String>> attributes = Collections.unmodifiableSet(tmpMap.entrySet());
+        private boolean regionMatch(NacosServer nacosServer, String regionPublish) {
             final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
-            return metadata.entrySet().containsAll(attributes);
+            String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
+            if (StringUtils.isNotBlank(metaRegionPublish)) {
+                if (metaRegionPublish.equals(regionPublish)) {
+                    return true;
+                }
+            } else {
+                if (regionPublish == null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean greyMatch(NacosServer nacosServer, String greyPublish) {
+            final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
+            String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
+            if (StringUtils.isNotBlank(metaGreyPublish)) {
+                if (metaGreyPublish.equals(greyPublish)) {
+                    return true;
+                }
+            } else {
+                if (greyPublish == null) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

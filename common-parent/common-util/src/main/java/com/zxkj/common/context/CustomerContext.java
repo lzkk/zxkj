@@ -28,12 +28,10 @@ public class CustomerContext {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         CustomerInfo customerUser = new CustomerInfo();
-        String regionPublishStr = getHeaderString(request, ContextConstant.REGION_PUBLISH);
-        if ("true".equals(regionPublishStr)) {
-            customerUser.setRegionPublish(true);
-        } else {
-            customerUser.setRegionPublish(false);
-        }
+        String regionPublishStr = getHeaderString(request, ContextConstant.REGION_PUBLISH_FLAG);
+        customerUser.setRegionPublish(regionPublishStr);
+        String greyPublishStr = getHeaderString(request, ContextConstant.GREY_PUBLISH_FLAG);
+        customerUser.setGreyPublish(greyPublishStr);
         currentCustomer.set(customerUser);
     }
 

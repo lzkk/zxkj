@@ -8,5 +8,8 @@ package com.zxkj.common.context.constants;
  */
 public class ContextConstant {
 
-    public static final String REGION_PUBLISH = "regionPublish";
+    // 区域发布标识
+    public static final String REGION_PUBLISH_FLAG = "regionPublish";
+    // 灰度发布标识
+    public static final String GREY_PUBLISH_FLAG = "greyPublish";
 }

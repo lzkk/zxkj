@@ -10,18 +10,21 @@ import com.zxkj.common.context.CustomerContext;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.util.ip.IPUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
+    private static final String ENVIRONMENT_DEV = "dev";
     private AbstractServerPredicate predicate;
 
-    @Autowired
-    private Environment environment;
+    @Value("${spring.profiles.active}")
+    private String currentEnv;
 
     public MyZoneAvoidanceRule() {
         super();
@@ -35,8 +38,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
 
     private class MyServerPredicate extends AbstractServerPredicate {
         private AbstractServerPredicate myPredicate;
-        private static final String CURRENT_ENVIRONMENT_PRE = "spring.profiles.active";
-        private static final String ENVIRONMENT_DEV = "dev";
+
 
         public MyServerPredicate(AbstractServerPredicate compositePredicate) {
             this.myPredicate = compositePredicate;
@@ -53,13 +55,14 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (serverList == null || serverList.size() == 0) {
                 return serverList;
             }
-            boolean isRegionPublish = CustomerContext.getCurrentCustomer().isRegionPublish();
-            String activeEnv = environment.getProperty(CURRENT_ENVIRONMENT_PRE);
+            String regionPublish = CustomerContext.getCurrentCustomer().getRegionPublish();
+            String greyPublish = CustomerContext.getCurrentCustomer().getGreyPublish();
+            boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv) ? true : false;
             List<Server> matchResults = Lists.newArrayList();
-            Iterator var4 = serverList.iterator();
-            while (var4.hasNext()) {
-                Server server = (Server) var4.next();
-                if (ENVIRONMENT_DEV.equals(activeEnv)) {
+            Iterator<Server> serverIterator = serverList.iterator();
+            while (serverIterator.hasNext()) {
+                Server server = serverIterator.next();
+                if (isDevEnv) {
                     // 开发环境，本地优先
                     String host = server.getHost();
                     List<String> localIpList = IPUtils.getNacosLocalIp();
@@ -70,25 +73,50 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 }
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
-                    if (!regionMatch(nacosServer, isRegionPublish)) {
+                    if (!greyMatch(nacosServer, greyPublish)) {
+                        continue;
+                    }
+                    if (!regionMatch(nacosServer, regionPublish)) {
                         continue;
                     }
                     matchResults.add(server);
                 }
             }
             if (matchResults.size() == 0) {
-                // 这一步慎用，本区域无节点时是否允许跨节点访问
-                 matchResults.addAll(serverList);
+                // 这一步慎用，范围内无节点时是否允许跨节点访问
+                matchResults.addAll(serverList);
             }
             return matchResults;
         }
 
-        private boolean regionMatch(NacosServer nacosServer, boolean isRegionPublish) {
-            Map<String, String> tmpMap = new HashMap<>();
-            tmpMap.put(ContextConstant.REGION_PUBLISH, String.valueOf(isRegionPublish));
-            final Set<Map.Entry<String, String>> attributes = Collections.unmodifiableSet(tmpMap.entrySet());
+        private boolean regionMatch(NacosServer nacosServer, String regionPublish) {
             final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
-            return metadata.entrySet().containsAll(attributes);
+            String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
+            if (StringUtils.isNotBlank(metaRegionPublish)) {
+                if (metaRegionPublish.equals(regionPublish)) {
+                    return true;
+                }
+            } else {
+                if (regionPublish == null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean greyMatch(NacosServer nacosServer, String greyPublish) {
+            final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
+            String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
+            if (StringUtils.isNotBlank(metaGreyPublish)) {
+                if (metaGreyPublish.equals(greyPublish)) {
+                    return true;
+                }
+            } else {
+                if (greyPublish == null) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

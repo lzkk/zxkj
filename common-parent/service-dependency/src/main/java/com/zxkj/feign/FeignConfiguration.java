@@ -2,6 +2,7 @@ package com.zxkj.feign;
 
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
+import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.feign.decoder.BusinessDecoder;
 import com.zxkj.feign.encoder.BusinessEncoder;
 import feign.Logger;
@@ -26,8 +27,8 @@ public class FeignConfiguration implements RequestInterceptor {
     private List<String> headKeyList = new ArrayList<>();
 
     {
-        headKeyList.add("version");
-        headKeyList.add("regionPublish");
+        headKeyList.add(ContextConstant.GREY_PUBLISH_FLAG);
+        headKeyList.add(ContextConstant.REGION_PUBLISH_FLAG);
     }
 
     @Override
