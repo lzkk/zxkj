@@ -78,7 +78,11 @@ public class GreyPublishUtil {
     }
 
     public static CustomerInfo getCustomerInfo() {
-        return currentCustomer.get();
+        CustomerInfo customerInfo = currentCustomer.get();
+        if (customerInfo == null) {
+            customerInfo = new CustomerInfo();
+        }
+        return customerInfo;
     }
 
 }

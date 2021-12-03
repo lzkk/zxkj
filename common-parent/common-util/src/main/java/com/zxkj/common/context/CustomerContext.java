@@ -21,7 +21,11 @@ public class CustomerContext {
      * 获取当前客户信息
      */
     public static CustomerInfo getCurrentCustomer() {
-        return currentCustomer.get();
+        CustomerInfo customerInfo = currentCustomer.get();
+        if(customerInfo == null){
+            customerInfo = new CustomerInfo();
+        }
+        return customerInfo;
     }
 
     public static void initContext() {

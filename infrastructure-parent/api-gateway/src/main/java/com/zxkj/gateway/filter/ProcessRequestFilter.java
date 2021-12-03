@@ -45,7 +45,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
     @Autowired
     private AuthorizationInterceptor authorizationInterceptor;
 
-    @Value("${greyPublish}")
+    @Value("${greyPublish:}")
     private String greyPublish;
 
     /***
