@@ -9,10 +9,7 @@ import com.zxkj.search.service.SkuSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /*****
  * @Author:
@@ -24,32 +21,23 @@ public class SkuSearchController implements SkuSearchFeign {
     @Autowired
     private SkuSearchService skuSearchService;
 
-
-    /***
-     * 商品搜索
-     */
-    public RespResult<Map<String, Object>> search(@RequestParam(required = false) Map<String, Object> searchMap) {
-        Map<String, Object> resultMap = skuSearchService.search(searchMap);
-        return RespResult.ok(resultMap);
-    }
-
     /*****
      * 增加索引
      */
-    public RespResult add(@RequestBody SkuEsCondition skuEsCondition) {
+    public RespResult<Boolean> add(@RequestBody SkuEsCondition skuEsCondition) {
         if (skuEsCondition == null) {
             return RespResult.error();
         }
         SkuEs skuEs = BeanUtil.copyObject(skuEsCondition, SkuEs.class);
         skuSearchService.add(skuEs);
-        return RespResult.ok();
+        return RespResult.ok(true);
     }
 
     /***
      * 删除索引
      */
-    public RespResult del(@PathVariable(value = "id") String id) {
+    public RespResult<Boolean> del(@PathVariable(value = "id") String id) {
         skuSearchService.del(id);
-        return RespResult.ok();
+        return RespResult.ok(true);
     }
 }

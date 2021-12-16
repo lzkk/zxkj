@@ -11,7 +11,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  *
  * @author yuhui
  */
-@Configuration
+//@Configuration
 public class CorsConfig {
 
     @Bean

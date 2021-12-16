@@ -22,8 +22,8 @@ import java.util.Map;
 @Service
 public class SeckillPageServiceImpl implements SeckillPageService {
 
-    @Value("${seckillpath}")
-    private String seckillpath;
+    @Value("${seckill_spuItem_out_path}")
+    private String seckillSpuItemOutPath;
 
     @Autowired
     private TemplateEngine templateEngine;
@@ -43,17 +43,17 @@ public class SeckillPageServiceImpl implements SeckillPageService {
         //2、设置模板数据  loadData(id)-》Map
         context.setVariables(loadData(id));
         //3、指定文件生成后存储路径
-        File file = new File(seckillpath, id + ".html");
+        File file = new File(seckillSpuItemOutPath, id + ".html");
         PrintWriter writer = new PrintWriter(file, "UTF-8");
         //4、执行合成生成
-        templateEngine.process("seckillitem", context, writer);
+        templateEngine.process("seckillSpuItem", context, writer);
         writer.close();
     }
 
     @Override
     public void delete(String id) {
         //创建要删除的文件对象
-        File file = new File(seckillpath, id + ".html");
+        File file = new File(seckillSpuItemOutPath, id + ".html");
         if (file.exists()) {
             file.delete();
         }

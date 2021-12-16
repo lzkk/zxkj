@@ -35,37 +35,38 @@ public class PageServiceImpl implements PageService {
     @Autowired
     private SpuFeign spuFeign;
 
-    @Value("${pagepath}")
-    private String pagepath;
+    @Value("${spuItem_out_path}")
+    private String spuItemOutPath;
 
     @Autowired
     private TemplateEngine templateEngine;
 
     /****
      * 生成静态页
-     * @param spuid
+     * @param spuId
      * @throws Exception
      */
     @Override
-    public void html(String spuid) throws Exception {
+    public void html(String spuId) throws Exception {
         //1、创建容器对象(上下文对象)
         Context context = new Context();
         //2、设置模板数据
-        context.setVariables(loadData(spuid));
+        context.setVariables(loadData(spuId));
         //3、指定文件生成后存储路径
-        File file = new File(pagepath, spuid + ".html");
+        File file = new File(spuItemOutPath, spuId + ".html");
         PrintWriter writer = new PrintWriter(file, "UTF-8");
         //4、执行合成生成
-        templateEngine.process("item", context, writer);
+
+        templateEngine.process("spuItem", context, writer);
         writer.close();
     }
 
     /****
      * 数据加载
      */
-    public Map<String, Object> loadData(String spuid) {
+    public Map<String, Object> loadData(String spuId) {
         //查询数据
-        RespResult<Product> productResult = spuFeign.one(spuid);
+        RespResult<Product> productResult = spuFeign.one(spuId);
         Product product = productResult.getResult();
         if (product != null) {
             //Map

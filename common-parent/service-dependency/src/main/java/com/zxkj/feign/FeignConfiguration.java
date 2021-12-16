@@ -63,12 +63,12 @@ public class FeignConfiguration implements RequestInterceptor {
         return Logger.Level.BASIC;
     }
 
-    @Bean
+//    @Bean
     public BusinessDecoder businessDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new BusinessDecoder(messageConverters);
     }
 
-    @Bean
+//    @Bean
     public BusinessEncoder businessEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new BusinessEncoder(messageConverters);
     }

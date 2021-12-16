@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/spu")
-@CrossOrigin
 public class SpuController {
 
     @Autowired

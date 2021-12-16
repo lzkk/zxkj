@@ -15,10 +15,6 @@
     <dependencies>
         <dependency>
             <groupId>com.zxkj</groupId>
-            <artifactId>page-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
             <artifactId>goods-api</artifactId>
         </dependency>
     </dependencies>

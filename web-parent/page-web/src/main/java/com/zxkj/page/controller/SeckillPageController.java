@@ -21,6 +21,15 @@ public class SeckillPageController implements SeckillPageFeign {
     private SeckillGoodsFeign seckillGoodsFeign;
 
     /***
+     * 生成秒杀商品详情页
+     */
+    public RespResult page(@PathVariable("id") String id) throws Exception {
+        //生成秒杀商品详情页
+        seckillPageService.html(id);
+        return RespResult.ok();
+    }
+
+    /***
      * 删除指定活动的页面
      */
     public RespResult deleByAct(@PathVariable("acid") String acid) {
@@ -34,15 +43,6 @@ public class SeckillPageController implements SeckillPageFeign {
                 seckillPageService.delete(seckillGoods.getId());
             }
         }
-        return RespResult.ok();
-    }
-
-    /***
-     * 生成秒杀商品详情页
-     */
-    public RespResult page(@PathVariable("id") String id) throws Exception {
-        //生成秒杀商品详情页
-        seckillPageService.html(id);
         return RespResult.ok();
     }
 }

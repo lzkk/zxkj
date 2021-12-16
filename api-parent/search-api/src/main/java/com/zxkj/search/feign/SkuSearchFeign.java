@@ -8,9 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /*****
  * @Author:
@@ -19,23 +20,17 @@ import java.util.Map;
 @FeignClient(value = ServiceIdConstant.SEARCH_SERVICE, path = "/", fallbackFactory = SkuSearchFeignFallback.class)
 public interface SkuSearchFeign {
 
-    /***
-     * 商品搜索
-     */
-    @GetMapping("/search")
-    RespResult<Map<String, Object>> search(@RequestParam(required = false) Map<String, Object> searchMap);
-
     /*****
      * 增加索引
      */
     @PostMapping(value = "/search/add")
-    RespResult add(@RequestBody SkuEsCondition skuEsCondition);
+    RespResult<Boolean> add(@RequestBody SkuEsCondition skuEsCondition);
 
     /***
      * 删除索引
      */
     @DeleteMapping(value = "/search/del/{id}")
-    RespResult del(@PathVariable(value = "id") String id);
+    RespResult<Boolean> del(@PathVariable(value = "id") String id);
 }
 
 
@@ -52,19 +47,13 @@ class SkuSearchFeignFallback implements SkuSearchFeign, FallbackFactory<SkuSearc
     }
 
     @Override
-    public RespResult<Map<String, Object>> search(Map<String, Object> searchMap) {
-        logger.error("SkuSearchFeignFallback -> search错误信息：{}", throwable.getMessage());
-        return RespResult.error(throwable.getMessage());
-    }
-
-    @Override
-    public RespResult add(SkuEsCondition skuEsCondition) {
+    public RespResult<Boolean> add(SkuEsCondition skuEsCondition) {
         logger.error("SkuSearchFeignFallback -> add错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
-    public RespResult del(String id) {
+    public RespResult<Boolean> del(String id) {
         logger.error("SeckillGoodsSearchFeignFallback -> del错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

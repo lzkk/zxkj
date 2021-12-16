@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/brand")
-@CrossOrigin
 public class BrandController {
 
     @Autowired
