@@ -23,6 +23,7 @@
         <module>seckill-service</module>
         <module>sys-service</module>
         <module>task-service</module>
+        <module>file-service</module>
     </modules>
 
     <dependencies>

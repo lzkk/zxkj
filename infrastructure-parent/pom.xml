@@ -16,6 +16,7 @@
         <module>api-gateway</module>
         <module>zipkin-server</module>
         <module>monitor-server</module>
+        <module>openapi-gateway</module>
     </modules>
 
     <dependencies>

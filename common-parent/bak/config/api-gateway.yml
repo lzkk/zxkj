@@ -1,0 +1,26 @@
+logging:
+  level:
+    com.alibaba.nacos.client.*: WARN
+
+#ribbon:
+  #ServerListRefreshInterval: 5000
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        #netty 路由过滤器，http或https开头
+
+        - id: goods-route
+          uri: lb://goods-service
+          predicates:
+            - Path=/api-goods/**
+          filters:
+            - StripPrefix=1
+
+        - id: order-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api-order/**
+          filters:
+            - StripPrefix=1

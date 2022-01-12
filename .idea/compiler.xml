@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -23,9 +24,11 @@
         <module name="common-util" />
         <module name="customer-api" />
         <module name="customer-service" />
+        <module name="file-service" />
         <module name="goods-api" />
         <module name="goods-service" />
         <module name="monitor-server" />
+        <module name="openapi-gateway" />
         <module name="order-api" />
         <module name="order-service" />
         <module name="page-api" />
@@ -70,11 +73,13 @@
       <module name="common-web" target="1.8" />
       <module name="customer-api" target="1.8" />
       <module name="customer-service" target="1.8" />
+      <module name="file-service" target="1.8" />
       <module name="goods-api" target="1.8" />
       <module name="goods-parent" target="1.8" />
       <module name="goods-service" target="1.8" />
       <module name="infrastructure-parent" target="1.8" />
       <module name="monitor-server" target="1.8" />
+      <module name="openapi-gateway" target="1.8" />
       <module name="order-api" target="1.8" />
       <module name="order-parent" target="1.8" />
       <module name="order-service" target="1.8" />

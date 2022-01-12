@@ -12,3 +12,9 @@ spring:
           refresh: true
       discovery:
         register-enabled: false
+
+#SpringCloud 2.X
+management:
+  endpoints:
+    web:
+      base-path: /actuator/

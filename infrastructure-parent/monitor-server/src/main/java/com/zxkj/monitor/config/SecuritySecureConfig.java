@@ -45,7 +45,11 @@ public class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
                 .ignoringAntMatchers(
                         "/instances",
                         "/info",
-                        "/health"
+                        "/health",
+                        "/actuator/instances",
+                        "/actuator/info",
+                        "/actuator/threaddump",
+                        "/actuator/health"
                 );
     }
 

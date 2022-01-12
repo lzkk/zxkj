@@ -6,6 +6,7 @@ import com.alibaba.cloud.nacos.discovery.NacosWatch;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.context.domain.CustomerInfo;
 import com.zxkj.common.util.greyPublish.GreyPublishUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -26,7 +27,17 @@ import java.util.Date;
 @Configuration
 @ConditionalOnNacosDiscoveryEnabled
 @AutoConfigureBefore({SimpleDiscoveryClientAutoConfiguration.class, CommonsClientAutoConfiguration.class})
+@Slf4j
 public class NacosDiscoveryClientAutoConfiguration {
+
+    @Value("${preserved.heart.beat.interval:3000}")
+    public String heartBeatInterval;
+
+    @Value("${preserved.heart.beat.timeout:6000}")
+    public String heartBeatTimeout;
+
+    @Value("${preserved.ip.delete.timeout:9000}")
+    public String ipDeleteTimeout;
 
     @Value("${spring.profiles.active}")
     public String profile;
@@ -53,6 +64,15 @@ public class NacosDiscoveryClientAutoConfiguration {
         nacosDiscoveryProperties.getMetadata().put(ContextConstant.GREY_PUBLISH_FLAG, customerInfo.getGreyPublish());
         nacosDiscoveryProperties.getMetadata().put("spring.profiles.active", profile);
         nacosDiscoveryProperties.getMetadata().put("startup.time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//        // 设置心跳的周期，单位为秒
+//        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, heartBeatInterval);
+//        // 设置心跳超时时间，单位为秒
+//        // 即服务端6秒收不到客户端心跳，会将该客户端注册的实例设为不健康：
+//        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, heartBeatTimeout);
+//        // 设置实例删除的超时时间，单位为秒
+//        // 即服务端9秒收不到客户端心跳，会将该客户端注册的实例删除：
+//        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.IP_DELETE_TIMEOUT, ipDeleteTimeout);
         return new NacosWatch(nacosDiscoveryProperties);
     }
+
 }
