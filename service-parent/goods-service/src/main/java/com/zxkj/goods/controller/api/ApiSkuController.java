@@ -1,14 +1,15 @@
 package com.zxkj.goods.controller.api;
 
-import com.zxkj.goods.controller.SkuController;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 测试
  */
+@Slf4j
 @RestController
 @RequestMapping("/api")
-public class ApiSkuController extends SkuController {
+public class ApiSkuController {
 
 }

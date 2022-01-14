@@ -14,12 +14,10 @@ public class MyOkHttpInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         long now = System.currentTimeMillis();
-        logger.info("okhttp request:{}", chain.request().url().toString());
         Response response = chain.proceed(chain.request());
         long spend = System.currentTimeMillis() - now;
-        logger.info("okhttp request:{},response:{},spend:{}", chain.request().url().toString(), JSON.toJSONString(response.code()), spend);
-        if (spend >= 200) {
-            logger.info("okhttp request:{},response:{},too long spend:{}", chain.request().url().toString(), JSON.toJSONString(response.code()), spend);
+        if (spend >= 50) {
+            logger.info("okhttp request:{},response:{},spend:{}", chain.request().url().toString(), JSON.toJSONString(response.code()), spend);
         }
         return response;
     }

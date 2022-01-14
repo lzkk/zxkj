@@ -37,4 +37,5 @@ public interface OrderService extends IService<Order> {
     List<OrderSkuVo> getCart(List<String> ids);
 
     void ribbonTest();
+
 }

@@ -7,15 +7,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SpringContext implements ApplicationContextAware {
-
     private static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
     }
 
-    public static <T>T getBean(Class clazz){
-        return applicationContext.getBean((Class<T>) clazz);
+    public static <T> T getBean(Class<T> clz) {
+        return applicationContext.getBean(clz);
+    }
+
+    public static <T> T getBeanFix(Class<T> clazz) {
+        T t = null;
+        try {
+            t = getBean(clazz);
+        } catch (Exception e) {
+        }
+        return t;
     }
 }

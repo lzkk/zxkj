@@ -18,6 +18,10 @@
         </dependency>
         <dependency>
             <groupId>com.zxkj</groupId>
+            <artifactId>order-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
             <artifactId>common-task</artifactId>
         </dependency>
     </dependencies>

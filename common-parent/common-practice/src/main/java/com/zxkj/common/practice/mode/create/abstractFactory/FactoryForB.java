@@ -1,8 +1,8 @@
 package com.zxkj.common.practice.mode.create.abstractFactory;
 
-class FactoryForB implements produce {
+public class FactoryForB implements Produce {
     @Override
-    public food get() {
+    public Food get() {
         return new B();
     }
 }

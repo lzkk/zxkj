@@ -13,10 +13,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-gateway</module>
-        <module>zipkin-server</module>
+        <module>gateway-parent</module>
         <module>monitor-server</module>
-        <module>openapi-gateway</module>
+        <module>zipkin-server</module>
     </modules>
 
     <dependencies>

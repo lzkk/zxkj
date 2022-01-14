@@ -23,6 +23,7 @@ public class CustomerContextConfig {
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
                 CustomerContext.initContext();
                 chain.doFilter(request, response);
+                CustomerContext.clearContext();
             }
 
             @Override

@@ -8,6 +8,7 @@ import com.zxkj.gateway.hot.HotQueue;
 import com.zxkj.gateway.permission.AuthorizationInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -87,6 +88,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         }
         HttpHeaders newHttpHeader = new HttpHeaders();
         newHttpHeader.putAll(exchange.getRequest().getHeaders());
+        newHttpHeader.put(ContextConstant.TRACE_ID_FLAG, getEncodedString(UUID.randomUUID().toString().replaceAll("-","")));
         try {
             if (HttpMethod.GET == request.getMethod()) {
                 return doGet(exchange, chain, newHttpHeader);

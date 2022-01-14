@@ -21,15 +21,15 @@ import com.zxkj.order.model.OrderSku;
 import com.zxkj.order.service.OrderService;
 import com.zxkj.order.vo.OrderSkuVo;
 import com.zxkj.seckill.feign.SeckillGoodsFeign;
-import com.zxkj.seckill.model.SeckillGoods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /*****
  * @Author:
@@ -56,6 +56,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private SeckillGoodsFeign seckillGoodsFeign;
+
+    @Resource
+    private Executor executor;
 
     /****
      * 退款申请
@@ -187,9 +190,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void ribbonTest() {
         RespResult<Sku> respResult1 = skuFeign.one("1318596430360813570");
         log.info("1--" + JsonUtil.toJsonString(respResult1));
-        RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
-        log.info("2--" + JsonUtil.toJsonString(respResult2));
-        RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
-        log.info("3--" + JsonUtil.toJsonString(respResult3));
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RespResult<Sku> respResult2 = skuFeign.one("1318596430360813570");
+//                RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gpNo1226524616676216832"));
+                log.info("2--" + JsonUtil.toJsonString(respResult2));
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                RespResult<Sku> respResult3 = skuFeign.one("1318596430360813570");
+//                RespResult<SeckillGoods> respResult3 = seckillGoodsFeign.one("111");
+                log.info("3--" + JsonUtil.toJsonString(respResult3));
+            }
+        });
+
     }
+
 }

@@ -74,6 +74,7 @@
       <module name="customer-api" target="1.8" />
       <module name="customer-service" target="1.8" />
       <module name="file-service" target="1.8" />
+      <module name="gateway-parent" target="1.8" />
       <module name="goods-api" target="1.8" />
       <module name="goods-parent" target="1.8" />
       <module name="goods-service" target="1.8" />
@@ -96,6 +97,7 @@
       <module name="service-parent" target="1.8" />
       <module name="sys-api" target="1.8" />
       <module name="sys-service" target="1.8" />
+      <module name="task-parent" target="1.8" />
       <module name="task-service" target="1.8" />
       <module name="trade-microservice" target="1.8" />
       <module name="trade-parent" target="1.8" />

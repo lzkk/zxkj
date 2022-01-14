@@ -35,5 +35,9 @@ public class CustomerInfo {
      * 灰度发布标识
      */
     private String greyPublish;
+    /**
+     * traceId标识
+     */
+    private String traceId;
 
 }

@@ -22,7 +22,7 @@ import java.util.*;
 @Slf4j
 public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
     private volatile boolean fetchFlag = false;
-    private static final String ENVIRONMENT_DEV = "dev2";
+    private static final String ENVIRONMENT_DEV = "dev";
     private AbstractServerPredicate predicate;
 
     @Value("${spring.profiles.active}")
