@@ -1,8 +1,8 @@
-package com.zxkj.feign;
+package com.zxkj.gateway.feign;
 
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import com.zxkj.common.context.GreyContext;
 import com.zxkj.common.context.domain.ContextInfo;
+import com.zxkj.gateway.util.GreyPublishUtil;
 
 import java.util.concurrent.Callable;
 
@@ -15,13 +15,13 @@ public class FeignHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy 
 
     @Override
     public <T> Callable<T> wrapCallable(Callable<T> callable) {
-        ContextInfo contextInfo = GreyContext.getCurrentContext();
+        ContextInfo contextInfo = GreyPublishUtil.getCurrentContext();
         return () -> {
             try {
-                GreyContext.fillContext(contextInfo);
+                GreyPublishUtil.fillContext(contextInfo);
                 return callable.call();
             } finally {
-                GreyContext.clearContext();
+                GreyPublishUtil.clearContext();
             }
         };
     }

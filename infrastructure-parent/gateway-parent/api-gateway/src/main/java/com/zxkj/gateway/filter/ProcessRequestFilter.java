@@ -1,17 +1,15 @@
 package com.zxkj.gateway.filter;
 
 import com.zxkj.common.context.constants.ContextConstant;
-import com.zxkj.common.context.domain.CustomerInfo;
+import com.zxkj.common.context.domain.ContextInfo;
 import com.zxkj.common.exception.gateway.GatewayExceptionCodes;
-import com.zxkj.common.util.greyPublish.GreyPublishUtil;
 import com.zxkj.gateway.hot.HotQueue;
 import com.zxkj.gateway.permission.AuthorizationInterceptor;
+import com.zxkj.gateway.util.GreyPublishUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -42,8 +40,6 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
     @Autowired
     private HotQueue hotQueue;
     @Autowired
-    private ApplicationArguments applicationArguments;
-    @Autowired
     private AuthorizationInterceptor authorizationInterceptor;
 
     @Value("${greyPublish:}")
@@ -58,6 +54,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         ServerHttpRequest request = exchange.getRequest();
         String uri = request.getURI().getPath();
         log.info("请求uri:{}", uri);
@@ -88,7 +85,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         }
         HttpHeaders newHttpHeader = new HttpHeaders();
         newHttpHeader.putAll(exchange.getRequest().getHeaders());
-        newHttpHeader.put(ContextConstant.TRACE_ID_FLAG, getEncodedString(UUID.randomUUID().toString().replaceAll("-","")));
+        newHttpHeader.put(ContextConstant.TRACE_ID_FLAG, getEncodedString(uuid));
         try {
             if (HttpMethod.GET == request.getMethod()) {
                 return doGet(exchange, chain, newHttpHeader);
@@ -137,9 +134,9 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo(applicationArguments.getSourceArgs(), greyPublish, version, grp);
-            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(customerInfo.getRegionPublish()));
-            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(customerInfo.getGreyPublish()));
+            ContextInfo contextInfo = GreyPublishUtil.initContext(greyPublish, version, grp);
+            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
+            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
             ServerHttpRequest mutatedRequest = getServerHttpRequest(exchange, query, headers, cachedFlux);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
@@ -173,9 +170,9 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo(applicationArguments.getSourceArgs(), greyPublish, version, grp);
-            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(customerInfo.getRegionPublish()));
-            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(customerInfo.getGreyPublish()));
+            ContextInfo contextInfo = GreyPublishUtil.initContext(greyPublish, version, grp);
+            headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
+            headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
             ServerHttpRequest mutatedRequest = postServerHttpRequest(exchange, headers, cachedFlux);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

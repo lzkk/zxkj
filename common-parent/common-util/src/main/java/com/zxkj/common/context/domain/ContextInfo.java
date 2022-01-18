@@ -3,10 +3,10 @@ package com.zxkj.common.context.domain;
 import lombok.Data;
 
 /**
- * 客户数据
+ * 上下文数据
  */
 @Data
-public class CustomerInfo {
+public class ContextInfo {
     /**
      * 客户主键ID
      */

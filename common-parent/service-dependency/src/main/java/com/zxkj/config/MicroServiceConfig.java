@@ -1,6 +1,6 @@
 package com.zxkj.config;
 
-import com.zxkj.common.context.support.CustomerContextConfig;
+import com.zxkj.common.context.support.GreyContextConfig;
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.common.web.RespCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 @Configuration
-@Import(CustomerContextConfig.class)
+@Import(GreyContextConfig.class)
 public class MicroServiceConfig {
 
     /**

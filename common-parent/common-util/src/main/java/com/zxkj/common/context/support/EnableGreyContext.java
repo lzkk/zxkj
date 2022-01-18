@@ -10,6 +10,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(CustomerContextConfig.class)
-public @interface EnableCustomerContext {
+@Import(GreyContextConfig.class)
+public @interface EnableGreyContext {
 }

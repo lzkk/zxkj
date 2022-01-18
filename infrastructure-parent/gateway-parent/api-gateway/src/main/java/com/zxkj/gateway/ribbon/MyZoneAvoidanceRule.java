@@ -9,9 +9,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.netflix.loadbalancer.*;
 import com.zxkj.common.context.constants.ContextConstant;
-import com.zxkj.common.context.domain.CustomerInfo;
-import com.zxkj.common.util.greyPublish.GreyPublishUtil;
 import com.zxkj.common.util.ip.IPUtils;
+import com.zxkj.gateway.util.GreyPublishUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,9 +114,8 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (serverList == null || serverList.size() == 0) {
                 return serverList;
             }
-            CustomerInfo customerInfo = GreyPublishUtil.getCustomerInfo();
-            String greyPublish = customerInfo.getGreyPublish();
-            String regionPublish = customerInfo.getRegionPublish();
+            String greyPublish = GreyPublishUtil.getCurrentContext().getGreyPublish();
+            String regionPublish = GreyPublishUtil.getCurrentContext().getRegionPublish();
             boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv) ? true : false;
             List<Server> matchResults = Lists.newArrayList();
             Iterator var4 = serverList.iterator();

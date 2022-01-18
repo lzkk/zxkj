@@ -8,7 +8,7 @@ import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.netflix.loadbalancer.*;
-import com.zxkj.common.context.CustomerContext;
+import com.zxkj.common.context.GreyContext;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.util.ip.IPUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -114,8 +114,8 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (serverList == null || serverList.size() == 0) {
                 return serverList;
             }
-            String regionPublish = CustomerContext.getCurrentCustomer().getRegionPublish();
-            String greyPublish = CustomerContext.getCurrentCustomer().getGreyPublish();
+            String regionPublish = GreyContext.getCurrentContext().getRegionPublish();
+            String greyPublish = GreyContext.getCurrentContext().getGreyPublish();
             boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv) ? true : false;
             List<Server> matchResults = Lists.newArrayList();
             Iterator<Server> serverIterator = serverList.iterator();

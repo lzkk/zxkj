@@ -1,19 +1,15 @@
-package com.zxkj.feign;
+package com.zxkj.gateway.feign;
 
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import com.zxkj.common.context.GreyContext;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.context.domain.ContextInfo;
-import com.zxkj.feign.decoder.BusinessDecoder;
-import com.zxkj.feign.encoder.BusinessEncoder;
+import com.zxkj.gateway.util.GreyPublishUtil;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,7 +19,7 @@ public class FeignConfiguration implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        ContextInfo contextInfo = GreyContext.getCurrentContext();
+        ContextInfo contextInfo = GreyPublishUtil.getCurrentContext();
         if (contextInfo == null) {
             return;
         }
@@ -45,13 +41,4 @@ public class FeignConfiguration implements RequestInterceptor {
         return Logger.Level.BASIC;
     }
 
-    //    @Bean
-    public BusinessDecoder businessDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
-        return new BusinessDecoder(messageConverters);
-    }
-
-    //    @Bean
-    public BusinessEncoder businessEncoder(ObjectFactory<HttpMessageConverters> messageConverters) {
-        return new BusinessEncoder(messageConverters);
-    }
 }

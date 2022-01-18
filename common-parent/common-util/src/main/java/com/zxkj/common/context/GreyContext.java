@@ -3,15 +3,13 @@ package com.zxkj.common.context;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.TraceContext;
 import com.zxkj.common.context.constants.ContextConstant;
-import com.zxkj.common.context.domain.CustomerInfo;
+import com.zxkj.common.context.domain.ContextInfo;
 import com.zxkj.common.context.support.WrappedExecutorService;
 import com.zxkj.common.trace.TraceUtil;
-import com.zxkj.common.util.SpringContext;
-import com.zxkj.common.util.greyPublish.GreyPublishUtil;
+import com.zxkj.common.util.sys.SysConfigUtil;
 import com.zxkj.common.web.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -23,49 +21,46 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 /**
- * 客户数据上下文,用于获取当前客户数据
+ * 用于获取当前上下文数据
  */
 @Slf4j
-public class CustomerContext {
-    private static ThreadLocal<CustomerInfo> customerInfoMap = new InheritableThreadLocal<>();
+public class GreyContext {
+    private static ThreadLocal<ContextInfo> greyMap = new InheritableThreadLocal<>();
 
     /**
      * 获取当前信息
      */
-    public static CustomerInfo getCurrentCustomer() {
-        CustomerInfo customerInfo = customerInfoMap.get();
-        if (customerInfo == null) {
-            ApplicationArguments applicationArguments = SpringContext.getBeanFix(ApplicationArguments.class);
-            if (applicationArguments != null) {
-                customerInfo = GreyPublishUtil.getPublishInfo(applicationArguments.getSourceArgs());
-                customerInfoMap.set(customerInfo);
-            } else {
-                customerInfo = new CustomerInfo();
-            }
+    public static ContextInfo getCurrentContext() {
+        ContextInfo contextInfo = greyMap.get();
+        if (contextInfo == null) {
+            contextInfo = new ContextInfo();
+            contextInfo.setGreyPublish(SysConfigUtil.getSysConfigValue(ContextConstant.GREY_PUBLISH_FLAG));
+            contextInfo.setRegionPublish(SysConfigUtil.getSysConfigValue(ContextConstant.REGION_PUBLISH_FLAG));
+            greyMap.set(contextInfo);
         }
-        return customerInfo;
+        return contextInfo;
     }
 
-    public static void fillContext(CustomerInfo customerInfo) {
-        customerInfoMap.set(customerInfo);
+    public static void fillContext(ContextInfo contextInfo) {
+        greyMap.set(contextInfo);
     }
 
     public static void initContext() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
-        CustomerInfo customerUser = new CustomerInfo();
+        ContextInfo contextInfo = new ContextInfo();
         String regionPublishStr = getHeaderString(request, ContextConstant.REGION_PUBLISH_FLAG);
-        customerUser.setRegionPublish(regionPublishStr);
+        contextInfo.setRegionPublish(regionPublishStr);
         String greyPublishStr = getHeaderString(request, ContextConstant.GREY_PUBLISH_FLAG);
-        customerUser.setGreyPublish(greyPublishStr);
+        contextInfo.setGreyPublish(greyPublishStr);
         String traceId = getHeaderString(request, ContextConstant.TRACE_ID_FLAG);
-        customerUser.setTraceId(traceId);
-        customerInfoMap.set(customerUser);
-        log.info("currentContext:" + JsonUtil.toJsonString(customerUser));
+        contextInfo.setTraceId(traceId);
+        greyMap.set(contextInfo);
+        log.info("currentContext:" + JsonUtil.toJsonString(contextInfo));
     }
 
     public static void clearContext() {
-        customerInfoMap.remove();
+        greyMap.remove();
     }
 
     private static String getHeaderString(HttpServletRequest request, String key) {
@@ -82,14 +77,14 @@ public class CustomerContext {
 
     private static <C> Callable<C> wrap(Callable<C> task) {
         //获取父线程中的Trace
-        CustomerInfo customerInfo = customerInfoMap.get();
+        ContextInfo contextInfo = greyMap.get();
         final TraceContext traceContext = TraceUtil.getTraceContext();
         class MyCustomCallable implements Callable<C> {
 
             @Override
             public C call() throws Exception {
                 //信息给子线程
-                customerInfoMap.set(customerInfo);
+                greyMap.set(contextInfo);
                 CurrentTraceContext.Scope scope = TraceUtil.getTraceContextScope(traceContext);
                 C obj;
                 try {
@@ -98,7 +93,7 @@ public class CustomerContext {
                     throw var11;
                 } finally {
                     //子线程用完删除
-                    customerInfoMap.remove();
+                    greyMap.remove();
                     TraceUtil.closeScope(scope);
                 }
                 return obj;
@@ -109,13 +104,13 @@ public class CustomerContext {
 
     private static Runnable wrap(Runnable task) {
         //获取父线程中的Trace
-        CustomerInfo customerInfo = customerInfoMap.get();
+        ContextInfo contextInfo = greyMap.get();
         final TraceContext traceContext = TraceUtil.getTraceContext();
         class MyCustomRunnable implements Runnable {
             @Override
             public void run() {
                 //信息给子线程
-                customerInfoMap.set(customerInfo);
+                greyMap.set(contextInfo);
                 CurrentTraceContext.Scope scope = TraceUtil.getTraceContextScope(traceContext);
                 try {
                     task.run();
@@ -123,7 +118,7 @@ public class CustomerContext {
                     throw var11;
                 } finally {
                     //子线程用完删除
-                    customerInfoMap.remove();
+                    greyMap.remove();
                     TraceUtil.closeScope(scope);
                 }
             }
@@ -138,7 +133,7 @@ public class CustomerContext {
             }
 
             public void execute(Runnable task) {
-                delegate.execute(CustomerContext.wrap(task));
+                delegate.execute(GreyContext.wrap(task));
             }
         }
 
@@ -155,11 +150,11 @@ public class CustomerContext {
             }
 
             protected <C> Callable<C> wrap(Callable<C> task) {
-                return CustomerContext.wrap(task);
+                return GreyContext.wrap(task);
             }
 
             protected Runnable wrap(Runnable task) {
-                return CustomerContext.wrap(task);
+                return GreyContext.wrap(task);
             }
         }
 

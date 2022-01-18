@@ -1,6 +1,6 @@
 package com.zxkj.order.config;
 
-import com.zxkj.common.context.CustomerContext;
+import com.zxkj.common.context.GreyContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,7 +29,7 @@ public class ExecutorConfig {
         executor.setQueueCapacity(50);
         executor.setThreadNamePrefix("orderExecutor-");
         executor.initialize();
-        return CustomerContext.executor(executor);
+        return GreyContext.executor(executor);
     }
 
 
@@ -43,7 +43,7 @@ public class ExecutorConfig {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 20, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(60));
         executor.setThreadFactory(new CustomizableThreadFactory("JDKCustomExecutor-"));
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        return CustomerContext.executor(executor);
+        return GreyContext.executor(executor);
     }
 
 }
