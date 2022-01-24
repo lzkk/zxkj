@@ -64,7 +64,7 @@
 //
 //    @Override
 //    public void afterPropertiesSet() throws Exception {
-//        for (int k = 1; k <= 100; k++) {
+//        for (int k = 1; k <= 10; k++) {
 //            rabbitmqMessageSender.send(BusiType.ORDER_CREATE_BUSI, "order_" + k, "orderData_" + k);
 //        }
 //    }

@@ -1,12 +1,13 @@
 package com.zxkj.common.rabbitmq.support;
 
-import com.alibaba.fastjson.JSON;
+import com.rabbitmq.client.Channel;
 import com.zxkj.common.cache.constant.CacheKeyPrefix;
 import com.zxkj.common.cache.lock.RedisLock;
 import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.rabbitmq.RabbitmqMessageListener;
 import com.zxkj.common.rabbitmq.RabbitmqMessageSender;
 import com.zxkj.common.rabbitmq.delay.DelayedRabbitMqConfig;
+import com.zxkj.common.rabbitmq.grey.GreyRabbitUtil;
 import com.zxkj.common.rabbitmq.support.enums.BusiType;
 import com.zxkj.common.rabbitmq.support.enums.BusiTypeHandler;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.aop.support.AopUtils;
@@ -36,7 +38,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +52,8 @@ import java.util.concurrent.TimeUnit;
 @Import(DelayedRabbitMqConfig.class)
 public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAware, DisposableBean {
     private static final Logger logger = LoggerFactory.getLogger(RabbitmqMessageConfig.class);
+
+    private Map<String, String> sequenceKeyMap = new ConcurrentHashMap<>();
     /**
      * 业务消息锁最长有效时间
      */
@@ -94,11 +101,12 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
     @Bean
     public List<Declarable> declarableBusiList() {
         List<Declarable> list = new ArrayList<>();
+        String greySuffix = GreyRabbitUtil.generateGreySuffix();
         for (BusiTypeHandler handler : BusiTypeHandler.values()) {
             BusiType dest = handler.getBusiType();
-            FanoutExchange exchange = new FanoutExchange(dest.toString(), true, false);
+            FanoutExchange exchange = new FanoutExchange(dest.toString() + greySuffix, true, false);
             list.add(exchange);
-            Queue queue = new Queue(handler.toString(), true, false, false);
+            Queue queue = new Queue(handler.toString() + greySuffix, true, false, false);
             list.add(queue);
             Binding binding = BindingBuilder.bind(queue).to(exchange);
             list.add(binding);
@@ -113,7 +121,6 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-
         return bean;
     }
 
@@ -132,8 +139,9 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                     throw new IllegalArgumentException("业务消息监听方法参数错误: " + targetClass.getCanonicalName() + "#" + method.getName());
                 }
                 SimpleMessageListenerContainer listenerContainer = new SimpleMessageListenerContainer(connectionFactory);
-                listenerContainer.setQueueNames(handler.toString());
-                listenerContainer.setAcknowledgeMode(AcknowledgeMode.AUTO);
+                String queueName = handler.toString() + GreyRabbitUtil.generateGreySuffix();
+                listenerContainer.setQueueNames(queueName);
+                listenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
                 String concurrentConsumers = null;
                 if (NumberUtils.isParsable(annotation.concurrentConsumers())) {
                     concurrentConsumers = annotation.concurrentConsumers();
@@ -160,9 +168,12 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                     if (!flag) {
                         logger.error("该顺序消费队列已经存在消费者，忽略: {},{}", tmpKey, localAddress);
                         return;
+                    } else {
+                        sequenceKeyMap.put(tmpKey, localAddress);
                     }
                 }
                 listenerContainer.setMessageListener(new BusiChannelAwareMessageListener(bean, method, handler, isSequentialExec));
+                listenerContainer.start();
                 beanFactory.registerSingleton(beanName + "#" + method.getName(), listenerContainer);
             }
         }, ReflectionUtils.USER_DECLARED_METHODS);
@@ -171,22 +182,20 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
 
     @Override
     public void destroy() throws Exception {
-        List<String> sequenceQueueList = cache.scan(CacheKeyPrefix.SEQUENCE_QUEUE_PRE);
-        logger.info("服务销毁，redis顺序消费队列待清除key列表: {}", JSON.toJSONString(sequenceQueueList));
-        if (sequenceQueueList == null || sequenceQueueList.size() == 0) {
-            return;
-        }
-        for (String tmp : sequenceQueueList) {
-            String sequenceData = cache.get(tmp);
+        Iterator<String> it = sequenceKeyMap.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            String sequenceData = cache.get(key);
             String localAddress = getLocalAddress();
             if (sequenceData != null && sequenceData.equals(localAddress)) {
-                logger.info("顺序消费队列清除key:{}，value:{}", tmp, localAddress);
-                cache.del(tmp);
+                logger.info("服务销毁，redis顺序消费队列待清除key: {},value:{}", key, localAddress);
+                cache.del(key);
             }
         }
+        logger.info("服务销毁清除key完毕！");
     }
 
-    private class BusiChannelAwareMessageListener implements MessageListener {
+    private class BusiChannelAwareMessageListener implements ChannelAwareMessageListener {
         private Object bean;
         private Method method;
         private BusiTypeHandler busiTypeHandler;
@@ -200,9 +209,9 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
         }
 
         @Override
-        public void onMessage(Message message) {
+        public void onMessage(Message message, Channel channel) {
             String body = new String(message.getBody(), StandardCharsets.UTF_8);
-            logger.info("-------body: {}", body);
+//            logger.info("-------body: {}", body);
             RabbitmqMessageHelper.BusiTransferObject<?> transferObject;
             try {
                 transferObject = RabbitmqMessageHelper.toTransferObject(body, busiTypeHandler.getBusiType().getBusiObjectClass());
@@ -219,7 +228,6 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                 logger.warn("业务消息接收超时: {}", key);
                 throw new RuntimeException("事件消息接收超时: " + key);
             }
-            logger.info("业务消息处理开始: {}", key);
             try {
                 method.invoke(bean, transferObject.getBusiKey(), transferObject.getBusiObject());
                 logger.info("业务消息处理完成: {}", key);
@@ -228,6 +236,11 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                 throw new RuntimeException("业务消息处理异常:" + key + ", " + e.toString(), e);
             } finally {
                 redisLock.unlock();
+                try {
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                } catch (IOException e) {
+                    logger.error(e.toString(), e);
+                }
             }
         }
     }

@@ -24,6 +24,7 @@
         <module>common-task</module>
         <module>common-util</module>
         <module>service-dependency</module>
+        <module>mybatisplus-generator</module>
     </modules>
 
 </project>

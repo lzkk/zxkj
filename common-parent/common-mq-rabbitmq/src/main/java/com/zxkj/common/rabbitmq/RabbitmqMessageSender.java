@@ -3,12 +3,14 @@ package com.zxkj.common.rabbitmq;
 import com.zxkj.common.cache.constant.CacheKeyPrefix;
 import com.zxkj.common.cache.redis.Cache;
 import com.zxkj.common.rabbitmq.delay.constant.DelayQueuePrefix;
+import com.zxkj.common.rabbitmq.grey.GreyRabbitUtil;
 import com.zxkj.common.rabbitmq.support.RabbitmqCorrelationData;
 import com.zxkj.common.rabbitmq.support.RabbitmqMessageHelper;
 import com.zxkj.common.rabbitmq.support.enums.BusiType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Objects;
@@ -18,7 +20,7 @@ import java.util.Objects;
  *
  * @author yuhui
  */
-public class RabbitmqMessageSender {
+public class RabbitmqMessageSender implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(RabbitmqMessageSender.class);
 
     @Autowired
@@ -26,6 +28,8 @@ public class RabbitmqMessageSender {
 
     @Autowired
     private Cache cache;
+
+    private String greyQueueSuffix = "";
 
     /**
      * 发送事件消息
@@ -43,9 +47,9 @@ public class RabbitmqMessageSender {
         String bodyKey = CacheKeyPrefix.BUSI_MESSAGE_BODY + busiType.toString();
         cache.zadd(idKey, System.currentTimeMillis(), busiKey);
         cache.hset(bodyKey, busiKey, json);
-        logger.info("业务消息发送开始: {} - {}", busiObject, busiKey);
-        rabbitTemplate.convertAndSend(busiType.toString(), null,
-                json, new RabbitmqCorrelationData(busiKey, busiType));
+        logger.info("业务消息发送开始: {} - {}", busiKey, busiObject);
+        String exchangeName = busiType.toString() + greyQueueSuffix;
+        rabbitTemplate.convertAndSend(exchangeName, null, json, new RabbitmqCorrelationData(busiKey, busiType));
     }
 
     /**
@@ -61,4 +65,8 @@ public class RabbitmqMessageSender {
         });
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        greyQueueSuffix = GreyRabbitUtil.generateGreySuffix();
+    }
 }
