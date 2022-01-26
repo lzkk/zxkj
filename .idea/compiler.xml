@@ -25,6 +25,7 @@
         <module name="customer-api" />
         <module name="customer-service" />
         <module name="file-service" />
+        <module name="gateway-dependency" />
         <module name="goods-api" />
         <module name="goods-service" />
         <module name="monitor-server" />
@@ -74,7 +75,9 @@
       <module name="common-web" target="1.8" />
       <module name="customer-api" target="1.8" />
       <module name="customer-service" target="1.8" />
+      <module name="dependency-parent" target="1.8" />
       <module name="file-service" target="1.8" />
+      <module name="gateway-dependency" target="1.8" />
       <module name="gateway-parent" target="1.8" />
       <module name="goods-api" target="1.8" />
       <module name="goods-parent" target="1.8" />

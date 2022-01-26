@@ -12,6 +12,7 @@
     <modules>
         <module>api-parent</module>
         <module>common-parent</module>
+        <module>dependency-parent</module>
         <module>infrastructure-parent</module>
         <module>service-parent</module>
         <module>web-parent</module>
@@ -121,6 +122,11 @@
             <dependency>
                 <groupId>com.zxkj</groupId>
                 <artifactId>service-dependency</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
+                <artifactId>gateway-dependency</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

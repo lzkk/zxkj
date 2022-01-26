@@ -29,14 +29,6 @@
             <groupId>com.zxkj</groupId>
             <artifactId>seckill-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
-            <artifactId>common-mq-rocketmq</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
-            <artifactId>common-util</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

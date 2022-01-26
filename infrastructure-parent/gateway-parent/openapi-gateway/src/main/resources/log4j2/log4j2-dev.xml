@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="180" packages="">
+    <properties>
+        <!-- java -jar xxx.jar -Dapp.log=xxxx， 如果不提供则使用默认值 -->
+        <property name="app.log">openapi-gateway</property>
+        <property name="LOG_HOME">/opt/logs/${sys:app.log}</property>
+        <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p [%X{traceId}] %C %t (%F:%L) - %m%n</property>
+    </properties>
+    <Appenders>
+        <!--Console -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <!-- When bufferedIO is true, this is the buffer size, the default is 8192 bytes. -->
+        <RollingFile name="RollingFile" fileName="${LOG_HOME}.log"
+                     filePattern="${LOG_HOME}.log.%d{yyyy-MM-dd}" append="true"
+                     bufferedIO="true">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <!--异步appender -->
+        <Async name="AsyncAppender" includeLocation="true">
+            <AppenderRef ref="RollingFile"/>
+        </Async>
+
+    </Appenders>
+    <Loggers>
+        <Root level="INFO" includeLocation="true">
+            <AppenderRef ref="AsyncAppender"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+        <!--<Logger name="com.zxkj" level="DEBUG" additivity="false">-->
+            <!--<AppenderRef ref="AsyncAppender"/>-->
+            <!--<AppenderRef ref="Console"/>-->
+        <!--</Logger>-->
+        <Logger name="com.zxkj.common.cache.redis" level="WARN" additivity="false">
+            <AppenderRef ref="AsyncAppender"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.springframework.boot" level="INFO" additivity="false">
+            <AppenderRef ref="AsyncAppender"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.alibaba.nacos" level="WARN">
+        </Logger>
+        <Logger name="org.apache.kafka" level="WARN">
+        </Logger>
+    </Loggers>
+</Configuration>

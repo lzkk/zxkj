@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: openapi-gateway
+  profiles:
+    active: dev
+
+server:
+  port: 5052

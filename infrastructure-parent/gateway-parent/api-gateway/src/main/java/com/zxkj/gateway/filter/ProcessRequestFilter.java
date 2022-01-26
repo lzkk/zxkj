@@ -5,7 +5,7 @@ import com.zxkj.common.context.domain.ContextInfo;
 import com.zxkj.common.exception.gateway.GatewayExceptionCodes;
 import com.zxkj.gateway.hot.HotQueue;
 import com.zxkj.gateway.permission.AuthorizationInterceptor;
-import com.zxkj.gateway.util.GreyPublishUtil;
+import com.zxkj.grey.GreyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +134,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            ContextInfo contextInfo = GreyPublishUtil.initContext(greyPublish, version, grp);
+            ContextInfo contextInfo = GreyUtil.initContext(greyPublish, version, grp);
             headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
             headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
@@ -170,7 +170,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            ContextInfo contextInfo = GreyPublishUtil.initContext(greyPublish, version, grp);
+            ContextInfo contextInfo = GreyUtil.initContext(greyPublish, version, grp);
             headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
             headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);

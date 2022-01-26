@@ -2,7 +2,7 @@
 <Configuration monitorInterval="180" packages="">
     <properties>
         <!-- java -jar xxx.jar -Dapp.log=xxxx， 如果不提供则使用默认值 -->
-        <property name="app.log">cloud-gateway</property>
+        <property name="app.log">api-gateway</property>
         <property name="LOG_HOME">/opt/logs/${sys:app.log}</property>
         <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p [%X{traceId}] %C %t (%F:%L) - %m%n</property>
     </properties>
