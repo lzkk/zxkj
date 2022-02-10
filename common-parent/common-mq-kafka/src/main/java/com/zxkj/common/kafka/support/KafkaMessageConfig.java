@@ -59,7 +59,7 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
         propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, environment.getProperty("spring.kafka.consumer.auto.offset.reset"));
         propsMap.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, environment.getProperty("spring.kafka.consumer.session.timeout.ms"));
         propsMap.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, environment.getProperty("spring.kafka.consumer.heartbeat.interval.ms"));
-        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, environment.getProperty("spring.kafka.consumer.group.id") + GreyKafkaUtil.generateGreySuffix());
+        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, environment.getProperty("spring.kafka.consumer.group.id"));
         propsMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, environment.getProperty("spring.kafka.consumer.max.poll.records"));
         propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, environment.getProperty("spring.kafka.consumer.max.poll.interval.ms"));
         propsMap.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, "org.apache.kafka.clients.consumer.RangeAssignor");
@@ -86,8 +86,11 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(Integer.valueOf(environment.getProperty("spring.kafka.listener.concurrency")));
-        factory.setBatchListener(true);
+        String concurrencyStr = environment.getProperty("spring.kafka.listener.concurrency");
+        if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
+            factory.setConcurrency(Integer.valueOf(concurrencyStr));
+            factory.setBatchListener(true);
+        }
         return factory;
     }
 
@@ -185,7 +188,10 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
                 configurationProperties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId + GreyKafkaUtil.generateGreySuffix());
                 ConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(configurationProperties);
                 ConcurrentMessageListenerContainer containers = new ConcurrentMessageListenerContainer(consumerFactory, containerProperties);
-                containers.setConcurrency(Integer.valueOf(environment.getProperty("spring.kafka.listener.concurrency")));
+                String concurrencyStr = environment.getProperty("spring.kafka.listener.concurrency");
+                if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
+                    containers.setConcurrency(Integer.valueOf(concurrencyStr));
+                }
                 containers.start();
                 beanFactory.registerSingleton(beanName + "#" + method.getName(), containers);
             }

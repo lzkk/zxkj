@@ -162,7 +162,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                     isSequentialExec = true;
                 }
                 if (isSequentialExec) {
-                    String tmpKey = CacheKeyPrefix.SEQUENCE_QUEUE_PRE + handler.toString();
+                    String tmpKey = CacheKeyPrefix.SEQUENCE_QUEUE_PRE + queueName;
                     String localAddress = getLocalAddress();
                     boolean flag = cache.setnx(tmpKey, localAddress);
                     if (!flag) {
@@ -172,7 +172,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                         sequenceKeyMap.put(tmpKey, localAddress);
                     }
                 }
-                listenerContainer.setMessageListener(new BusiChannelAwareMessageListener(bean, method, handler, isSequentialExec));
+                listenerContainer.setMessageListener(new BusiChannelAwareMessageListener(bean, method, handler, queueName, isSequentialExec));
                 listenerContainer.start();
                 beanFactory.registerSingleton(beanName + "#" + method.getName(), listenerContainer);
             }
@@ -199,12 +199,14 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
         private Object bean;
         private Method method;
         private BusiTypeHandler busiTypeHandler;
+        private String queueName;
         private boolean isSequentialExec;
 
-        public BusiChannelAwareMessageListener(Object bean, Method method, BusiTypeHandler busiTypeHandler, boolean isSequentialExec) {
+        public BusiChannelAwareMessageListener(Object bean, Method method, BusiTypeHandler busiTypeHandler, String queueName, boolean isSequentialExec) {
             this.bean = bean;
             this.method = method;
             this.busiTypeHandler = busiTypeHandler;
+            this.queueName = queueName;
             this.isSequentialExec = isSequentialExec;
         }
 
@@ -219,7 +221,7 @@ public class RabbitmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                 logger.error("业务消息接收异常: " + e.toString(), e);
                 throw new RuntimeException("业务消息接收异常: " + e.toString(), e);
             }
-            String key = CacheKeyPrefix.EVENT_MESSAGE_HANDLER + busiTypeHandler.toString();
+            String key = CacheKeyPrefix.EVENT_MESSAGE_HANDLER + queueName;
             if (!isSequentialExec) {
                 key += ":" + transferObject.getBusiKey();
             }

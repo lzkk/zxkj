@@ -1,12 +1,10 @@
 package com.zxkj.config;
 
-import com.zxkj.grey.support.GreyContextConfig;
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.common.web.RespCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -21,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 @Configuration
-@Import(GreyContextConfig.class)
 public class MicroServiceConfig {
 
     /**

@@ -22,6 +22,9 @@ public class GreyUtil {
         String regionPublishStr = SysConfigUtil.getSysConfigValue(ContextConstant.REGION_PUBLISH_FLAG);
         contextInfo.setRegionPublish(regionPublishStr);
         String greyPublish = judgeGrey(configInfo, version, grp);
+        if (greyPublish == null) {
+            greyPublish = SysConfigUtil.getSysConfigValue(ContextConstant.GREY_PUBLISH_FLAG);
+        }
         contextInfo.setGreyPublish(greyPublish);
         greyMap.set(contextInfo);
         return contextInfo;

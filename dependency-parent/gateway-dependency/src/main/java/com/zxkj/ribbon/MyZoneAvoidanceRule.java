@@ -12,7 +12,6 @@ import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.util.ip.IPUtils;
 import com.zxkj.grey.GreyUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
@@ -116,7 +115,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             String greyPublish = GreyUtil.getCurrentContext().getGreyPublish();
             String regionPublish = GreyUtil.getCurrentContext().getRegionPublish();
-            boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv) ? true : false;
+            boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv);
             List<Server> matchResults = Lists.newArrayList();
             Iterator var4 = serverList.iterator();
             while (var4.hasNext()) {
@@ -132,13 +131,9 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 }
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
-                    if (!greyMatch(nacosServer, greyPublish)) {
-                        continue;
+                    if (greyMatch(nacosServer, greyPublish, regionPublish)) {
+                        matchResults.add(server);
                     }
-                    if (!regionMatch(nacosServer, regionPublish)) {
-                        continue;
-                    }
-                    matchResults.add(server);
                 }
             }
             if (matchResults.size() == 0) {
@@ -148,32 +143,14 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             return matchResults;
         }
 
-        private boolean regionMatch(NacosServer nacosServer, String regionPublish) {
-            final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
-            String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
-            if (StringUtils.isNotBlank(metaRegionPublish)) {
-                if (metaRegionPublish.equals(regionPublish)) {
-                    return true;
-                }
-            } else {
-                if (regionPublish == null) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean greyMatch(NacosServer nacosServer, String greyPublish) {
+        private boolean greyMatch(NacosServer nacosServer, String greyPublish, String regionPublish) {
             final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
             String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
-            if (StringUtils.isNotBlank(metaGreyPublish)) {
-                if (metaGreyPublish.equals(greyPublish)) {
-                    return true;
-                }
-            } else {
-                if (greyPublish == null) {
-                    return true;
-                }
+            String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
+            String reqGrey = greyPublish + "-" + regionPublish;
+            String metaGrey = metaGreyPublish + "-" + metaRegionPublish;
+            if (reqGrey.equals(metaGrey)) {
+                return true;
             }
             return false;
         }
