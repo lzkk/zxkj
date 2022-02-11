@@ -40,7 +40,7 @@ public class GreyUtil {
 
 
     private static String judgeGrey(String configInfo, String version, String grp) {
-        if (StringUtils.isBlank(configInfo)) {
+        if (StringUtils.isBlank(configInfo) || StringUtils.isBlank(version) || StringUtils.isBlank(grp)) {
             return null;
         }
         String reqKey = version + "_" + grp;
@@ -57,6 +57,15 @@ public class GreyUtil {
                 continue;
             }
             for (String config : configArray) {
+                if ("*".equals(config)) {
+                    return greyEnvFlag;
+                }
+                if (config.startsWith("*_")) {
+                    String configGrp = config.substring(2);
+                    if (grp.equals(configGrp)) {
+                        return greyEnvFlag;
+                    }
+                }
                 if (config.equals(reqKey)) {
                     return greyEnvFlag;
                 }

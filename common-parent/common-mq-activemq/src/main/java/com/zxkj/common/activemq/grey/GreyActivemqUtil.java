@@ -1,10 +1,10 @@
-package com.zxkj.common.rabbitmq.grey;
+package com.zxkj.common.activemq.grey;
 
 /**
  * @author ：yuhui
  * @date ：Created in 2022/1/19 16:11
  */
-public class GreyRabbitUtil {
+public class GreyActivemqUtil {
 
     /**
      * 根据命令行参数生成灰度发布的后缀信息

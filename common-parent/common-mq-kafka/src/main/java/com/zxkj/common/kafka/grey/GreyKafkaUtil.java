@@ -17,10 +17,6 @@ public class GreyKafkaUtil {
         if (greyPublish != null && greyPublish.trim().length() > 0) {
             suffix += "_g" + greyPublish;
         }
-        String regionPublish = System.getProperty("regionPublish");
-        if (regionPublish != null && regionPublish.trim().length() > 0) {
-            suffix += "_r" + regionPublish;
-        }
         return suffix;
     }
 }
