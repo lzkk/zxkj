@@ -4,6 +4,7 @@ import com.zxkj.common.kafka.KafkaMessageListener;
 import com.zxkj.common.kafka.KafkaMessageSender;
 import com.zxkj.common.kafka.grey.GreyKafkaUtil;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -24,12 +25,11 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer;
-import org.springframework.kafka.listener.AcknowledgingMessageListener;
+import org.springframework.kafka.listener.BatchAcknowledgingMessageListener;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.util.ReflectionUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +89,9 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
         String concurrencyStr = environment.getProperty("spring.kafka.listener.concurrency");
         if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
             factory.setConcurrency(Integer.valueOf(concurrencyStr));
+        }
+        String maxPollRecordsStr = environment.getProperty("spring.kafka.consumer.max.poll.records");
+        if (maxPollRecordsStr != null && maxPollRecordsStr.trim().length() > 0) {
             factory.setBatchListener(true);
         }
         return factory;
@@ -166,19 +169,19 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
                 String topicName = handler.getTopicName() + GreyKafkaUtil.generateGreySuffix();
                 ContainerProperties containerProperties = new ContainerProperties(topicName);
                 containerProperties.setAckMode(AbstractMessageListenerContainer.AckMode.MANUAL);
-                containerProperties.setMessageListener((AcknowledgingMessageListener<String, String>) (record, acknowledgment) -> {
+                containerProperties.setMessageListener((BatchAcknowledgingMessageListener<String, String>) (records, acknowledgment) -> {
                     try {
-                        KafkaMessageHelper.BusiTransferObject<?> transferObject;
-                        try {
-                            transferObject = KafkaMessageHelper.toTransferObject(record.value(), handler.getBusiObjectClass());
-                            logger.info("receive over,topic:{},key:{},value:{}", topicName, transferObject.getBusiKey(), transferObject.getBusiObject());
-                        } catch (IOException e) {
-                            logger.error("业务消息接收异常: " + e.toString(), e);
-                            throw new RuntimeException("业务消息接收异常: " + e.toString(), e);
+                        for (ConsumerRecord<String, String> consumerRecord : records) {
+                            KafkaMessageHelper.BusiTransferObject<?> transferObject = null;
+                            try {
+                                transferObject = KafkaMessageHelper.toTransferObject(consumerRecord.value(), handler.getBusiObjectClass());
+                                logger.info("Kafka process over,topic:{},key:{},value:{}", topicName, transferObject.getBusiKey(), transferObject.getBusiObject());
+                                method.invoke(bean, transferObject.getBusiKey(), transferObject.getBusiObject());
+                            } catch (Exception e) {
+                                logger.error("Kafka消息处理异常: " + consumerRecord.value(), e);
+                                continue;
+                            }
                         }
-                        method.invoke(bean, transferObject.getBusiKey(), transferObject.getBusiObject());
-                    } catch (Exception e) {
-                        logger.error("业务消息处理异常: " + record.value() + ", " + e.toString(), e);
                     } finally {
                         acknowledgment.acknowledge();
                     }
@@ -192,7 +195,6 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
                 if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
                     containers.setConcurrency(Integer.valueOf(concurrencyStr));
                 }
-                containers.start();
                 beanFactory.registerSingleton(beanName + "#" + method.getName(), containers);
             }
         }, ReflectionUtils.USER_DECLARED_METHODS);

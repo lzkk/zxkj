@@ -13,15 +13,15 @@ public @interface RabbitmqMessageListener {
     /**
      * 同时监听数量
      */
-    String concurrentConsumers();
+    int concurrentConsumers() default -1;
 
     /**
      * 最大同时监听数量
      */
-    String maxConcurrentConsumers();
+    int maxConcurrentConsumers() default -1;
 
     /**
      * 设置预取数量
      */
-    int prefetchCount() default -1;
+    int prefetchCount() default 0;
 }

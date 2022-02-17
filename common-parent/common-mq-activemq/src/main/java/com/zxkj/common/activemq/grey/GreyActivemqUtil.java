@@ -13,7 +13,7 @@ public class GreyActivemqUtil {
      */
     public static String generateGreySuffix() {
         String suffix = "";
-        String greyPublish = System.getProperty("greyPublish");
+        String greyPublish = System.getProperty("greySuffix");
         if (greyPublish != null && greyPublish.trim().length() > 0) {
             suffix += "_g" + greyPublish;
         }
