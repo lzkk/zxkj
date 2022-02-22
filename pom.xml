@@ -116,7 +116,7 @@
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
-                <artifactId>common-task</artifactId>
+                <artifactId>xxl-job-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

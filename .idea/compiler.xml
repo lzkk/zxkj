@@ -20,7 +20,6 @@
         <module name="common-mq-rabbitmq" />
         <module name="common-mq-rocketmq" />
         <module name="common-practice" />
-        <module name="common-task" />
         <module name="common-util" />
         <module name="customer-api" />
         <module name="customer-service" />
@@ -45,6 +44,8 @@
         <module name="sys-api" />
         <module name="sys-service" />
         <module name="task-service" />
+        <module name="xxl-job-admin" />
+        <module name="xxl-job-core" />
         <module name="zipkin-server" />
       </profile>
     </annotationProcessing>
@@ -70,12 +71,12 @@
       <module name="common-mq-rocketmq" target="1.8" />
       <module name="common-parent" target="1.8" />
       <module name="common-practice" target="1.8" />
-      <module name="common-task" target="1.8" />
       <module name="common-util" target="1.8" />
       <module name="common-web" target="1.8" />
       <module name="customer-api" target="1.8" />
       <module name="customer-service" target="1.8" />
       <module name="dependency-parent" target="1.8" />
+      <module name="elastic-job-core" target="1.8" />
       <module name="file-service" target="1.8" />
       <module name="gateway-dependency" target="1.8" />
       <module name="gateway-parent" target="1.8" />
@@ -107,6 +108,8 @@
       <module name="trade-microservice" target="1.8" />
       <module name="trade-parent" target="1.8" />
       <module name="web-parent" target="1.8" />
+      <module name="xxl-job-admin" target="1.8" />
+      <module name="xxl-job-core" target="1.8" />
       <module name="zipkin-server" target="1.8" />
       <module name="zxkj-parent" target="1.8" />
     </bytecodeTargetLevel>

@@ -15,6 +15,7 @@
     <modules>
         <module>gateway-parent</module>
         <module>monitor-server</module>
+        <module>xxl-job-admin</module>
         <module>zipkin-server</module>
     </modules>
 
