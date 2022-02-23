@@ -151,7 +151,7 @@ public class XxlJobExecutor {
     private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
 
         // fill ip port
-        port = port > 0 ? port : NetUtil.findAvailablePort(60000);
+//        port = port > 0 ? port : NetUtil.findAvailablePort(60000);
         ip = (ip != null && ip.trim().length() > 0) ? ip : IpUtil.getIp();
 
         // generate address
