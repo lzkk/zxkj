@@ -1,6 +1,8 @@
 package com.zxkj.sentinel;
 
 import com.alibaba.cloud.nacos.NacosConfigManager;
+import com.alibaba.cloud.sentinel.SentinelProperties;
+import com.alibaba.cloud.sentinel.custom.SentinelBeanPostProcessor;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.BlockRequestHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.slots.block.authority.AuthorityException;
@@ -13,6 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.zxkj.common.util.NetUtil;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.route.RouteDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -57,6 +62,10 @@ public class SentinelConfig {
     private NacosConfigManager nacosConfigManager;
     @Resource
     private GatewayProperties gatewayProperties;
+    @Autowired
+    private SentinelProperties properties;
+    @Value("${server.port}")
+    private Integer serverPort;
 
     private static final String DEFAULT_GROUP = "SENTINEL_GROUP";
     private static final String APPLICATION_NAME = "spring.application.name";
@@ -103,6 +112,24 @@ public class SentinelConfig {
         GatewayCallbackManager.setBlockHandler(blockRequestHandler);
     }
 
+    @Bean
+    @ConditionalOnClass(
+            name = {"org.springframework.web.client.RestTemplate"}
+    )
+    @ConditionalOnProperty(
+            name = {"resttemplate.sentinel.enabled"},
+            havingValue = "true",
+            matchIfMissing = true
+    )
+    public SentinelBeanPostProcessor sentinelBeanPostProcessor(ApplicationContext applicationContext) {
+        int port = NetUtil.getFormatPort(String.valueOf(serverPort));
+        String transportStr = System.getProperty("spring.cloud.sentinel.transport.port");
+        if (!StringUtils.isEmpty(transportStr)) {
+            port = Integer.parseInt(transportStr);
+        }
+        properties.getTransport().setPort(String.valueOf(NetUtil.findAvailablePort(port)));
+        return new SentinelBeanPostProcessor(applicationContext);
+    }
 
     @Bean(name = "degradeRuleInitializer")
     public ApplicationRunner degradeRuleInitializer() {
