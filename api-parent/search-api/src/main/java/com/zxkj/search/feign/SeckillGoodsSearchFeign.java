@@ -1,9 +1,9 @@
 package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SeckillGoodsEsCondition;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -35,15 +35,8 @@ public interface SeckillGoodsSearchFeign {
 }
 
 @Component
-class SeckillGoodsSearchFeignFallback implements SeckillGoodsSearchFeign, FallbackFactory<SeckillGoodsSearchFeign> {
+class SeckillGoodsSearchFeignFallback extends CustomFallbackFactory implements SeckillGoodsSearchFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.search.feign.SeckillGoodsSearchFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public SeckillGoodsSearchFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult<Boolean> add(SeckillGoodsEsCondition seckillGoodsEsCondition) {

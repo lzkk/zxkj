@@ -1,9 +1,9 @@
 package com.zxkj.goods.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.model.Category;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -27,15 +27,8 @@ public interface CategoryFeign {
 }
 
 @Component
-class CategoryFeignFallback implements CategoryFeign, FallbackFactory<CategoryFeign> {
+class CategoryFeignFallback extends CustomFallbackFactory implements CategoryFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.goods.feign.CategoryFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public CategoryFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult<Category> one(Integer id) {

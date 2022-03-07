@@ -2,9 +2,9 @@ package com.zxkj.goods.feign;
 
 import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.model.Sku;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -62,15 +62,8 @@ public interface SkuFeign {
 }
 
 @Component
-class SkuFeignFallback implements SkuFeign, FallbackFactory<SkuFeign> {
+class SkuFeignFallback extends CustomFallbackFactory implements SkuFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.goods.feign.SkuFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public SkuFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult dcount(List<CartCondition> carts) {

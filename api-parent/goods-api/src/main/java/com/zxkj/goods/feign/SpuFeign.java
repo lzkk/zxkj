@@ -1,9 +1,9 @@
 package com.zxkj.goods.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.model.Product;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -27,15 +27,8 @@ public interface SpuFeign {
 
 
 @Component
-class SpuFeignFallback implements SpuFeign, FallbackFactory<SpuFeign> {
+class SpuFeignFallback extends CustomFallbackFactory implements SpuFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.goods.feign.SpuFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public SpuFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult<Product> one(String id) {

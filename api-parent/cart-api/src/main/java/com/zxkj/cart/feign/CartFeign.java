@@ -2,8 +2,8 @@ package com.zxkj.cart.feign;
 
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -37,15 +37,8 @@ public interface CartFeign {
 }
 
 @Component
-class CartFeignFallback implements CartFeign, FallbackFactory<CartFeign> {
+class CartFeignFallback extends CustomFallbackFactory implements CartFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.cart.feign.CartFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public CartFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult delete(List<String> ids) {

@@ -1,9 +1,9 @@
 package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SkuEsCondition;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -35,16 +35,8 @@ public interface SkuSearchFeign {
 
 
 @Component
-class SkuSearchFeignFallback implements SkuSearchFeign, FallbackFactory<SkuSearchFeign> {
+class SkuSearchFeignFallback extends CustomFallbackFactory implements SkuSearchFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.search.feign.SkuSearchFeignFallback.class);
-
-    private Throwable throwable;
-
-    @Override
-    public SkuSearchFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult<Boolean> add(SkuEsCondition skuEsCondition) {

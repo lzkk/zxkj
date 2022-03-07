@@ -1,8 +1,8 @@
 package com.zxkj.page.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -29,15 +29,8 @@ public interface PageFeign {
 
 
 @Component
-class PageFeignFallback implements PageFeign, FallbackFactory<PageFeign> {
+class PageFeignFallback extends CustomFallbackFactory implements PageFeign {
     private static final Logger logger = LoggerFactory.getLogger(PageFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public PageFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult html(String acid) {

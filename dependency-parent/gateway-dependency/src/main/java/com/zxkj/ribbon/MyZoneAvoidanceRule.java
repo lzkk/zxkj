@@ -21,6 +21,7 @@ import java.util.*;
 @Slf4j
 public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
     private volatile boolean fetchFlag = false;
+    private volatile List<Server> localServerList = new ArrayList<>();
     private static final String ENVIRONMENT_DEV = "dev";
     private AbstractServerPredicate predicate;
 
@@ -51,6 +52,10 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             ZoneAwareLoadBalancer zoneAwareLoadBalancer = (ZoneAwareLoadBalancer) lb;
             String clientName = zoneAwareLoadBalancer.getName();
             serverList = getServerListByClientName(zoneAwareLoadBalancer, clientName);
+            if (localServerList.hashCode() != serverList.hashCode()) {
+                log.info("node:{} current nodes:{}", clientName, serverList);
+                localServerList = serverList;
+            }
         }
         Optional<Server> server = this.getPredicate().chooseRoundRobinAfterFiltering(serverList, key);
         return server.isPresent() ? server.get() : null;
@@ -64,13 +69,11 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (fetchFlag) {
                 return lb.getAllServers();
             }
-            log.info("node:{} init begin", clientName);
             ServerListUpdater.UpdateAction updateAction = myServerListUpdater.getUpdateAction();
             if (updateAction != null) {
                 updateAction.doUpdate();
             }
             fetchFlag = true;
-            log.info("node:{} init end", clientName);
         }
         try {
             NamingService naming = NamingFactory.createNamingService(getNacosProperties());
@@ -79,6 +82,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                     ServerListUpdater.UpdateAction updateAction = myServerListUpdater.getUpdateAction();
                     if (updateAction != null) {
                         updateAction.doUpdate();
+                        log.info("node:{} change over!nodes:{}", clientName, lb.getAllServers());
                     }
                 }
             });

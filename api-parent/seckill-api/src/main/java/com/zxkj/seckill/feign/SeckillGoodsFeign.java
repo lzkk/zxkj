@@ -1,9 +1,9 @@
 package com.zxkj.seckill.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
+import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.seckill.model.SeckillGoods;
-import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -35,15 +35,8 @@ public interface SeckillGoodsFeign {
 }
 
 @Component
-class SeckillGoodsFeignFallback implements SeckillGoodsFeign, FallbackFactory<SeckillGoodsFeign> {
+class SeckillGoodsFeignFallback extends CustomFallbackFactory implements SeckillGoodsFeign {
     private static final Logger logger = LoggerFactory.getLogger(com.zxkj.seckill.feign.SeckillGoodsFeignFallback.class);
-    private Throwable throwable;
-
-    @Override
-    public SeckillGoodsFeign create(Throwable throwable) {
-        this.throwable = throwable;
-        return this;
-    }
 
     @Override
     public RespResult<List<SeckillGoods>> actGoods(String acid) {
