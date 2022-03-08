@@ -16,36 +16,47 @@ logging:
     com.alibaba.nacos.client.config.impl: WARN
 
 # ====================MybatisPlus====================
-mybatis-plus:
-  mapper-locations: classpath*:com/zxkj/**/mapper/*.xml
-  configuration:
-    map-underscore-to-camel-case: true
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+mybatis:
+  mapper-locations: "classpath*:com/zxkj/**/mapper/*.xml"
 
 ##feign sentinel
 feign:
   sentinel:
-    enabled: true
-  hystrix:
     enabled: false
+  hystrix:
+    enabled: true
   httpclient:
     enabled: false
     max-connections: 200
     max-connections-per-route: 20
   okhttp:
     enabled: true
-  client:
-    config:
-      default:
-        connect-timeout: 1000
-        read-timeout: 3000
+####超时时间(feign和ribbon同时配置，feign优先级高所以会覆盖ribbon配置；如果超时时间高于hystrix会报错HystrixTimer异常，否则报ReadTimeOut异常)
+  #feign超时时间
+#   client:
+#     config:
+#       default:
+#         connect-timeout: 2000
+#         read-timeout: 2000
+
+#hystrix超时时间
+hystrix:
+  threadpool:
+    default:
+      coreSize: 10 #并发执行的最大线程数，默认10
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4000
 
 #ribbon的超时时间
 ribbon:
   eager-load:
     enabled: true
-    clients: cart-service,goods-service,seckill-service,order-service
-  ConnectTimeout: 1000
+    #clients: cart-service,goods-service,seckill-service,order-service
+  ConnectTimeout: 3000
   ReadTimeout: 3000
   MaxAutoRetries: 0 #同一台实例最大重试次数,不包括首次调用
   MaxAutoRetriesNextServer: 0 #重试负载均衡其他的实例最大重试次数,不包括首次调用
@@ -138,25 +149,35 @@ spring:
     connection-timeout: 15000
     listener:
       simple:
-        acknowledge-mode: manual
-        concurrency: 5
-        max-concurrency: 10
+        retry:
+          enabled: true
+          max-attempts: 3
+
+
   ###kafka
   kafka:
-    bootstrap-servers: 127.0.0.1:9092
+    bootstrap-servers: 172.17.53.138:9092
     producer:
-      retries: 0
-      linger: 1
-      batch.size: 4096
-      buffer.memory: 40960
+      acks: 1
+      retry.count: 2147483647
+      retry.backoff.ms: 100
+      retry.max.in.flight.requests.per.connection: 1
+      linger.ms: 30
+      batch.size: 16384
+      buffer.memory: 33554432
+      max.request.size: 1048576
     consumer:
-      enable-auto-commit: true
-      auto.commit.interval: 100
-      auto.offset.reset: earliest
-      session.timeout: 6000
-      group-id: default_consumer_group #群组ID
-      concurrency: 10
-      max.pollrecordes: 100
+      enable.auto.commit: false
+      auto.commit.interval: 1000
+      auto.offset.reset: latest
+      session.timeout.ms: 30000
+      heartbeat.interval.ms: 9000
+      group.id: default_consumer_group #群组ID
+      max.poll.records: 2
+      max.poll.interval.ms: 30000
+    listener:
+      concurrency: 1
+
   ###activemq
   activemq:
     broker-url: tcp://127.0.0.1:61616
@@ -168,8 +189,8 @@ spring:
       uri: mongodb://127.0.0.1:27017/test
     ###elasticsearch
     elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: 172.17.53.138:9300
+      cluster-name: my-application
+      cluster-nodes: 127.0.0.1:9300
       repositories:
         enabled: true
 
@@ -191,4 +212,14 @@ redis:
   maxWaitMillis: 1000
   maxRedirections: 5
 
+xxl:
+  job:
+    accessToken: ''
+    executor:
+      appname: ${spring.application.name}
+      logpath: /opt/logs/job/jobhandler/
+      logretentiondays: 1
+      port: ${server.port}
+    admin:
+      addresses: http://127.0.0.1:8765/xxl-job-admin,http://127.0.0.1:8766/xxl-job-admin
 

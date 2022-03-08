@@ -12,7 +12,6 @@ import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.util.ip.IPUtils;
 import com.zxkj.grey.GreyUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 
@@ -31,9 +30,6 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
     private String serverAddress;
     @Value("${spring.cloud.nacos.config.namespace}")
     private String namespace;
-
-    @Autowired
-    private MyServerListUpdater myServerListUpdater;
 
     public MyZoneAvoidanceRule() {
         super();
@@ -69,9 +65,9 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (fetchFlag) {
                 return lb.getAllServers();
             }
-            ServerListUpdater.UpdateAction updateAction = myServerListUpdater.getUpdateAction();
-            if (updateAction != null) {
-                updateAction.doUpdate();
+            MyServerListUpdater serverListUpdater = (MyServerListUpdater) lb.getServerListUpdater();
+            if (serverListUpdater != null) {
+                serverListUpdater.getUpdateAction().doUpdate();
             }
             fetchFlag = true;
         }
@@ -79,9 +75,9 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             NamingService naming = NamingFactory.createNamingService(getNacosProperties());
             naming.subscribe(clientName, event -> {
                 if (event instanceof NamingEvent) {
-                    ServerListUpdater.UpdateAction updateAction = myServerListUpdater.getUpdateAction();
-                    if (updateAction != null) {
-                        updateAction.doUpdate();
+                    MyServerListUpdater serverListUpdater = (MyServerListUpdater) lb.getServerListUpdater();
+                    if (serverListUpdater != null) {
+                        serverListUpdater.getUpdateAction().doUpdate();
                         log.info("node:{} change over!nodes:{}", clientName, lb.getAllServers());
                     }
                 }
