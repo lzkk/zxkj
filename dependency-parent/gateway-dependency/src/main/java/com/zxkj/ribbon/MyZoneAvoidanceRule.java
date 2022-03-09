@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.netflix.loadbalancer.*;
 import com.zxkj.common.context.constants.ContextConstant;
-import com.zxkj.common.util.ip.IPUtils;
+import com.zxkj.common.util.NetUtil;
 import com.zxkj.grey.GreyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,6 +71,11 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             fetchFlag = true;
         }
+        subscribe(lb, clientName);
+        return lb.getAllServers();
+    }
+
+    private void subscribe(ZoneAwareLoadBalancer lb, String clientName) {
         try {
             NamingService naming = NamingFactory.createNamingService(getNacosProperties());
             naming.subscribe(clientName, event -> {
@@ -85,7 +90,6 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
         } catch (NacosException e) {
             log.error("订阅NACOS出错", e);
         }
-        return lb.getAllServers();
     }
 
     private Properties getNacosProperties() {
@@ -123,7 +127,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 if (isDevEnv) {
                     // 开发环境，本地优先
                     String host = server.getHost();
-                    List<String> localIpList = IPUtils.getNacosLocalIp();
+                    List<String> localIpList = getNacosLocalIp();
                     if (localIpList.contains(host)) {
                         matchResults.add(server);
                         break;
@@ -155,5 +159,11 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             return false;
         }
 
+        private List<String> getNacosLocalIp() {
+            String ip = NetUtil.getLocalIp();
+            return Collections.singletonList(ip);
+        }
+
     }
+
 }

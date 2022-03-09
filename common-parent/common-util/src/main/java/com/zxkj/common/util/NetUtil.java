@@ -4,13 +4,57 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
+import java.util.Enumeration;
 
 /**
  * net util
  */
 public class NetUtil {
     private static Logger logger = LoggerFactory.getLogger(NetUtil.class);
+
+    private static String localIp = null;
+
+    public static String getLocalIp() {
+        if (localIp != null) {
+            return localIp;
+        }
+        localIp = getNacosRegisterIp();
+        logger.info("init local ip : {}", localIp);
+        return localIp;
+    }
+
+    /**
+     * getNacosRegisterIp
+     *
+     * @return
+     */
+    private static String getNacosRegisterIp() {
+        try {
+            InetAddress result = null;
+            Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces();
+            while (nie.hasMoreElements()) {
+                NetworkInterface ni = nie.nextElement();
+                Enumeration<InetAddress> ie = ni.getInetAddresses();
+                while (ie.hasMoreElements()) {
+                    InetAddress address = ie.nextElement();
+                    if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
+                        result = address;
+                    }
+                }
+            }
+            if (result != null) {
+                return result.getHostAddress();
+            }
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            logger.error("getNacosRegisterIp-Error", e);
+            return null;
+        }
+    }
 
     /**
      * getFormatPort

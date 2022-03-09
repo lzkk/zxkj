@@ -5,8 +5,6 @@ import org.springframework.http.HttpHeaders;
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 /*****
  * @Author:
@@ -84,18 +82,15 @@ public class IPUtils {
         return ip;
     }
 
-
-    public static List<String> getNacosLocalIp() {
-        List<String> ipList = new ArrayList<String>();
+    public static String getLocalIp() {
         InetAddress localHost = null;
         try {
             localHost = Inet4Address.getLocalHost();
+            return localHost.getHostAddress();
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        String ip = localHost.getHostAddress();  // 返回格式为：xxx.xxx.xxx
-        ipList.add(ip);
-        return ipList;
     }
 
 }
