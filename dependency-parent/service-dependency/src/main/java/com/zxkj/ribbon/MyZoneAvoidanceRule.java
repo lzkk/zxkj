@@ -49,7 +49,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             String clientName = zoneAwareLoadBalancer.getName();
             serverList = getServerListByClientName(zoneAwareLoadBalancer, clientName);
             if (localServerList.hashCode() != serverList.hashCode()) {
-                log.info("node:{} current nodes:{}", clientName, serverList);
+                log.info("node:{} current serverList:{}", clientName, serverList);
                 localServerList = serverList;
             }
         }
@@ -83,7 +83,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                     MyServerListUpdater serverListUpdater = (MyServerListUpdater) lb.getServerListUpdater();
                     if (serverListUpdater != null) {
                         serverListUpdater.getUpdateAction().doUpdate();
-                        log.info("node:{} change over!nodes:{}", clientName, lb.getAllServers());
+                        log.info("node:{} change over!serverList:{}", clientName, lb.getAllServers());
                     }
                 }
             });
