@@ -53,7 +53,6 @@ import java.util.concurrent.Executor;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty({"feign.sentinel.enabled"})
 public class SentinelConfig {
 
     @Autowired
@@ -91,6 +90,7 @@ public class SentinelConfig {
      * 限流输出定制
      */
     @PostConstruct
+    @ConditionalOnProperty({"feign.sentinel.enabled"})
     public void initBlockHandlers() {
         BlockRequestHandler blockRequestHandler = (ServerWebExchange serverWebExchange, Throwable ex) -> {
             String msg = null;
@@ -132,6 +132,7 @@ public class SentinelConfig {
     }
 
     @Bean(name = "degradeRuleInitializer")
+    @ConditionalOnProperty({"feign.sentinel.enabled"})
     public ApplicationRunner degradeRuleInitializer() {
         return (ApplicationArguments args) -> {
             Class<?> mainClass = deduceMainApplicationName();
@@ -281,6 +282,7 @@ public class SentinelConfig {
 
 
     @PostConstruct
+    @ConditionalOnProperty({"feign.sentinel.enabled"})
     public void monitorDegradeCustom() {
         ConfigService configService = nacosConfigManager.getConfigService();
         String applicationName = environment.getProperty(APPLICATION_NAME);

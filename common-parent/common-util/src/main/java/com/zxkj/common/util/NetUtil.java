@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
+import java.net.*;
 import java.util.Enumeration;
 
 /**
@@ -22,38 +19,53 @@ public class NetUtil {
         if (localIp != null) {
             return localIp;
         }
-        localIp = getNacosRegisterIp();
+        localIp = findFirstNonLoopbackAddress() == null ? "127.0.0.1" : findFirstNonLoopbackAddress().getHostAddress();
         logger.info("init local ip : {}", localIp);
         return localIp;
     }
 
-    /**
-     * getNacosRegisterIp
-     *
-     * @return
-     */
-    private static String getNacosRegisterIp() {
+    private static InetAddress findFirstNonLoopbackAddress() {
+        InetAddress result = null;
         try {
-            InetAddress result = null;
-            Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces();
-            while (nie.hasMoreElements()) {
-                NetworkInterface ni = nie.nextElement();
-                Enumeration<InetAddress> ie = ni.getInetAddresses();
-                while (ie.hasMoreElements()) {
-                    InetAddress address = ie.nextElement();
-                    if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
-                        result = address;
+            int lowest = Integer.MAX_VALUE;
+            for (Enumeration<NetworkInterface> nics = NetworkInterface
+                    .getNetworkInterfaces(); nics.hasMoreElements(); ) {
+                NetworkInterface ifc = nics.nextElement();
+                if (ifc.isUp()) {
+                    if (ifc.getIndex() < lowest || result == null) {
+                        lowest = ifc.getIndex();
+                    } else if (result != null) {
+                        continue;
                     }
+
+                    // @formatter:off
+                    for (Enumeration<InetAddress> addrs = ifc
+                            .getInetAddresses(); addrs.hasMoreElements(); ) {
+                        InetAddress address = addrs.nextElement();
+                        if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
+                            logger.trace("Found non-loopback interface: "
+                                    + ifc.getDisplayName());
+                            result = address;
+                        }
+                    }
+                    // @formatter:on
                 }
             }
-            if (result != null) {
-                return result.getHostAddress();
-            }
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (Exception e) {
-            logger.error("getNacosRegisterIp-Error", e);
-            return null;
+        } catch (IOException ex) {
+            logger.error("Cannot get first non-loopback address", ex);
         }
+
+        if (result != null) {
+            return result;
+        }
+
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            logger.warn("Unable to retrieve localhost");
+        }
+
+        return null;
     }
 
     /**

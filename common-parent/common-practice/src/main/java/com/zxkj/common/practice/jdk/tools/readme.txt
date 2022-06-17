@@ -61,3 +61,11 @@
    -Dcom.sun.management.jmxremote.port=18080
 9、mat
    mat是一个比较强大的分析堆溢出的工具。把之前dump文件导入到工具中。
+
+10、top
+   1、top -c
+   每隔5秒显式进程的资源占用情况，并显示进程的命令行参数(默认只有进程名)
+   2、查看进程中CPU占比最高的线程
+   top -H -p 3147(3147为进程id)
+   printf '%x\n' 3168(3168为占用cpu最高的线程id)，得到线程id对应的十六进制数据c60
+   jstack 3147 | grep c60 -A 50

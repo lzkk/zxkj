@@ -13,7 +13,7 @@ public class GreyRabbitUtil {
      */
     public static String generateGreySuffix() {
         String suffix = "";
-        String greyPublish = System.getProperty("greySuffix");
+        String greyPublish = System.getProperty("mqSuffix");
         if (greyPublish != null && greyPublish.trim().length() > 0) {
             suffix += "_g" + greyPublish;
         }

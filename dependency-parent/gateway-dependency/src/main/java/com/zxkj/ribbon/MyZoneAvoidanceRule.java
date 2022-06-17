@@ -2,7 +2,6 @@ package com.zxkj.ribbon;
 
 import com.alibaba.cloud.nacos.ribbon.NacosServer;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.google.common.base.Optional;
@@ -77,7 +76,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
 
     private void subscribe(ZoneAwareLoadBalancer lb, String clientName) {
         try {
-            NamingService naming = NamingFactory.createNamingService(getNacosProperties());
+            NamingService naming = NacosNamingUtil.getNamingService(getNacosProperties());
             naming.subscribe(clientName, event -> {
                 if (event instanceof NamingEvent) {
                     MyServerListUpdater serverListUpdater = (MyServerListUpdater) lb.getServerListUpdater();
@@ -119,23 +118,11 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             String greyPublish = GreyUtil.getCurrentContext().getGreyPublish();
             String regionPublish = GreyUtil.getCurrentContext().getRegionPublish();
-            boolean isDevEnv = ENVIRONMENT_DEV.equals(currentEnv);
             List<Server> matchResults = Lists.newArrayList();
-            Iterator var4 = serverList.iterator();
-            while (var4.hasNext()) {
-                Server server = (Server) var4.next();
-                if (isDevEnv) {
-                    // 开发环境，本地优先
-                    String host = server.getHost();
-                    List<String> localIpList = getNacosLocalIp();
-                    if (localIpList.contains(host)) {
-                        matchResults.add(server);
-                        break;
-                    }
-                }
+            for (Server server : serverList) {
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
-                    if (greyMatch(nacosServer, greyPublish, regionPublish)) {
+                    if (developEnvMatch(server) && greyMatch(nacosServer, greyPublish, regionPublish)) {
                         matchResults.add(server);
                     }
                 }
@@ -153,10 +140,15 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
             String reqGrey = greyPublish + "-" + regionPublish;
             String metaGrey = metaGreyPublish + "-" + metaRegionPublish;
-            if (reqGrey.equals(metaGrey)) {
-                return true;
+            return reqGrey.equals(metaGrey);
+        }
+
+        private boolean developEnvMatch(Server server) {
+            if (ENVIRONMENT_DEV.equals(currentEnv)) {
+                // 开发环境，本地优先
+                return getNacosLocalIp().contains(server.getHost());
             }
-            return false;
+            return true;
         }
 
         private List<String> getNacosLocalIp() {
