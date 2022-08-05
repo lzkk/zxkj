@@ -49,7 +49,6 @@ public class NacosDiscoveryClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     @ConditionalOnProperty(value = {"spring.cloud.nacos.discovery.watch.enabled"}, matchIfMissing = true)
     public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties) {
         //更改服务详情中的元数据，增加服务注册时间

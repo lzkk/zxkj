@@ -1,7 +1,7 @@
 package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.common.hystrix.CustomFallbackFactory;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SeckillGoodsEsCondition;
 import org.slf4j.Logger;

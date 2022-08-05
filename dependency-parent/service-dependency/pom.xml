@@ -85,6 +85,10 @@
             <groupId>com.zxkj</groupId>
             <artifactId>common-cache</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-web</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

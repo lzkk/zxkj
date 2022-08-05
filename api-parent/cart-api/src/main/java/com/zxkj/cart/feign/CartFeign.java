@@ -2,8 +2,8 @@ package com.zxkj.cart.feign;
 
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.common.hystrix.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;

@@ -2,7 +2,7 @@ package com.zxkj.goods.feign;
 
 import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.common.hystrix.CustomFallbackFactory;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.model.Sku;
 import org.slf4j.Logger;

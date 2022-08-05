@@ -21,6 +21,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
     private volatile boolean fetchFlag = false;
     private volatile List<Server> localServerList = new ArrayList<>();
     private static final String ENVIRONMENT_DEV = "dev";
+    private static final String ENV_ONLINE = "null-null";
     private AbstractServerPredicate predicate;
 
     @Value("${spring.profiles.active}")
@@ -129,11 +130,19 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             if (matchResults.size() == 0) {
                 // 这一步慎用，范围内无节点时是否允许跨节点访问
-                matchResults.addAll(serverList);
+                return compatibleMatch(serverList, greyPublish, regionPublish);
             }
             return matchResults;
         }
 
+        /**
+         * 灰度/线上路由完全匹配
+         *
+         * @param nacosServer
+         * @param greyPublish
+         * @param regionPublish
+         * @return
+         */
         private boolean greyMatch(NacosServer nacosServer, String greyPublish, String regionPublish) {
             final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
             String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
@@ -141,6 +150,36 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             String reqGrey = greyPublish + "-" + regionPublish;
             String metaGrey = metaGreyPublish + "-" + metaRegionPublish;
             return reqGrey.equals(metaGrey);
+        }
+
+        /**
+         * 多灰度环境，灰度请求若未完全匹配则线上服务兜底
+         *
+         * @param serverList
+         * @param greyPublish
+         * @param regionPublish
+         * @return
+         */
+        private List<Server> compatibleMatch(List<Server> serverList, String greyPublish, String regionPublish) {
+            List<Server> compatibleList = new ArrayList<>();
+            String reqGrey = greyPublish + "-" + regionPublish;
+            for (Server server : serverList) {
+                if (server instanceof NacosServer) {
+                    NacosServer nacosServer = (NacosServer) server;
+                    Map<String, String> metadata = nacosServer.getInstance().getMetadata();
+                    String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
+                    String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
+                    String metaGrey = metaGreyPublish + "-" + metaRegionPublish;
+                    if (!ENV_ONLINE.equals(reqGrey) && ENV_ONLINE.equals(metaGrey)) {
+                        compatibleList.add(server);
+                    }
+                }
+            }
+            if (compatibleList.size() > 0) {
+                return compatibleList;
+            } else {
+                return serverList;
+            }
         }
 
         private boolean developEnvMatch(Server server) {

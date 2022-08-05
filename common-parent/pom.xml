@@ -17,13 +17,14 @@
         <module>common-exception</module>
         <module>common-mongo</module>
         <module>common-mq-activemq</module>
+        <module>common-mq-kafka</module>
         <module>common-mq-rabbitmq</module>
         <module>common-mq-rocketmq</module>
-        <module>common-mq-kafka</module>
         <module>common-practice</module>
         <module>common-util</module>
         <module>mybatisplus-generator</module>
         <module>xxl-job-core</module>
+        <module>common-web</module>
     </modules>
 
 </project>

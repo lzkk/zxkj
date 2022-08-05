@@ -1,17 +1,18 @@
-package com.zxkj.common.hystrix;
+package com.zxkj.feign.fallback;
 
 import feign.hystrix.FallbackFactory;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
  * CustomFallbackFactory
  *
  * @author ：yuhui
- * @date ：Created in 2022/3/4 15:59
  */
-@Slf4j
 public class CustomFallbackFactory<T> implements FallbackFactory<T> {
+    private static Logger log = LoggerFactory.getLogger(CustomFallbackFactory.class);
+
     protected Throwable throwable;
     private boolean isLoaded = false;
 
@@ -21,7 +22,7 @@ public class CustomFallbackFactory<T> implements FallbackFactory<T> {
     public T create(Throwable cause) {
         this.throwable = cause;
         if (!feignHystrixEnabled || isLoaded) {
-            log.error("异常信息：" + cause.toString(), cause);
+            log.error("errMsg：" + cause.toString(), cause);
         }
         if (!isLoaded) {
             isLoaded = true;

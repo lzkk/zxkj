@@ -38,7 +38,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +69,7 @@ public class SentinelConfig {
     private static final String APPLICATION_NAME = "spring.application.name";
     private static final String DEGRADE_RULES_PREFIX = "degrade-rules-";
     private static final String DEGRADE_RULES_SUFFIX = ".json";
+    private static final String CUSTOM_SUFFIX = "-custom";
 
     private Class<?> clz = null;
 
@@ -89,9 +89,9 @@ public class SentinelConfig {
     /***
      * 限流输出定制
      */
-    @PostConstruct
+    @Bean(value = "initBlockHandlers")
     @ConditionalOnProperty({"feign.sentinel.enabled"})
-    public void initBlockHandlers() {
+    public List<String> initBlockHandlers() {
         BlockRequestHandler blockRequestHandler = (ServerWebExchange serverWebExchange, Throwable ex) -> {
             String msg = null;
             if (ex instanceof FlowException) {
@@ -110,6 +110,7 @@ public class SentinelConfig {
             return ServerResponse.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromObject(RespResult.error(msg)));
         };
         GatewayCallbackManager.setBlockHandler(blockRequestHandler);
+        return new ArrayList<>();
     }
 
     @Bean
@@ -269,7 +270,7 @@ public class SentinelConfig {
         try {
             String customStr = "";
             if (isCustom) {
-                customStr = "-custom";
+                customStr = CUSTOM_SUFFIX;
             }
             String applicationName = environment.getProperty(APPLICATION_NAME);
             String dataId = DEGRADE_RULES_PREFIX + applicationName + customStr + DEGRADE_RULES_SUFFIX;
@@ -280,13 +281,12 @@ public class SentinelConfig {
         return json;
     }
 
-
-    @PostConstruct
+    @Bean(value = "monitorDegradeCustom")
     @ConditionalOnProperty({"feign.sentinel.enabled"})
-    public void monitorDegradeCustom() {
+    public List<String> monitorDegradeCustom() {
         ConfigService configService = nacosConfigManager.getConfigService();
         String applicationName = environment.getProperty(APPLICATION_NAME);
-        String customDataId = DEGRADE_RULES_PREFIX + applicationName + "-custom" + DEGRADE_RULES_SUFFIX;
+        String customDataId = DEGRADE_RULES_PREFIX + applicationName + CUSTOM_SUFFIX + DEGRADE_RULES_SUFFIX;
         try {
             configService.addListener(customDataId, DEFAULT_GROUP, new Listener() {
                 @Override
@@ -301,10 +301,10 @@ public class SentinelConfig {
                 }
             });
         } catch (NacosException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
+        return new ArrayList<>();
     }
-
 
 }
 

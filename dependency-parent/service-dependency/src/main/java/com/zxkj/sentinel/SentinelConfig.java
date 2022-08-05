@@ -36,7 +36,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -66,6 +65,7 @@ public class SentinelConfig {
     private static final String APPLICATION_NAME = "spring.application.name";
     private static final String DEGRADE_RULES_PREFIX = "degrade-rules-";
     private static final String DEGRADE_RULES_SUFFIX = ".json";
+    private static final String CUSTOM_SUFFIX = "-custom";
 
     private static final String REQUEST_METHOD_GET = "GET:";
     private static final String REQUEST_METHOD_POST = "POST:";
@@ -232,8 +232,10 @@ public class SentinelConfig {
         if (StringUtils.isNotBlank(feignClientUrl)) {
             requestHost = feignClientUrl;
         } else {
-            requestHost = feignClientServiceName;
+            requestHost = StringUtils.isBlank(feignClientServiceName) ? feignClient.name() : feignClientServiceName;
         }
+        String feignClientPath = StringUtils.isBlank(feignClient.path()) ? "" : feignClient.path();
+        requestHost += feignClientPath;
         if (!requestHost.startsWith(REQUEST_PROTOCAL)) {
             requestHost = REQUEST_PROTOCAL + requestHost;
         }
@@ -256,7 +258,12 @@ public class SentinelConfig {
                     requestMethod = REQUEST_METHOD_GET;
                     methodValue = ((GetMapping) annotation).value()[0];
                 } else if (clazz.isAssignableFrom(RequestMapping.class)) {
-                    requestMethod = REQUEST_METHOD_GET;
+                    RequestMethod[] requestMethodArray = ((RequestMapping) annotation).method();
+                    if (requestMethodArray != null && requestMethodArray.length > 0) {
+                        requestMethod = requestMethodArray[0].name() + ":";
+                    } else {
+                        requestMethod = REQUEST_METHOD_GET;
+                    }
                     methodValue = ((RequestMapping) annotation).value()[0];
                 } else if (clazz.isAssignableFrom(PutMapping.class)) {
                     requestMethod = REQUEST_METHOD_PUT;
@@ -350,7 +357,7 @@ public class SentinelConfig {
         try {
             String customStr = "";
             if (isCustom) {
-                customStr = "-custom";
+                customStr = CUSTOM_SUFFIX;
             }
             String applicationName = environment.getProperty(APPLICATION_NAME);
             String dataId = DEGRADE_RULES_PREFIX + applicationName + customStr + DEGRADE_RULES_SUFFIX;
@@ -361,12 +368,12 @@ public class SentinelConfig {
         return json;
     }
 
-    @PostConstruct
+    @Bean(value = "monitorDegradeCustom")
     @ConditionalOnProperty({"feign.sentinel.enabled"})
-    public void monitorDegradeCustom() {
+    public List<String> monitorDegradeCustom() {
         ConfigService configService = nacosConfigManager.getConfigService();
         String applicationName = environment.getProperty(APPLICATION_NAME);
-        String customDataId = DEGRADE_RULES_PREFIX + applicationName + "-custom" + DEGRADE_RULES_SUFFIX;
+        String customDataId = DEGRADE_RULES_PREFIX + applicationName + CUSTOM_SUFFIX + DEGRADE_RULES_SUFFIX;
         try {
             configService.addListener(customDataId, DEFAULT_GROUP, new Listener() {
                 @Override
@@ -381,8 +388,9 @@ public class SentinelConfig {
                 }
             });
         } catch (NacosException e) {
-            e.printStackTrace();
+            log.error("monitorDegradeCustom_error", e);
         }
+        return new ArrayList<>();
     }
 
 }
