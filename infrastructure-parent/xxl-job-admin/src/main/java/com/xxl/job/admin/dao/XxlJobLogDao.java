@@ -1,5 +1,6 @@
 package com.xxl.job.admin.dao;
 
+import com.github.pagehelper.Page;
 import com.xxl.job.admin.core.model.XxlJobLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,7 +17,7 @@ import java.util.Map;
 public interface XxlJobLogDao {
 
 	// exist jobId not use jobGroup, not exist use jobGroup
-	public List<XxlJobLog> pageList(@Param("offset") int offset,
+	public Page<XxlJobLog> pageList(@Param("offset") int offset,
 									@Param("pagesize") int pagesize,
 									@Param("jobGroup") int jobGroup,
 									@Param("jobId") int jobId,

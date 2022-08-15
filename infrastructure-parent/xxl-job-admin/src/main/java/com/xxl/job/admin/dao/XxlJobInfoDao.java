@@ -1,5 +1,6 @@
 package com.xxl.job.admin.dao;
 
+import com.github.pagehelper.Page;
 import com.xxl.job.admin.core.model.XxlJobInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,7 +15,7 @@ import java.util.List;
 @Mapper
 public interface XxlJobInfoDao {
 
-	public List<XxlJobInfo> pageList(@Param("offset") int offset,
+	public Page<XxlJobInfo> pageList(@Param("offset") int offset,
 									 @Param("pagesize") int pagesize,
 									 @Param("jobGroup") int jobGroup,
 									 @Param("triggerStatus") int triggerStatus,

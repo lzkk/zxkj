@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: admin-gateway
+  profiles:
+    active: dev
+
+server:
+  port: 5055

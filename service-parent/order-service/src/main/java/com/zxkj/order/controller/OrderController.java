@@ -1,5 +1,6 @@
 package com.zxkj.order.controller;
 
+import com.zxkj.common.exception.BusinessException;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.order.feign.OrderFeign;
 import com.zxkj.order.service.OrderService;
@@ -20,6 +21,14 @@ public class OrderController implements OrderFeign {
 
     public RespResult<Boolean> ribbonTest() {
         orderService.ribbonTest();
+        return RespResult.ok(true);
+    }
+
+    public RespResult<Boolean> ribbonTest2() {
+        boolean flag = true;
+        if(flag){
+            throw new BusinessException(10001);
+        }
         return RespResult.ok(true);
     }
 

@@ -1,6 +1,7 @@
 package com.zxkj.goods.controller;
 
 import com.zxkj.cart.condition.CartCondition;
+import com.zxkj.common.datasource.support.Readonly;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
@@ -34,7 +35,19 @@ public class SkuController implements SkuFeign {
      * @return
      */
     public RespResult<Sku> one(@PathVariable(value = "id") String id) {
-        Sku sku = sKuService.getById(id);
+        Sku sku = sKuService.selectOne(id);
+        log.info("sku:" + JsonUtil.toJsonString(sku));
+        return RespResult.ok(sku);
+    }
+
+
+    /***
+     * 根据ID查询商品详情
+     * @return
+     */
+    @Readonly
+    public RespResult<Sku> one2(@PathVariable(value = "id") String id) {
+        Sku sku = sKuService.selectOne2(id);
         log.info("sku:" + JsonUtil.toJsonString(sku));
         return RespResult.ok(sku);
     }

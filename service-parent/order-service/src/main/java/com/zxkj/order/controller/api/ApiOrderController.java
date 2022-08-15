@@ -2,12 +2,10 @@ package com.zxkj.order.controller.api;
 
 import com.zxkj.common.web.RespResult;
 import com.zxkj.order.model.Order;
-import com.zxkj.order.pay.WeixinPayParam;
+import com.zxkj.order.service.pay.WeixinPayParam;
 import com.zxkj.order.service.OrderService;
 import com.zxkj.order.vo.OrderSkuVo;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -37,7 +37,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.zxkj.gateway.ApiGatewayMain</mainClass>
+                    <mainClass>com.zxkj.apigateway.ApiGatewayMain</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>

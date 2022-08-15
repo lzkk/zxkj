@@ -1,5 +1,7 @@
 package com.xxl.job.admin.controller;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xxl.job.admin.controller.annotation.PermissionLimit;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobUser;
@@ -52,9 +54,9 @@ public class UserController {
                                         @RequestParam(required = false, defaultValue = "10") int length,
                                         String username, int role) {
 
-        // page list
-        List<XxlJobUser> list = xxlJobUserDao.pageList(start, length, username, role);
-        int list_count = xxlJobUserDao.pageListCount(start, length, username, role);
+        // page lis
+        PageHelper.offsetPage(start, length);
+        Page<XxlJobUser> list = xxlJobUserDao.pageList(start, length, username, role);
 
         // filter
         if (list!=null && list.size()>0) {
@@ -65,8 +67,8 @@ public class UserController {
 
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal", list_count);		// 总记录数
-        maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
+        maps.put("recordsTotal", list.getTotal());		// 总记录数
+        maps.put("recordsFiltered", list.getTotal());	// 过滤后的总记录数
         maps.put("data", list);  					// 分页列表
         return maps;
     }

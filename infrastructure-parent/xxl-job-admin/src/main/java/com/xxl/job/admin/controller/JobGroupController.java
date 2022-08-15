@@ -1,6 +1,7 @@
 package com.xxl.job.admin.controller;
 
-import com.xxl.job.admin.controller.annotation.PermissionLimit;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobRegistry;
 import com.xxl.job.admin.core.util.I18nUtil;
@@ -11,7 +12,6 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.enums.RegistryConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,13 +48,14 @@ public class JobGroupController {
 										String appname, String title) {
 
 		// page query
-		List<XxlJobGroup> list = xxlJobGroupDao.pageList(start, length, appname, title);
+		PageHelper.offsetPage(start, length);
+		Page<XxlJobGroup> list = xxlJobGroupDao.pageList(start, length, appname, title);
 		int list_count = xxlJobGroupDao.pageListCount(start, length, appname, title);
 
 		// package result
 		Map<String, Object> maps = new HashMap<String, Object>();
-		maps.put("recordsTotal", list_count);		// 总记录数
-		maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
+		maps.put("recordsTotal", list.getTotal());		// 总记录数
+		maps.put("recordsFiltered", list.getTotal());	// 过滤后的总记录数
 		maps.put("data", list);  					// 分页列表
 		return maps;
 	}

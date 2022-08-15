@@ -1,20 +1,17 @@
 package com.zxkj.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.zxkj.common.util.page.PageInfo;
+import com.zxkj.common.page.PageInfo;
 import com.zxkj.search.mapper.SkuSearchMapper;
 import com.zxkj.search.model.SkuEs;
 import com.zxkj.search.service.SkuSearchService;
-import com.zxkj.search.util.HighlightResultMapper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;

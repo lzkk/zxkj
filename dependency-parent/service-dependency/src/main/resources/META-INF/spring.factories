@@ -1,8 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.zxkj.config.CacheConfig,\
-com.zxkj.config.MicroServiceConfig,\
-com.zxkj.config.NacosDiscoveryClientAutoConfiguration,\
-com.zxkj.feign.FeignConfiguration,\
-com.zxkj.okhttp.OkHttpFeignConfiguration,\
-com.zxkj.ribbon.RibbonConfig,\
-com.zxkj.sentinel.SentinelConfig
+com.zxkj.service.config.CacheConfig,\
+com.zxkj.service.config.MicroServiceConfig,\
+com.zxkj.service.config.NacosDiscoveryClientAutoConfiguration,\
+com.zxkj.service.feign.FeignConfiguration,\
+com.zxkj.service.okhttp.OkHttpFeignConfiguration,\
+com.zxkj.service.ribbon.RibbonConfig,\
+com.zxkj.service.sentinel.SentinelConfig

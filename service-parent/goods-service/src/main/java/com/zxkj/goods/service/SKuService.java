@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface SKuService extends IService<Sku> {
 
+    Sku selectOne(String id);
+
+    Sku selectOne2(String id);
+
     int dcount(List<CartCondition> carts);
 
     List<Sku> typeSkuItems(Integer id);

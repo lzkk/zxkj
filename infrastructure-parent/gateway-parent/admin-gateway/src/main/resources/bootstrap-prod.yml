@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: 71ac2b43-ca6f-4462-9c67-9e1177ef682e
+        prefix: admin-gateway
+        file-extension: yml
+        extension-configs[0]:
+          data-id: default.yml
+          group: DEFAULT_GROUP
+          refresh: true

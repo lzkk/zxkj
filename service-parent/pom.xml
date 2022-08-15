@@ -23,7 +23,6 @@
         <module>search-service</module>
         <module>seckill-service</module>
         <module>sys-service</module>
-        <module>task-service</module>
     </modules>
 
     <dependencies>
@@ -63,11 +62,6 @@
                     <target>1.8</target>
                     <encoding>utf-8</encoding>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -16,7 +16,6 @@
         <module>gateway-parent</module>
         <module>monitor-server</module>
         <module>xxl-job-admin</module>
-        <module>zipkin-server</module>
     </modules>
 
     <build>
@@ -44,11 +43,6 @@
                     <target>1.8</target>
                     <encoding>utf-8</encoding>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

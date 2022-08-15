@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="admin-gateway" />
         <module name="admin-web" />
         <module name="api-gateway" />
         <module name="canal-service" />
@@ -45,13 +46,12 @@
         <module name="service-dependency" />
         <module name="sys-api" />
         <module name="sys-service" />
-        <module name="task-service" />
         <module name="xxl-job-admin" />
         <module name="xxl-job-core" />
-        <module name="zipkin-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="admin-gateway" target="1.8" />
       <module name="admin-web" target="1.8" />
       <module name="api-gateway" target="1.8" />
       <module name="api-parent" target="1.8" />

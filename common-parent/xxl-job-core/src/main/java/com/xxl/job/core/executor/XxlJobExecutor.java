@@ -11,7 +11,7 @@ import com.xxl.job.core.thread.JobLogFileCleanThread;
 import com.xxl.job.core.thread.JobThread;
 import com.xxl.job.core.thread.TriggerCallbackThread;
 import com.xxl.job.core.util.IpUtil;
-import com.xxl.job.core.util.NetUtil;
+import com.zxkj.xxl.util.GreyXxlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +87,14 @@ public class XxlJobExecutor {
         // init TriggerCallbackThread
         TriggerCallbackThread.getInstance().start();
 
-        // init executor-server
-        initEmbedServer(address, ip, port, appname, accessToken);
+
+        String greySuffix = GreyXxlUtil.generateGreySuffix();
+        if (greySuffix != null && greySuffix.trim().length() > 0) {
+            // 灰度环境微服务不再注册到jobAdmin(为减小生产事故风险)，若要测试在jobAdmin任务上填写灰度服务地址执行一次即可
+        } else {
+            // init executor-server
+            initEmbedServer(address, ip, port, appname, accessToken);
+        }
     }
 
     public void destroy() {

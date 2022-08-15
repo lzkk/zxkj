@@ -33,6 +33,13 @@ public interface SkuFeign {
     @GetMapping(value = "/sku/{id}")
     RespResult<Sku> one(@PathVariable(value = "id") String id);
 
+    /***
+     * 根据ID查询商品详情
+     * @return
+     */
+    @GetMapping(value = "/sku2/{id}")
+    RespResult<Sku> one2(@PathVariable(value = "id") String id);
+
 
     /****
      * 根据推广分类查询推广产品列表
@@ -73,6 +80,12 @@ class SkuFeignFallback extends CustomFallbackFactory implements SkuFeign {
 
     @Override
     public RespResult<Sku> one(String id) {
+        logger.error("SkuFeignFallback -> one错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
+    }
+
+    @Override
+    public RespResult<Sku> one2(String id) {
         logger.error("SkuFeignFallback -> one错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

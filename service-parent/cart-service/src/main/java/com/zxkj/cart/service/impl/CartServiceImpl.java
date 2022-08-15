@@ -4,7 +4,7 @@ import com.zxkj.cart.model.Cart;
 import com.zxkj.cart.service.CartService;
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.mongo.base.BaseMongoImpl;
-import com.zxkj.common.util.BeanUtil;
+import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
 import com.zxkj.goods.model.Sku;

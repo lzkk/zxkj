@@ -17,6 +17,10 @@
             <groupId>com.zxkj</groupId>
             <artifactId>goods-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>xxl-job-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -35,6 +39,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.yml</include>
+                    <include>**/*.properties</include>
                     <include>**/*.xml</include>
                 </includes>
             </resource>

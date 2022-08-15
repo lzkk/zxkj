@@ -1,6 +1,6 @@
 package com.zxkj.search.controller;
 
-import com.zxkj.common.util.BeanUtil;
+import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SeckillGoodsEsCondition;
 import com.zxkj.search.feign.SeckillGoodsSearchFeign;

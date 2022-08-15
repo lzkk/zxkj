@@ -19,6 +19,9 @@ public interface OrderFeign {
     @GetMapping(value = "/order/ribbonTest")
     RespResult<Boolean> ribbonTest();
 
+    @GetMapping(value = "/order/ribbonTest2")
+    RespResult<Boolean> ribbonTest2();
+
 }
 
 @Component
@@ -28,6 +31,12 @@ class OrderFeignFallback extends CustomFallbackFactory implements OrderFeign {
     @Override
     public RespResult ribbonTest() {
         logger.error("OrderFeignFallback -> ribbonTest错误信息：{}", throwable.getMessage());
+        return RespResult.error(throwable.getMessage());
+    }
+
+    @Override
+    public RespResult ribbonTest2() {
+        logger.error("OrderFeignFallback -> ribbonTest2错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 

@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.zxkj.config.GatewayConfiguration,\
-com.zxkj.config.CacheConfig,\
-com.zxkj.feign.FeignConfiguration,\
-com.zxkj.ribbon.RibbonConfig,\
-com.zxkj.sentinel.SentinelConfig
+com.zxkj.gateway.config.GatewayConfiguration,\
+com.zxkj.gateway.config.CacheConfig,\
+com.zxkj.gateway.feign.FeignConfiguration,\
+com.zxkj.gateway.ribbon.RibbonConfig,\
+com.zxkj.gateway.sentinel.SentinelConfig

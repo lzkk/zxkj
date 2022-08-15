@@ -7,7 +7,7 @@ import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.cart.feign.CartFeign;
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.exception.BusinessException;
-import com.zxkj.common.util.BeanUtil;
+import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;

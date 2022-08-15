@@ -1,6 +1,6 @@
 package com.zxkj.order.config;
 
-import com.zxkj.grey.GreyContext;
+import com.zxkj.service.grey.GreyContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;

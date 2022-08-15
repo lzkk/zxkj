@@ -3,6 +3,7 @@ package com.zxkj.goods.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zxkj.cart.condition.CartCondition;
+import com.zxkj.common.datasource.support.Readonly;
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.goods.mapper.AdItemsMapper;
 import com.zxkj.goods.mapper.SkuMapper;
@@ -32,6 +33,21 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
 
     @Autowired
     private SpuMapper spuMapper;
+
+    @Override
+    public Sku selectOne(String id) {
+        return skuMapper.selectById(id);
+    }
+
+    @Readonly
+    @Override
+    public Sku selectOne2(String id) {
+        if (!"".equals(id)) {
+            throw new BusinessException(10002);
+        }
+        return skuMapper.selectById(null);
+    }
+
 
     /***
      * 库存递减
