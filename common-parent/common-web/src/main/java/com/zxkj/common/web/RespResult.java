@@ -10,48 +10,61 @@ import java.io.Serializable;
 public class RespResult<T> implements Serializable {
     private static final long serialVersionUID = 2456967161175690965L;
 
-    private int returnCode;// 返回码
+    private int code = 1;// 返回码
 
     private String message;// 返回信息
 
-    private T result; // 数据信息
+    private T data; // 数据信息
+
+    private long timestamp; // 时间戳
 
     private RespResult() {
     }
 
     private RespResult(RespCodeEnum respCodeEnum) {
-        this.returnCode = respCodeEnum.getReturnCode();
+        this.code = respCodeEnum.getCode();
         this.message = respCodeEnum.getMessage();
     }
 
-    private RespResult(T result, RespCodeEnum respCodeEnum) {
-        this.result = result;
-        this.returnCode = respCodeEnum.getReturnCode();
+    private RespResult(T data, RespCodeEnum respCodeEnum) {
+        this.data = data;
+        this.code = respCodeEnum.getCode();
         this.message = respCodeEnum.getMessage();
     }
 
-    public void setReturnCode(int returnCode) {
-        this.returnCode = returnCode;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public void setResult(T result) {
-        this.result = result;
+    public void setData(T data) {
+        this.data = data;
     }
 
-    public int getReturnCode() {
-        return returnCode;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getCode() {
+        return code;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public T getResult() {
-        return result;
+    public T getData() {
+        return data;
+    }
+
+    public long getTimestamp() {
+        if (timestamp == 0) {
+            timestamp = System.currentTimeMillis();
+        }
+        return timestamp;
     }
 
     public String toJsonString() {
@@ -67,26 +80,22 @@ public class RespResult<T> implements Serializable {
     }
 
     public static <T> RespResult<T> error() {
-        return new RespResult(null, RespCodeEnum.ERROR);
+        return new RespResult(null, RespCodeEnum.FAIL);
     }
 
     public static <T> RespResult<T> error(String message) {
         RespResult respResult = new RespResult();
-        respResult.setReturnCode(RespCodeEnum.ERROR.getReturnCode());
+        respResult.setCode(RespCodeEnum.FAIL.getCode());
         respResult.setMessage(message);
         return respResult;
     }
 
-    public static <T> RespResult<T> error(RespCodeEnum respCodeEnum) {
-        return new RespResult(respCodeEnum);
-    }
-
     @JsonIgnore
-    public T getResultWithException() {
-        if (returnCode != RespCodeEnum.SUCCESS.getReturnCode()) {
-            throw new BusinessException(message);
+    public T getDataWithException() {
+        if (code != RespCodeEnum.SUCCESS.getCode()) {
+            throw new BusinessException(code, message);
         }
-        return result;
+        return data;
     }
 
 }

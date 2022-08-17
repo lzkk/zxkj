@@ -98,14 +98,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setUpdateTime(order.getCreateTime());
 
         //1、查询购物车数据
-        List<CartVo> carts = cartFeign.list(order.getCartIds()).getResultWithException();
+        List<CartVo> carts = cartFeign.list(order.getCartIds()).getDataWithException();
         if (carts == null || carts.size() == 0) {
             throw new BusinessException("请选择商品再下单");
         }
 
         //2、递减库存
         List<CartCondition> cartConditions = BeanUtil.copyList(carts, CartCondition.class);
-        skuFeign.dcount(cartConditions).getResultWithException();
+        skuFeign.dcount(cartConditions).getDataWithException();
 
         //3、添加订单明细
         int totalNum = 0;

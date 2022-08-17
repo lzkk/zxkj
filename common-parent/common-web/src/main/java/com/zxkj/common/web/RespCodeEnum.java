@@ -5,24 +5,24 @@ package com.zxkj.common.web;
  */
 public enum RespCodeEnum {
 
-    SUCCESS(0, "处理成功"),
-    ERROR(-1, "处理失败"),
-    SYSTEM_ERROR(9999, "系统异常");
+    SUCCESS(1, "处理成功!"),
+    FAIL(-1, "处理失败!"),
+    ERROR(10000, "系统繁忙，请稍后再试!");
 
-    RespCodeEnum(int returnCode, String message) {
-        this.returnCode = returnCode;
+    RespCodeEnum(int code, String message) {
+        this.code = code;
         this.message = message;
     }
 
-    private int returnCode;
+    private int code;
     private String message;
 
-    public int getReturnCode() {
-        return returnCode;
+    public int getCode() {
+        return code;
     }
 
-    public void setReturnCode(int returnCode) {
-        this.returnCode = returnCode;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getMessage() {

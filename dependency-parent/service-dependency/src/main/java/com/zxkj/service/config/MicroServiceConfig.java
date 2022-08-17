@@ -45,24 +45,29 @@ public class MicroServiceConfig {
             @Override
             public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse httpServletResponse, Object o, Exception ex) {
                 Integer code;
-                String message = "未知异常，请联系管理员！";
+                String message;
                 // 根据不同错误转向不同页面
                 if (ex instanceof BusinessException) {
                     BusinessException businessException = (BusinessException) ex;
-                    code = businessException.getErrorCode();
-                    if (code != null) {
-                        message = messageSource.getMessage(String.valueOf(code), null, RequestContextUtils.getLocale(request));
-                        ((BusinessException) ex).setMessage(message);
+                    if (businessException.getMessage() == null && businessException.getErrorCode() != null) {
+                        code = businessException.getErrorCode();
+                        message = messageSource.getMessage(String.valueOf(businessException.getErrorCode()), null, RequestContextUtils.getLocale(request));
+                        if (message == null) {
+                            message = RespCodeEnum.FAIL.getMessage();
+                        }
+                    } else {
+                        code = businessException.getErrorCode() == null ? RespCodeEnum.FAIL.getCode() : businessException.getErrorCode();
+                        message = businessException.getMessage() == null ? RespCodeEnum.FAIL.getMessage() : businessException.getMessage();
                     }
                 } else {
-                    code = RespCodeEnum.SYSTEM_ERROR.getReturnCode();
-                    message = ex.getMessage();
+                    code = RespCodeEnum.ERROR.getCode();
+                    message = RespCodeEnum.ERROR.getMessage();
                 }
-                log.error(ex.getMessage(), ex);
+                log.error(message, ex);
                 MappingJackson2JsonView view = new MappingJackson2JsonView();
-                view.addStaticAttribute("returnCode", code);
+                view.addStaticAttribute("code", code);
                 view.addStaticAttribute("message", message);
-                view.addStaticAttribute("result", null);
+                view.addStaticAttribute("timestamp", System.currentTimeMillis());
                 return new ModelAndView(view);
             }
 

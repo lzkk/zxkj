@@ -48,6 +48,9 @@ public class SkuController implements SkuFeign {
     @Readonly
     public RespResult<Sku> one2(@PathVariable(value = "id") String id) {
         Sku sku = sKuService.selectOne2(id);
+        if (sku != null){
+            throw new ArrayIndexOutOfBoundsException("hhhh");
+        }
         log.info("sku:" + JsonUtil.toJsonString(sku));
         return RespResult.ok(sku);
     }

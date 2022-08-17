@@ -42,10 +42,7 @@ public class SKuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SKuSe
     @Readonly
     @Override
     public Sku selectOne2(String id) {
-        if (!"".equals(id)) {
-            throw new BusinessException(10002);
-        }
-        return skuMapper.selectById(null);
+        return skuMapper.selectById(id);
     }
 
 
