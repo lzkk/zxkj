@@ -50,7 +50,7 @@ public class CartServiceImpl extends BaseMongoImpl<Cart> implements CartService 
             RespResult<Sku> skuResp = skuFeign.one(id);
 
             //3)将当前ID商品对应的数据加入购物车（存入到MongoDB）
-            Sku sku = skuResp.getResult();
+            Sku sku = skuResp.getData();
             Cart cart = new Cart(userName + id, userName, sku.getName(), sku.getPrice(), sku.getImage(), id, num);
             save(cart);
         }

@@ -3,11 +3,17 @@ package com.zxkj.order.feign;
 import com.zxkj.common.constant.ServiceIdConstant;
 import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.order.condition.TestCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
 
 /*****
  * @Author:
@@ -19,8 +25,8 @@ public interface OrderFeign {
     @GetMapping(value = "/order/ribbonTest")
     RespResult<Boolean> ribbonTest();
 
-    @GetMapping(value = "/order/ribbonTest2")
-    RespResult<Boolean> ribbonTest2();
+    @PostMapping(value = "/order/ribbonTest2")
+    RespResult<Boolean> ribbonTest2(@RequestBody @Valid TestCondition condition);
 
 }
 
@@ -35,7 +41,7 @@ class OrderFeignFallback extends CustomFallbackFactory implements OrderFeign {
     }
 
     @Override
-    public RespResult ribbonTest2() {
+    public RespResult ribbonTest2(TestCondition condition) {
         logger.error("OrderFeignFallback -> ribbonTest2错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }

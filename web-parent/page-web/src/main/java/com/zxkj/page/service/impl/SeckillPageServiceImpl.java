@@ -65,10 +65,10 @@ public class SeckillPageServiceImpl implements SeckillPageService {
     public Map<String, Object> loadData(String id) {
         //查询数据
         RespResult<SeckillGoods> goodsResp = seckillGoodsFeign.one(id);
-        if (goodsResp.getResult() != null) {
+        if (goodsResp.getData() != null) {
             Map<String, Object> dataMap = new HashMap<String, Object>();
-            dataMap.put("item", goodsResp.getResult());
-            dataMap.put("images", goodsResp.getResult().getImages().split(","));
+            dataMap.put("item", goodsResp.getData());
+            dataMap.put("images", goodsResp.getData().getImages().split(","));
             return dataMap;
         }
         return null;

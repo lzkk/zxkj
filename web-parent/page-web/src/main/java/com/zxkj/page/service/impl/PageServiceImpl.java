@@ -67,7 +67,7 @@ public class PageServiceImpl implements PageService {
     public Map<String, Object> loadData(String spuId) {
         //查询数据
         RespResult<Product> productResult = spuFeign.one(spuId);
-        Product product = productResult.getResult();
+        Product product = productResult.getData();
         if (product != null) {
             //Map
             Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -83,9 +83,9 @@ public class PageServiceImpl implements PageService {
             RespResult<Category> one = categoryFeign.one(spu.getCategoryOneId());
             RespResult<Category> two = categoryFeign.one(spu.getCategoryTwoId());
             RespResult<Category> three = categoryFeign.one(spu.getCategoryThreeId());
-            resultMap.put("one", one.getResult());
-            resultMap.put("two", two.getResult());
-            resultMap.put("three", three.getResult());
+            resultMap.put("one", one.getData());
+            resultMap.put("two", two.getData());
+            resultMap.put("three", three.getData());
 
             //Sku集合
             List<Map<String, Object>> skuList = new ArrayList<Map<String, Object>>();
