@@ -1,6 +1,6 @@
 package com.zxkj.common.rocketmq;
 
-import com.zxkj.common.rocketmq.support.RocketmqTopicTagEnum;
+import com.zxkj.common.rocketmq.support.enums.RocketmqTopicTagEnum;
 
 import java.lang.annotation.*;
 

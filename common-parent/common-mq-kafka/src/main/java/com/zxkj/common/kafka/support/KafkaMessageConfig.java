@@ -1,8 +1,11 @@
 package com.zxkj.common.kafka.support;
 
+import brave.propagation.CurrentTraceContext;
 import com.zxkj.common.kafka.KafkaMessageListener;
 import com.zxkj.common.kafka.KafkaMessageSender;
 import com.zxkj.common.kafka.grey.GreyKafkaUtil;
+import com.zxkj.common.kafka.support.enums.KafkaTopicTypeEnum;
+import com.zxkj.common.sleuth.TraceUtil;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -30,6 +33,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.util.ReflectionUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +49,32 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
 
     @Autowired
     private Environment environment;
+
+    /**
+     * 原生kafka消费方式
+     *
+     * @return
+     */
+    @Bean(value = "kafkaListenerContainerFactory")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        String concurrencyStr = environment.getProperty("spring.kafka.listener.concurrency");
+        if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
+            factory.setConcurrency(Integer.valueOf(concurrencyStr));
+            factory.setBatchListener(true);
+        }
+        return factory;
+    }
+
+    /**
+     * 消费消息工厂
+     *
+     * @return
+     */
+    public DefaultKafkaConsumerFactory<String, String> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+    }
 
     /**
      * 消费消息配置
@@ -69,32 +99,12 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
     }
 
     /**
-     * 消费消息工厂
+     * 生产消息工厂
      *
      * @return
      */
-    public DefaultKafkaConsumerFactory<String, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
-
-    /**
-     * 原生kafka消费方式
-     *
-     * @return
-     */
-    @Bean(value = "kafkaListenerContainerFactory")
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        String concurrencyStr = environment.getProperty("spring.kafka.listener.concurrency");
-        if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
-            factory.setConcurrency(Integer.valueOf(concurrencyStr));
-        }
-        String maxPollRecordsStr = environment.getProperty("spring.kafka.consumer.max.poll.records");
-        if (maxPollRecordsStr != null && maxPollRecordsStr.trim().length() > 0) {
-            factory.setBatchListener(true);
-        }
-        return factory;
+    public ProducerFactory<String, String> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     /**
@@ -116,15 +126,6 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return props;
-    }
-
-    /**
-     * 生产消息工厂
-     *
-     * @return
-     */
-    public ProducerFactory<String, String> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
@@ -172,14 +173,17 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
                 containerProperties.setMessageListener((BatchAcknowledgingMessageListener<String, String>) (records, acknowledgment) -> {
                     try {
                         for (ConsumerRecord<String, String> consumerRecord : records) {
+                            CurrentTraceContext.Scope scope = TraceUtil.getTraceContextScope(getTraceMap(consumerRecord));
                             KafkaMessageHelper.BusiTransferObject<?> transferObject = null;
                             try {
                                 transferObject = KafkaMessageHelper.toTransferObject(consumerRecord.value(), handler.getBusiObjectClass());
-                                logger.info("Kafka process over,topic:{},key:{},value:{}", topicName, transferObject.getBusiKey(), transferObject.getBusiObject());
                                 method.invoke(bean, transferObject.getBusiKey(), transferObject.getBusiObject());
+//                                logger.info("Kafka process over,topic:{},key:{},value:{}", topicName, transferObject.getBusiKey(), transferObject.getBusiObject());
                             } catch (Exception e) {
                                 logger.error("Kafka消息处理异常: " + consumerRecord.value(), e);
                                 continue;
+                            } finally {
+                                TraceUtil.closeScope(scope);
                             }
                         }
                     } finally {
@@ -195,10 +199,25 @@ public class KafkaMessageConfig implements BeanPostProcessor, BeanFactoryAware {
                 if (concurrencyStr != null && concurrencyStr.trim().length() > 0) {
                     containers.setConcurrency(Integer.valueOf(concurrencyStr));
                 }
+                containers.start();
                 beanFactory.registerSingleton(beanName + "#" + method.getName(), containers);
             }
         }, ReflectionUtils.USER_DECLARED_METHODS);
         return bean;
+    }
+
+    /**
+     * 获取trace数据
+     *
+     * @param consumerRecord
+     * @return
+     */
+    private Map<String, Object> getTraceMap(ConsumerRecord<String, String> consumerRecord) {
+        Map<String, Object> traceMap = new HashMap<>();
+        consumerRecord.headers().forEach(header -> {
+            traceMap.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
+        });
+        return traceMap;
     }
 
 }

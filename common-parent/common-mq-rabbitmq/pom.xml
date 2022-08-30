@@ -34,6 +34,10 @@
         </dependency>
         <dependency>
             <groupId>com.zxkj</groupId>
+            <artifactId>common-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zxkj</groupId>
             <artifactId>common-cache</artifactId>
         </dependency>
     </dependencies>

@@ -1,6 +1,7 @@
 package com.zxkj.service.grey.support;
 
 import com.zxkj.service.grey.GreyContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 
 import javax.servlet.*;
@@ -14,6 +15,7 @@ import java.util.Set;
 /**
  * 上下文配置类
  */
+@Slf4j
 public class GreyContextConfig {
 
     @Bean(value = "greyContextFilter")
@@ -30,6 +32,7 @@ public class GreyContextConfig {
 
             @Override
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+                long now = System.currentTimeMillis();
                 HttpServletRequest httpServletRequest = (HttpServletRequest) request;
                 String requestURI = httpServletRequest.getRequestURI();
                 boolean ignorePath = IGNORE_PATHS.contains(requestURI);
@@ -39,6 +42,10 @@ public class GreyContextConfig {
                 chain.doFilter(request, response);
                 if (!ignorePath) {
                     GreyContext.clearContext();
+                }
+                long consume = System.currentTimeMillis() - now;
+                if (consume >= 50) {
+                    log.info("uri:{},consume:{}", requestURI, consume);
                 }
             }
 

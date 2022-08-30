@@ -23,6 +23,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
     private static final String ENVIRONMENT_DEV = "dev";
     private static final String ENV_ONLINE = "null-null";
     private AbstractServerPredicate predicate;
+    private String clientName;
 
     @Value("${spring.profiles.active}")
     private String currentEnv;
@@ -47,6 +48,9 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
         if (lb instanceof ZoneAwareLoadBalancer) {
             ZoneAwareLoadBalancer zoneAwareLoadBalancer = (ZoneAwareLoadBalancer) lb;
             String clientName = zoneAwareLoadBalancer.getName();
+            if (this.clientName == null) {
+                this.clientName = clientName;
+            }
             serverList = getServerListByClientName(zoneAwareLoadBalancer, clientName);
             if (localServerList.hashCode() != serverList.hashCode()) {
                 log.info("node:{} current serverList:{}", clientName, serverList);
@@ -124,6 +128,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
                     if (developEnvMatch(server) && greyMatch(nacosServer, greyPublish, regionPublish)) {
+                        log.info("reqClientName:{},matchResult:{}", clientName, nacosServer.getHostPort());
                         matchResults.add(server);
                     }
                 }
@@ -176,8 +181,10 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
                 }
             }
             if (compatibleList.size() > 0) {
+                log.info("reqClientName:{},matchCompatible", clientName);
                 return compatibleList;
             } else {
+                log.info("reqClientName:{},matchAll", clientName);
                 return serverList;
             }
         }

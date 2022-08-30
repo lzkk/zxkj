@@ -1,5 +1,6 @@
 package com.zxkj.order.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -19,12 +20,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
+    @Value("${swagger.enable: true}")
+    private boolean swaggerEnable;
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 //是否开启 (true 开启  false隐藏。生产环境建议隐藏)
-                .enable(false)
+                .enable(swaggerEnable)
                 .select()
                 //扫描的路径包,设置basePackage会将包下的所有被@Api标记类的所有方法作为api
                 .apis(RequestHandlerSelectors.basePackage("com.zxkj"))

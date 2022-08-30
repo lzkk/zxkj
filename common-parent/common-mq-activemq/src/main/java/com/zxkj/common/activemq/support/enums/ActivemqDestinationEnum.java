@@ -1,4 +1,4 @@
-package com.zxkj.common.activemq.support;
+package com.zxkj.common.activemq.support.enums;
 
 public enum ActivemqDestinationEnum {
 	   

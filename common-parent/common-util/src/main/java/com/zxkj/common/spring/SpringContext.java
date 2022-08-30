@@ -1,4 +1,4 @@
-package com.zxkj.service.spring;
+package com.zxkj.common.spring;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,11 +15,16 @@ public class SpringContext implements ApplicationContextAware {
     }
 
     public static <T> T getBean(Class<T> clz) {
-        if (applicationContext.containsBean(clz.getName())) {
-            return applicationContext.getBean(clz);
-        } else {
-            return null;
+        return applicationContext.getBean(clz);
+    }
+
+    public static <T> T getBeanFix(Class<T> clazz) {
+        T t = null;
+        try {
+            t = getBean(clazz);
+        } catch (Exception e) {
         }
+        return t;
     }
 
 }

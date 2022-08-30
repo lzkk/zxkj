@@ -23,7 +23,6 @@ import com.zxkj.order.vo.OrderSkuVo;
 import com.zxkj.seckill.feign.SeckillGoodsFeign;
 import com.zxkj.seckill.model.SeckillGoods;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,22 +40,22 @@ import java.util.concurrent.Executor;
 @Slf4j
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
-    @Autowired
+    @Resource
     private OrderMapper orderMapper;
 
-    @Autowired
+    @Resource
     private OrderSkuMapper orderSkuMapper;
 
-    @Autowired
+    @Resource
     private OrderRefundMapper orderRefundMapper;
 
-    @Autowired
+    @Resource
     private CartFeign cartFeign;
 
-    @Autowired
+    @Resource
     private SkuFeign skuFeign;
 
-    @Autowired
+    @Resource
     private SeckillGoodsFeign seckillGoodsFeign;
 
     @Resource

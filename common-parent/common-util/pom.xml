@@ -38,6 +38,19 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>common-exception</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>3.12.1</version>
@@ -46,14 +59,6 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
             <version>1.46</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zxkj</groupId>
-            <artifactId>common-exception</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

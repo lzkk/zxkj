@@ -5,9 +5,8 @@ import brave.propagation.TraceContext;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.context.domain.ContextInfo;
 import com.zxkj.service.grey.support.WrappedExecutorService;
-import com.zxkj.service.grey.support.TraceUtil;
+import com.zxkj.common.sleuth.TraceUtil;
 import com.zxkj.common.util.sys.SysConfigUtil;
-import com.zxkj.common.web.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -56,7 +55,6 @@ public class GreyContext {
         String traceId = getHeaderString(request, ContextConstant.TRACE_ID_FLAG);
         contextInfo.setTraceId(traceId);
         greyMap.set(contextInfo);
-        log.info("currentContext:" + JsonUtil.toJsonString(contextInfo));
     }
 
     public static void clearContext() {
@@ -75,7 +73,7 @@ public class GreyContext {
         }
     }
 
-    private static <C> Callable<C> wrap(Callable<C> task) {
+    public static <C> Callable<C> wrap(Callable<C> task) {
         //获取父线程中的Trace
         ContextInfo contextInfo = greyMap.get();
         final TraceContext traceContext = TraceUtil.getTraceContext();
@@ -102,7 +100,7 @@ public class GreyContext {
         return new MyCustomCallable();
     }
 
-    private static Runnable wrap(Runnable task) {
+    public static Runnable wrap(Runnable task) {
         //获取父线程中的Trace
         ContextInfo contextInfo = greyMap.get();
         final TraceContext traceContext = TraceUtil.getTraceContext();

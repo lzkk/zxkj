@@ -1,9 +1,12 @@
 package com.zxkj.common.rocketmq.support;
 
+import brave.propagation.CurrentTraceContext;
 import com.zxkj.common.rocketmq.RocketmqMessageListener;
 import com.zxkj.common.rocketmq.RocketmqMessageSender;
+import com.zxkj.common.rocketmq.grey.GreyRocketmqUtil;
+import com.zxkj.common.rocketmq.support.enums.RocketmqTopicTagEnum;
+import com.zxkj.common.sleuth.TraceUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -24,7 +27,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Rocketmq消息配置类
@@ -109,35 +113,38 @@ public class RocketmqMessageConfig implements BeanPostProcessor, BeanFactoryAwar
                 consumer.setNamesrvAddr(namesrvAddr);
                 consumer.setConsumeThreadMin(consumeThreadMin);
                 consumer.setConsumeThreadMax(consumeThreadMax);
-                consumer.registerMessageListener(new MessageListenerConcurrently() {
-                    @Override
-                    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                        if (CollectionUtils.isEmpty(list)) {
-                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-                        }
-                        MessageExt messageExt = list.get(0);
-                        int reConsume = messageExt.getReconsumeTimes();
-                        if (reConsume == 3) {
-                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-                        }
-                        String content = new String(messageExt.getBody());
-                        try {
-                            method.invoke(bean, content);
-                        } catch (Exception e) {
-                            logger.error("业务消息处理异常: " + content + ", " + e.toString(), e);
-                            throw new RuntimeException("业务消息处理异常:" + content + ", " + e.toString(), e);
-                        }
-                        // 消息消费成功
+                consumer.registerMessageListener((MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
+                    if (CollectionUtils.isEmpty(list)) {
                         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                     }
+                    MessageExt messageExt = list.get(0);
+                    Map<String, Object> dataMap = new HashMap<>();
+                    dataMap.putAll(messageExt.getProperties());
+                    CurrentTraceContext.Scope scope = TraceUtil.getTraceContextScope(dataMap);
+                    int reConsume = messageExt.getReconsumeTimes();
+                    if (reConsume == 3) {
+                        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                    }
+                    String content = new String(messageExt.getBody());
+                    try {
+                        method.invoke(bean, content);
+                    } catch (Exception e) {
+                        logger.error("业务消息处理异常: " + content + ", " + e.toString(), e);
+                        throw new RuntimeException("业务消息处理异常:" + content + ", " + e.toString(), e);
+                    } finally {
+                        TraceUtil.closeScope(scope);
+                    }
+                    // 消息消费成功
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 });
                 consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
                 consumer.setConsumeMessageBatchMaxSize(consumeMessageBatchMaxSize);
                 try {
-                    consumer.subscribe(handler.getTopic(), handler.getTag());
+                    String topicName = handler.getTopic() + GreyRocketmqUtil.generateGreySuffix();
+                    consumer.subscribe(topicName, handler.getTag());
                     consumer.start();
                 } catch (MQClientException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }, ReflectionUtils.USER_DECLARED_METHODS);

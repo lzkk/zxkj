@@ -1,6 +1,7 @@
 package com.zxkj.common.practice.thread.log;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.alibaba.ttl.TtlRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ class MyTest2 {
 //        }
 
 
-        executorService.execute(runnable);//结果为空
+        executorService.execute(TtlRunnable.get(runnable, false, false));//结果为空
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -69,7 +70,7 @@ class MyTest2 {
         traceId = UUID.randomUUID().toString().replace("-", "");
         ThreadPoolTracing.threadLocalTraceId.set(traceId);
         loger.info("二次改变,{}", traceId);
-        executorService.execute(runnable);//结果为空
+        executorService.execute(TtlRunnable.get(runnable, false, false));//结果为空
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -79,18 +80,18 @@ class MyTest2 {
         ThreadPoolTracing.threadLocalTraceId.set(traceId);
         loger.info("三次改变,{}", traceId);
 //        Runnable wrap = wrap(runnable);
-        executorService.execute(runnable);//结果为空
+        executorService.execute(TtlRunnable.get(runnable, false, false));//结果为空
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         for (int k = 0; k < 6; k++) {
-            executorService.execute(runnable);//结果为空
+            executorService.execute(TtlRunnable.get(runnable, false, false));//结果为空
         }
 
-//        Runnable wrap = wrap(runnable);
-//        executorService.execute(wrap);//可以获取traceId
+        Runnable wrap = wrap(runnable);
+        executorService.execute(wrap);//可以获取traceId
 //        try {
 //            Thread.sleep(100);
 //        } catch (InterruptedException e) {

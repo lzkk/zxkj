@@ -1,6 +1,6 @@
 package com.zxkj.common.kafka;
 
-import com.zxkj.common.kafka.support.KafkaTopicTypeEnum;
+import com.zxkj.common.kafka.support.enums.KafkaTopicTypeEnum;
 
 import java.lang.annotation.*;
 

@@ -1,15 +1,18 @@
 package com.zxkj.common.rabbitmq;
 
-import com.zxkj.common.cache.constant.CacheKeyPrefix;
-import com.zxkj.common.cache.redis.Cache;
-import com.zxkj.common.rabbitmq.delay.constant.DelayQueuePrefix;
-import com.zxkj.common.rabbitmq.grey.GreyRabbitUtil;
+import brave.propagation.TraceContext;
+import com.zxkj.common.rabbitmq.grey.GreyRabbitmqUtil;
 import com.zxkj.common.rabbitmq.support.RabbitmqCorrelationData;
 import com.zxkj.common.rabbitmq.support.RabbitmqMessageHelper;
 import com.zxkj.common.rabbitmq.support.enums.BusiType;
+import com.zxkj.common.sleuth.TraceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,9 +29,6 @@ public class RabbitmqMessageSender implements InitializingBean {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private Cache cache;
-
     private String greyQueueSuffix = "";
 
     /**
@@ -39,34 +39,73 @@ public class RabbitmqMessageSender implements InitializingBean {
      * @param busiObject 例如:订单相关事件可用订单对象
      * @param <T>
      */
-    public <T> void send(BusiType busiType, String busiKey, T busiObject) {
+    public <T> void send(BusiType busiType, String busiKey, Object busiObject) {
         Objects.requireNonNull(busiKey, "busiKey不能为null");
         Objects.requireNonNull(busiObject, "busiObject不能为null");
-        String json = RabbitmqMessageHelper.toJson(busiKey, busiObject);
-        String idKey = CacheKeyPrefix.BUSI_MESSAGE_ID + busiType.toString();
-        String bodyKey = CacheKeyPrefix.BUSI_MESSAGE_BODY + busiType.toString();
-        cache.zadd(idKey, System.currentTimeMillis(), busiKey);
-        cache.hset(bodyKey, busiKey, json);
         logger.info("业务消息发送开始: {} - {}", busiKey, busiObject);
-        String exchangeName = busiType.toString() + greyQueueSuffix;
-        rabbitTemplate.convertAndSend(exchangeName, null, json, new RabbitmqCorrelationData(busiKey, busiType));
+        String json = RabbitmqMessageHelper.toJson(busiKey, busiObject);
+        CorrelationData correlationData = new RabbitmqCorrelationData(busiKey, busiType);
+        realSend(busiType.toString(), json, null, correlationData);
     }
 
     /**
      * 发送延迟消息
      *
-     * @param msg
-     * @param delayTime
+     * @param busiType
+     * @param busiKey
+     * @param busiObject
+     * @param delayMilliseconds
      */
-    public void sendDelayMsg(String msg, Integer delayTime) {
-        rabbitTemplate.convertAndSend(DelayQueuePrefix.DELAYED_EXCHANGE_NAME, DelayQueuePrefix.DELAYED_ROUTING_KEY, msg, a -> {
-            a.getMessageProperties().setDelay(delayTime);
-            return a;
-        });
+    public void send(BusiType busiType, String busiKey, Object busiObject, Integer delayMilliseconds) {
+        Objects.requireNonNull(busiKey, "busiKey不能为null");
+        Objects.requireNonNull(busiObject, "busiObject不能为null");
+        logger.info("延时业务消息发送开始: {} - {}", busiKey, busiObject);
+        MessagePostProcessor processor = message1 -> {
+            message1.getMessageProperties().setDelay(delayMilliseconds);
+            return message1;
+        };
+        String json = RabbitmqMessageHelper.toJson(busiKey, busiObject);
+        CorrelationData correlationData = new RabbitmqCorrelationData(busiKey, busiType);
+        realSend(busiType.toString(), json, processor, correlationData);
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param exchangeName
+     * @param json
+     * @param processor
+     * @param correlationData
+     */
+    private void realSend(String exchangeName, String json, MessagePostProcessor processor, CorrelationData correlationData) {
+        exchangeName = exchangeName + greyQueueSuffix;
+        Message message = new Message(json.getBytes(), initMessageProperties());
+        if (processor != null) {
+            rabbitTemplate.convertAndSend(exchangeName, null, message, processor, correlationData);
+        } else {
+            rabbitTemplate.convertAndSend(exchangeName, null, message, correlationData);
+        }
+    }
+
+    /**
+     * 组装MessageProperties(包含traceId)
+     *
+     * @return
+     */
+    private MessageProperties initMessageProperties() {
+        MessageProperties messageProperties = new MessageProperties();
+        TraceContext traceContext = TraceUtil.getTraceContext();
+        if (traceContext != null) {
+            messageProperties.setHeader(TraceUtil.TRACE_ID, traceContext.traceId());
+            messageProperties.setHeader(TraceUtil.TRACE_ID_HIGH, traceContext.traceIdHigh());
+            messageProperties.setHeader(TraceUtil.SPAN_ID, traceContext.spanId());
+        }
+        return messageProperties;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        greyQueueSuffix = GreyRabbitUtil.generateGreySuffix();
+        greyQueueSuffix = GreyRabbitmqUtil.generateGreySuffix();
     }
+
 }

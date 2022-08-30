@@ -1,4 +1,4 @@
-package com.zxkj.common.kafka.support;
+package com.zxkj.common.kafka.support.enums;
 
 /**
  * 主体类型

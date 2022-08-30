@@ -22,7 +22,8 @@ public class CustomFallbackFactory<T> implements FallbackFactory<T> {
     public T create(Throwable cause) {
         this.throwable = cause;
         if (!feignHystrixEnabled || isLoaded) {
-            log.error("errMsg：" + cause.toString(), cause);
+//            log.error("errMsg：" + cause.toString(), cause);
+            log.error("errMsg：" + cause.toString());
         }
         if (!isLoaded) {
             isLoaded = true;

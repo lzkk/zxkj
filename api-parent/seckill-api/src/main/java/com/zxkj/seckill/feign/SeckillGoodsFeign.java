@@ -36,17 +36,14 @@ public interface SeckillGoodsFeign {
 
 @Component
 class SeckillGoodsFeignFallback extends CustomFallbackFactory implements SeckillGoodsFeign {
-    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.seckill.feign.SeckillGoodsFeignFallback.class);
 
     @Override
     public RespResult<List<SeckillGoods>> actGoods(String acid) {
-        logger.error("SeckillGoodsFeignFallback -> actGoods错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<SeckillGoods> one(String id) {
-        logger.error("SeckillGoodsFeignFallback -> one错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 }

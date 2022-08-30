@@ -38,17 +38,14 @@ public interface CartFeign {
 
 @Component
 class CartFeignFallback extends CustomFallbackFactory implements CartFeign {
-    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.cart.feign.CartFeignFallback.class);
 
     @Override
     public RespResult delete(List<String> ids) {
-        logger.error("CartFeignFallback -> delete错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<List<CartVo>> list(List<String> ids) {
-        logger.error("CartFeignFallback -> list错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 }

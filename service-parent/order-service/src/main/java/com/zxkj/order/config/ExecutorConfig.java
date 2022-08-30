@@ -28,8 +28,9 @@ public class ExecutorConfig {
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(50);
         executor.setThreadNamePrefix("orderExecutor-");
+        executor.setTaskDecorator(GreyContext::wrap);
         executor.initialize();
-        return GreyContext.executor(executor);
+        return executor;
     }
 
 

@@ -1,4 +1,4 @@
-package com.zxkj.common.rocketmq.support;
+package com.zxkj.common.rocketmq.support.enums;
 
 public enum RocketmqTopicTagEnum {
 

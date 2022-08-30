@@ -70,47 +70,39 @@ public interface SkuFeign {
 
 @Component
 class SkuFeignFallback extends CustomFallbackFactory implements SkuFeign {
-    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.goods.feign.SkuFeignFallback.class);
 
     @Override
     public RespResult dcount(List<CartCondition> carts) {
-        logger.error("SkuFeignFallback -> dcount错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<Sku> one(String id) {
-        logger.error("SkuFeignFallback -> one错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<Sku> one2(String id) {
-        logger.error("SkuFeignFallback -> one错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult typeItems(Integer id) {
-        logger.error("SkuFeignFallback -> typeItems错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult delTypeItems(Integer id) {
-        logger.error("SkuFeignFallback -> delTypeItems错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult updateTypeItems(Integer id) {
-        logger.error("SkuFeignFallback -> updateTypeItems错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult updateTest(String skuId, String spuId) {
-        logger.error("SkuFeignFallback -> updateTest错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 

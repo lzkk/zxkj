@@ -29,14 +29,6 @@
             <groupId>com.zxkj</groupId>
             <artifactId>seckill-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -47,9 +39,6 @@
                 <includes>
                     <include>**/*.*</include>
                 </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
