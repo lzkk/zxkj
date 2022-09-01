@@ -27,8 +27,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/*.yml</include>
-                    <include>**/*.xml</include>
+                    <include>**/*.*</include>
                 </includes>
             </resource>
         </resources>

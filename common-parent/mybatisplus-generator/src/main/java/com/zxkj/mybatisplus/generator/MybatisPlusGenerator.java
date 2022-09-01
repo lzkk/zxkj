@@ -25,45 +25,28 @@ public class MybatisPlusGenerator {
         String author = "yuhui";
         // 注释时间（@date），默认 yyyy-MM-dd HH:mm:ss
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        //模块名称
+        //模块名称(不用填写，通过包名来区分)
         String moduleName = "";
         //包名
         String packageName = "com.zxkj.order";
-        //表名  表名（英文逗号分隔）
+        //实体包名 默认:entity
+        String entityName = "entity";
+        //表名,表名（多个用英文逗号分隔）
+//        String tableNames = "BASE_USER,CRM_WS_ORDER";
         String tableNames = "order_info";
-        generator(author, date, moduleName, packageName, tableNames);
+        generator(author, date, moduleName, packageName, tableNames, entityName);
         System.out.println("执行完成！");
-    }
-
-    /**
-     * 读取控制台输入内容
-     */
-    private static final Scanner scanner = new Scanner(System.in);
-
-    /**
-     * 控制台输入内容读取并打印提示信息
-     *
-     * @param message 提示信息
-     * @return
-     */
-    public static String scannerNext(String message) {
-        System.out.println(message);
-        String nextLine = scanner.nextLine();
-        if (StringUtils.isBlank(nextLine)) {
-            // 如果输入空行继续等待
-            return scanner.next();
-        }
-        return nextLine;
     }
 
     protected static <T> T configBuilder(IConfigBuilder<T> configBuilder) {
         return null == configBuilder ? null : configBuilder.build();
     }
 
-    private static void generator(String author, String date, String moduleName, String packageName, String tableNames) {
+    private static void generator(String author, String date, String moduleName, String packageName, String tableNames, String entityName) {
         String url = (MybatisPlusGenerator.class.getResource("/").getFile() + "").replace("target/classes/", "src/main/java");
         // 代码生成器
-        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/shop_order?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC", "root", "123456")))
+//        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:sqlserver://192.168.10.32:1433;DatabaseName=CRM_Retail_Uat", "Retail_Uat", "T4wYGypz#(9::/Mq")))
+        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/shop_order?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456")))
                 // 全局配置
                 .global(configBuilder(new GlobalConfig.Builder()
                         // 覆盖已生成文件，默认 false
@@ -88,6 +71,8 @@ public class MybatisPlusGenerator {
                         .moduleName(moduleName)
                         // 父包名
                         .parent(packageName)
+                        //实体包名
+                        .entity(entityName)
                 ))
                 // 自定义配置
                 .injection(configBuilder(new InjectionConfig.Builder()

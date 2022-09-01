@@ -1,4 +1,4 @@
-package com.zxkj.page;
+package com.zxkj.admin;
 
 import com.baomidou.mybatisplus.autoconfigure.IdentifierGeneratorAutoConfiguration;
 import org.springframework.boot.CommandLineRunner;
@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * 静态页微服务
+ * 后台管理服务
  *
  * @author ：yuhui
  * @date ：Created in 2020/8/4 14:59
@@ -17,15 +17,15 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, IdentifierGeneratorAutoConfiguration.class})
-public class PageServiceMain implements CommandLineRunner {
+public class AdminServiceMain implements CommandLineRunner {
 
     public static void main(String[] args) {
-        SpringApplication.run(PageServiceMain.class, args);
+        SpringApplication.run(AdminServiceMain.class, args);
     }
 
     @Override
     public void run(String... strings) throws Exception {
-        System.out.println("PageServiceMain is running!");
+        System.out.println("AdminServiceMain is running!");
     }
 
 }

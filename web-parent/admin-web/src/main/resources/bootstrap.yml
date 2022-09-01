@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: admin-web
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 5061
