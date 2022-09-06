@@ -1,6 +1,6 @@
 package com.zxkj.search.service;
 
-import com.zxkj.search.model.SkuEs;
+import com.zxkj.search.entity.SkuEs;
 
 import java.util.Map;
 

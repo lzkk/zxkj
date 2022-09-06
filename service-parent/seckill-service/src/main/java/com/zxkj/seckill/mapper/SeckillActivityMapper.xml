@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.seckill.mapper.SeckillActivityMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.seckill.entity.SeckillActivity">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="activity_name" property="activityName" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, activity_name, type, end_time, create_time
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.seckill.entity.SeckillActivity" >
+        insert into seckill_activity
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            activity_name,
+            type,
+            end_time,
+            create_time,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.activityName, jdbcType=VARCHAR},
+                #{param.type, jdbcType=INTEGER},
+                #{param.endTime, jdbcType=TIMESTAMP},
+                #{param.createTime, jdbcType=TIMESTAMP},
+            </trim>
+        </foreach>
+    </insert>
+
+    <select id="validActivity" resultMap="BaseResultMap">
+        SELECT * FROM seckill_activity WHERE end_time>NOW() ORDER BY start_time ASC LIMIT 5
+    </select>
+</mapper>

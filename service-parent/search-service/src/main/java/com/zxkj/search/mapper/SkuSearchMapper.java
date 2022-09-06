@@ -1,6 +1,6 @@
 package com.zxkj.search.mapper;
 
-import com.zxkj.search.model.SkuEs;
+import com.zxkj.search.entity.SkuEs;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 /*****

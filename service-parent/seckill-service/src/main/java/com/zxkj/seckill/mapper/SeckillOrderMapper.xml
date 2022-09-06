@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.seckill.mapper.SeckillOrderMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.seckill.entity.SeckillOrder">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="seckill_goods_id" property="seckillGoodsId" jdbcType="VARCHAR"/>
+        <result column="money" property="money" jdbcType="INTEGER"/>
+        <result column="num" property="num" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="weixin_transaction_id" property="weixinTransactionId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, seckill_goods_id, money, num, username, create_time, pay_time, status, weixin_transaction_id
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.seckill.entity.SeckillOrder" >
+        insert into seckill_order
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            seckill_goods_id,
+            money,
+            num,
+            username,
+            create_time,
+            pay_time,
+            status,
+            weixin_transaction_id,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.seckillGoodsId, jdbcType=VARCHAR},
+                #{param.money, jdbcType=INTEGER},
+                #{param.num, jdbcType=INTEGER},
+                #{param.username, jdbcType=VARCHAR},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.payTime, jdbcType=TIMESTAMP},
+                #{param.status, jdbcType=INTEGER},
+                #{param.weixinTransactionId, jdbcType=VARCHAR},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

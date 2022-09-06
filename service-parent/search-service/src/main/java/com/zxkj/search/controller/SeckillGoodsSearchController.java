@@ -4,7 +4,7 @@ import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SeckillGoodsEsCondition;
 import com.zxkj.search.feign.SeckillGoodsSearchFeign;
-import com.zxkj.search.model.SeckillGoodsEs;
+import com.zxkj.search.entity.SeckillGoodsEs;
 import com.zxkj.search.service.SeckillGoodsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

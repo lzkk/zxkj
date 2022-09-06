@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.seckill.mapper.SeckillGoodsMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.seckill.entity.SeckillGoods">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="sup_id" property="supId" jdbcType="VARCHAR"/>
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="images" property="images" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="INTEGER"/>
+        <result column="seckill_price" property="seckillPrice" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="num" property="num" jdbcType="INTEGER"/>
+        <result column="store_count" property="storeCount" jdbcType="INTEGER"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="activity_id" property="activityId" jdbcType="VARCHAR"/>
+        <result column="islock" property="islock" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sup_id, sku_id, name, images, price, seckill_price, create_time, start_time, end_time, num, store_count, content, activity_id, islock
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.seckill.entity.SeckillGoods" >
+        insert into seckill_goods
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            sup_id,
+            sku_id,
+            name,
+            images,
+            price,
+            seckill_price,
+            create_time,
+            start_time,
+            end_time,
+            num,
+            store_count,
+            content,
+            activity_id,
+            islock,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.supId, jdbcType=VARCHAR},
+                #{param.skuId, jdbcType=VARCHAR},
+                #{param.name, jdbcType=VARCHAR},
+                #{param.images, jdbcType=VARCHAR},
+                #{param.price, jdbcType=INTEGER},
+                #{param.seckillPrice, jdbcType=INTEGER},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.startTime, jdbcType=TIMESTAMP},
+                #{param.endTime, jdbcType=TIMESTAMP},
+                #{param.num, jdbcType=INTEGER},
+                #{param.storeCount, jdbcType=INTEGER},
+                #{param.content, jdbcType=VARCHAR},
+                #{param.activityId, jdbcType=VARCHAR},
+                #{param.islock, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

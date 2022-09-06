@@ -1,10 +1,10 @@
 package com.zxkj.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.zxkj.common.page.PageInfo;
 import com.zxkj.search.mapper.SkuSearchMapper;
-import com.zxkj.search.model.SkuEs;
+import com.zxkj.search.entity.SkuEs;
 import com.zxkj.search.service.SkuSearchService;
+import com.zxkj.search.common.util.EPageInfo;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -77,8 +77,8 @@ public class SkuSearchServiceImpl implements SkuSearchService {
 
         // 创建分页对象
         int currentpage = queryBuilder.build().getPageable().getPageNumber() + 1;
-        PageInfo pageInfo = new PageInfo(page.getTotalElements(), currentpage, 5);
-        resultMap.put("pageInfo", pageInfo);
+        EPageInfo ePageInfo = new EPageInfo(page.getTotalElements(), currentpage, 5);
+        resultMap.put("pageInfo", ePageInfo);
         return resultMap;
     }
 

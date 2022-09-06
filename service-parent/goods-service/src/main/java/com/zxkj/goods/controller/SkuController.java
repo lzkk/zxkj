@@ -5,8 +5,8 @@ import com.zxkj.common.datasource.support.Readonly;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
-import com.zxkj.goods.model.Sku;
-import com.zxkj.goods.service.SKuService;
+import com.zxkj.goods.service.SkuService;
+import com.zxkj.goods.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,21 +21,21 @@ import java.util.List;
 public class SkuController implements SkuFeign {
 
     @Autowired
-    private SKuService sKuService;
+    private SkuService skuService;
 
     /***
      * 库存递减
      */
     public RespResult<Integer> dcount(@RequestBody List<CartCondition> carts) {
-        return RespResult.ok(sKuService.dcount(carts));
+        return RespResult.ok(skuService.dcount(carts));
     }
 
     /***
      * 根据ID查询商品详情
      * @return
      */
-    public RespResult<Sku> one(@PathVariable(value = "id") String id) {
-        Sku sku = sKuService.selectOne(id);
+    public RespResult<SkuVo> one(@PathVariable(value = "id") String id) {
+        SkuVo sku = skuService.selectOne(id);
         log.info("sku:" + JsonUtil.toJsonString(sku));
         return RespResult.ok(sku);
     }
@@ -46,11 +46,8 @@ public class SkuController implements SkuFeign {
      * @return
      */
     @Readonly
-    public RespResult<Sku> one2(@PathVariable(value = "id") String id) {
-        Sku sku = sKuService.selectOne2(id);
-        if (sku != null){
-            throw new ArrayIndexOutOfBoundsException("hhhh");
-        }
+    public RespResult<SkuVo> one2(@PathVariable(value = "id") String id) {
+        SkuVo sku = skuService.selectOne2(id);
         log.info("sku:" + JsonUtil.toJsonString(sku));
         return RespResult.ok(sku);
     }
@@ -59,9 +56,9 @@ public class SkuController implements SkuFeign {
      * 根据推广分类查询推广产品列表
      *
      */
-    public RespResult<List<Sku>> typeItems(@RequestParam(value = "id") Integer id) {
+    public RespResult<List<SkuVo>> typeItems(@RequestParam(value = "id") Integer id) {
         //查询
-        List<Sku> skus = sKuService.typeSkuItems(id);
+        List<SkuVo> skus = skuService.typeSkuItems(id);
         return RespResult.ok(skus);
     }
 
@@ -69,7 +66,7 @@ public class SkuController implements SkuFeign {
      * 根据推广分类查询推广产品列表
      */
     public RespResult delTypeItems(@RequestParam(value = "id") Integer id) {
-        sKuService.delTypeSkuItems(id);
+        skuService.delTypeSkuItems(id);
         return RespResult.ok();
     }
 
@@ -79,13 +76,13 @@ public class SkuController implements SkuFeign {
      */
     public RespResult updateTypeItems(@RequestParam(value = "id") Integer id) {
         //修改
-        sKuService.updateTypeSkuItems(id);
+        skuService.updateTypeSkuItems(id);
         return RespResult.ok();
     }
 
     public RespResult updateTest(@RequestParam(value = "skuId") String skuId, @RequestParam(value = "spuId") String spuId) {
         //修改
-        sKuService.updateTest(skuId, spuId);
+        skuService.updateTest(skuId, spuId);
         return RespResult.ok();
     }
 

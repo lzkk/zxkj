@@ -138,7 +138,10 @@ public abstract class BaseMongoImpl<T> implements IBaseMongo<T> {
     public void deleteById(Serializable... ids) {
         if (ids != null && ids.length > 0) {
             for (Serializable id : ids) {
-                mongoTemplate.remove(mongoTemplate.findById(id, getEntityClass()));
+                Object obj = mongoTemplate.findById(id, getEntityClass());
+                if(obj != null){
+                    mongoTemplate.remove(obj);
+                }
             }
         }
     }

@@ -2,11 +2,9 @@ package com.zxkj.goods.feign;
 
 import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.model.Sku;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
+import com.zxkj.goods.vo.SkuVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -31,21 +29,21 @@ public interface SkuFeign {
      * @return
      */
     @GetMapping(value = "/sku/{id}")
-    RespResult<Sku> one(@PathVariable(value = "id") String id);
+    RespResult<SkuVo> one(@PathVariable(value = "id") String id);
 
     /***
      * 根据ID查询商品详情
      * @return
      */
     @GetMapping(value = "/sku2/{id}")
-    RespResult<Sku> one2(@PathVariable(value = "id") String id);
+    RespResult<SkuVo> one2(@PathVariable(value = "id") String id);
 
 
     /****
      * 根据推广分类查询推广产品列表
      */
     @GetMapping(value = "/sku/aditems/type")
-    RespResult<List<Sku>> typeItems(@RequestParam(value = "id") Integer id);
+    RespResult<List<SkuVo>> typeItems(@RequestParam(value = "id") Integer id);
 
     /****
      * 根据推广分类查询推广产品列表
@@ -77,12 +75,12 @@ class SkuFeignFallback extends CustomFallbackFactory implements SkuFeign {
     }
 
     @Override
-    public RespResult<Sku> one(String id) {
+    public RespResult<SkuVo> one(String id) {
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
-    public RespResult<Sku> one2(String id) {
+    public RespResult<SkuVo> one2(String id) {
         return RespResult.error(throwable.getMessage());
     }
 

@@ -42,8 +42,8 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
     @Autowired
     private AuthorizationInterceptor authorizationInterceptor;
 
-    @Value("${greyPublish:}")
-    private String greyPublish;
+    @Value("${greyStr:}")
+    private String greyStr;
 
     /***
      * 执行拦截处理
@@ -134,7 +134,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            ContextInfo contextInfo = GreyUtil.initContext(greyPublish, version, grp);
+            ContextInfo contextInfo = GreyUtil.initContext(greyStr, version, grp);
             headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
             headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);
@@ -170,7 +170,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             headers.putAll(newHttpHeader);
             String version = newHttpHeader.getFirst("version");
             String grp = newHttpHeader.getFirst("grp");
-            ContextInfo contextInfo = GreyUtil.initContext(greyPublish, version, grp);
+            ContextInfo contextInfo = GreyUtil.initContext(greyStr, version, grp);
             headers.put(ContextConstant.REGION_PUBLISH_FLAG, getEncodedString(contextInfo.getRegionPublish()));
             headers.put(ContextConstant.GREY_PUBLISH_FLAG, getEncodedString(contextInfo.getGreyPublish()));
             headers.remove(HttpHeaders.CONTENT_LENGTH);

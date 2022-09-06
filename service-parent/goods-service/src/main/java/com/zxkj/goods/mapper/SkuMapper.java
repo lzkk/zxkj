@@ -1,15 +1,26 @@
 package com.zxkj.goods.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zxkj.goods.model.Sku;
+import com.zxkj.goods.entity.Sku;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
+/**
+ * @desc 商品表 Mapper
+ *
+ * @author yuhui
+ * @version 1.0
+ * @date 2022-09-02 16:35:52
+ */
 public interface SkuMapper extends BaseMapper<Sku> {
 
-    /***
-     * 库存递减
+    /**
+     * 商品表 批量插入数据集
+     * @param param
+     * @return Boolean
      */
-    @Update("update sku set num=num-#{num} where id=#{id} and num>=#{num}")
+    Boolean insertAll(@Param("paramList") List<Sku> param);
+
     int dcount(@Param("id") String id, @Param("num") Integer num);
 }

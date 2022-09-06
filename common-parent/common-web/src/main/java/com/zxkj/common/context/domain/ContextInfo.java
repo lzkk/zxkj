@@ -16,10 +16,6 @@ public class ContextInfo {
      */
     private String customerName;
     /**
-     * 客户层级ID
-     */
-    private Long customerOrgId;
-    /**
      * 版本号
      */
     private String version;

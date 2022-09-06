@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.mapper.SpuMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.entity.Spu">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="intro" property="intro" jdbcType="VARCHAR"/>
+        <result column="brand_id" property="brandId" jdbcType="INTEGER"/>
+        <result column="category_one_id" property="categoryOneId" jdbcType="INTEGER"/>
+        <result column="category_two_id" property="categoryTwoId" jdbcType="INTEGER"/>
+        <result column="category_three_id" property="categoryThreeId" jdbcType="INTEGER"/>
+        <result column="images" property="images" jdbcType="VARCHAR"/>
+        <result column="after_sales_service" property="afterSalesService" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="attribute_list" property="attributeList" jdbcType="VARCHAR"/>
+        <result column="is_marketable" property="isMarketable" jdbcType="INTEGER"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, intro, brand_id, category_one_id, category_two_id, category_three_id, images, after_sales_service, content, attribute_list, is_marketable, is_delete, status
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.entity.Spu" >
+        insert into spu
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            name,
+            intro,
+            brand_id,
+            category_one_id,
+            category_two_id,
+            category_three_id,
+            images,
+            after_sales_service,
+            content,
+            attribute_list,
+            is_marketable,
+            is_delete,
+            status,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.name, jdbcType=VARCHAR},
+                #{param.intro, jdbcType=VARCHAR},
+                #{param.brandId, jdbcType=INTEGER},
+                #{param.categoryOneId, jdbcType=INTEGER},
+                #{param.categoryTwoId, jdbcType=INTEGER},
+                #{param.categoryThreeId, jdbcType=INTEGER},
+                #{param.images, jdbcType=VARCHAR},
+                #{param.afterSalesService, jdbcType=VARCHAR},
+                #{param.content, jdbcType=VARCHAR},
+                #{param.attributeList, jdbcType=VARCHAR},
+                #{param.isMarketable, jdbcType=INTEGER},
+                #{param.isDelete, jdbcType=INTEGER},
+                #{param.status, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

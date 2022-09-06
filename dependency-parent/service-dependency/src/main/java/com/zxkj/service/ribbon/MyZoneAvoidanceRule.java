@@ -121,13 +121,13 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             if (serverList == null || serverList.size() == 0) {
                 return serverList;
             }
-            String regionPublish = GreyContext.getCurrentContext().getRegionPublish();
-            String greyPublish = GreyContext.getCurrentContext().getGreyPublish();
+            String regionPublishStr = GreyContext.getCurrentContext().getRegionPublish();
+            String greyPublishStr = GreyContext.getCurrentContext().getGreyPublish();
             List<Server> matchResults = Lists.newArrayList();
             for (Server server : serverList) {
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;
-                    if (developEnvMatch(server) && greyMatch(nacosServer, greyPublish, regionPublish)) {
+                    if (developEnvMatch(server) && greyMatch(nacosServer, regionPublishStr, greyPublishStr)) {
                         log.info("reqClientName:{},matchResult:{}", clientName, nacosServer.getHostPort());
                         matchResults.add(server);
                     }
@@ -135,7 +135,7 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
             }
             if (matchResults.size() == 0) {
                 // 这一步慎用，范围内无节点时是否允许跨节点访问
-                return compatibleMatch(serverList, greyPublish, regionPublish);
+                return compatibleMatch(serverList, regionPublishStr, greyPublishStr);
             }
             return matchResults;
         }
@@ -144,15 +144,15 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
          * 灰度/线上路由完全匹配
          *
          * @param nacosServer
-         * @param greyPublish
-         * @param regionPublish
+         * @param regionPublishStr
+         * @param greyPublishStr
          * @return
          */
-        private boolean greyMatch(NacosServer nacosServer, String greyPublish, String regionPublish) {
+        private boolean greyMatch(NacosServer nacosServer, String regionPublishStr, String greyPublishStr) {
             final Map<String, String> metadata = nacosServer.getInstance().getMetadata();
             String metaGreyPublish = metadata.get(ContextConstant.GREY_PUBLISH_FLAG);
             String metaRegionPublish = metadata.get(ContextConstant.REGION_PUBLISH_FLAG);
-            String reqGrey = greyPublish + "-" + regionPublish;
+            String reqGrey = regionPublishStr + "-" + greyPublishStr;
             String metaGrey = metaGreyPublish + "-" + metaRegionPublish;
             return reqGrey.equals(metaGrey);
         }
@@ -161,13 +161,13 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
          * 多灰度环境，灰度请求若未完全匹配则线上服务兜底
          *
          * @param serverList
-         * @param greyPublish
-         * @param regionPublish
+         * @param regionPublishStr
+         * @param greyPublishStr
          * @return
          */
-        private List<Server> compatibleMatch(List<Server> serverList, String greyPublish, String regionPublish) {
+        private List<Server> compatibleMatch(List<Server> serverList, String regionPublishStr, String greyPublishStr) {
             List<Server> compatibleList = new ArrayList<>();
-            String reqGrey = greyPublish + "-" + regionPublish;
+            String reqGrey = regionPublishStr + "-" + greyPublishStr;
             for (Server server : serverList) {
                 if (server instanceof NacosServer) {
                     NacosServer nacosServer = (NacosServer) server;

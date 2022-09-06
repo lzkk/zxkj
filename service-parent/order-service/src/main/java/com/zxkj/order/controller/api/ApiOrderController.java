@@ -1,14 +1,15 @@
 package com.zxkj.order.controller.api;
 
 import com.zxkj.common.web.RespResult;
-import com.zxkj.order.model.Order;
+import com.zxkj.order.condition.OrderInfoCondition;
+import com.zxkj.order.service.OrderInfoService;
 import com.zxkj.order.service.pay.WeixinPayParam;
-import com.zxkj.order.service.OrderService;
+import com.zxkj.order.vo.OrderInfoVo;
 import com.zxkj.order.vo.OrderSkuVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -23,10 +24,10 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiOrderController {
 
-    @Autowired
-    private OrderService orderService;
+    @Resource
+    private OrderInfoService orderInfoService;
 
-    @Autowired
+    @Resource
     private WeixinPayParam weixinPayParam;
 
     //    @Autowired
@@ -109,42 +110,42 @@ public class ApiOrderController {
      * 添加订单
      */
     @PostMapping(value = "/order/add")
-    public RespResult add(@RequestBody Order order, HttpServletRequest request) throws Exception {
+    public RespResult add(@RequestBody OrderInfoCondition order, HttpServletRequest request) throws Exception {
         //用户名字
         order.setUsername("gp");
         //下单
-        Boolean bo = orderService.add(order);
+        Boolean bo = orderInfoService.add(order);
         String result = weixinPayParam.weixinParam(order, request);
         return bo ? RespResult.ok(result) : RespResult.error();
     }
 
     @GetMapping(value = "/order/getById")
     public RespResult getById(@RequestParam(value = "id") String id) throws Exception {
-        Order order = orderService.getById(id);
+        OrderInfoVo order = orderInfoService.getById(id);
         return RespResult.ok(order);
     }
 
     @GetMapping(value = "/order/getByUserName")
     public RespResult getByUserName(@RequestParam(value = "userName") String userName, HttpServletRequest request) throws Exception {
-        Order order = orderService.getByUserName(userName);
+        OrderInfoVo order = orderInfoService.getByUserName(userName);
         return RespResult.ok(order);
     }
 
     @GetMapping(value = "/order/getOrderSkuByUserName")
     public RespResult<List<OrderSkuVo>> getOrderSkuByUserName(@RequestParam(value = "userName") String userName, HttpServletRequest request) throws Exception {
-        List<OrderSkuVo> orderSkuVoList = orderService.getOrderSkuByUserName(userName);
+        List<OrderSkuVo> orderSkuVoList = orderInfoService.getOrderSkuByUserName(userName);
         return RespResult.ok(orderSkuVoList);
     }
 
     @GetMapping(value = "/order/getCartTest")
     public RespResult<List<OrderSkuVo>> getCart(@RequestBody List<String> ids) throws Exception {
-        List<OrderSkuVo> orderSkuVoList = orderService.getCart(ids);
+        List<OrderSkuVo> orderSkuVoList = orderInfoService.getCart(ids);
         return RespResult.ok(orderSkuVoList);
     }
 
     @GetMapping(value = "/order/ribbonTest")
     public RespResult<Boolean> ribbonTest() {
-        orderService.ribbonTest();
+        orderInfoService.ribbonTest();
         return RespResult.ok(true);
     }
 

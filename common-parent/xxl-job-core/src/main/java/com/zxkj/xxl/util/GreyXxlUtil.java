@@ -1,5 +1,7 @@
 package com.zxkj.xxl.util;
 
+import com.zxkj.common.context.constants.ContextConstant;
+
 /**
  * @author ：yuhui
  * @date ：Created in 2022/1/19 16:11
@@ -13,13 +15,13 @@ public class GreyXxlUtil {
      */
     public static String generateGreySuffix() {
         String suffix = "";
-        String greyPublish = System.getProperty("greyPublish");
-        if (greyPublish != null && greyPublish.trim().length() > 0) {
-            suffix += "_g" + greyPublish;
+        String greyStr = System.getProperty(ContextConstant.GREY_PUBLISH_FLAG);
+        if (greyStr != null && greyStr.trim().length() > 0) {
+            suffix += "_g" + greyStr;
         }
-        String regionPublish = System.getProperty("regionPublish");
-        if (regionPublish != null && regionPublish.trim().length() > 0) {
-            suffix += "_r" + regionPublish;
+        String regionStr = System.getProperty(ContextConstant.REGION_PUBLISH_FLAG);
+        if (regionStr != null && regionStr.trim().length() > 0) {
+            suffix += "_r" + regionStr;
         }
         return suffix;
     }

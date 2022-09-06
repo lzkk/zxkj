@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.order.mapper.OrderRefundMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.order.entity.OrderRefund">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="refund_type" property="refundType" jdbcType="INTEGER"/>
+        <result column="order_sku_id" property="orderSkuId" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="money" property="money" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, refund_type, order_sku_id, username, status, create_time, money
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.order.entity.OrderRefund" >
+        insert into order_refund
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            order_no,
+            refund_type,
+            order_sku_id,
+            username,
+            status,
+            create_time,
+            money,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.orderNo, jdbcType=VARCHAR},
+                #{param.refundType, jdbcType=INTEGER},
+                #{param.orderSkuId, jdbcType=VARCHAR},
+                #{param.username, jdbcType=VARCHAR},
+                #{param.status, jdbcType=INTEGER},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.money, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

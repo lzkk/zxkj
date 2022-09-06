@@ -2,11 +2,12 @@ package com.zxkj.order.service.pay;
 
 import com.zxkj.common.util.net.IPUtils;
 import com.zxkj.common.util.security.Signature;
-import com.zxkj.order.model.Order;
-import com.zxkj.order.model.OrderRefund;
+import com.zxkj.order.condition.OrderInfoCondition;
+import com.zxkj.order.condition.OrderRefundCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +15,14 @@ import java.util.Map;
 @Component
 public class WeixinPayParam {
 
-    @Autowired
+    @Resource
     private Signature signature;
 
 
     /*****
      * 支付数据处理
      */
-    public String weixinRefundParam(OrderRefund orderRefund) throws Exception {
+    public String weixinRefundParam(OrderRefundCondition orderRefund) throws Exception {
         //预支付下单需要用到的数据
         Map<String, String> data = new HashMap<String, String>();
         data.put("out_trade_no", orderRefund.getOrderNo());    //订单号
@@ -39,7 +40,7 @@ public class WeixinPayParam {
     /*****
      * 支付数据处理
      */
-    public String weixinParam(Order order, HttpServletRequest request) throws Exception {
+    public String weixinParam(OrderInfoCondition order, HttpServletRequest request) throws Exception {
         //预支付下单需要用到的数据
         Map<String, String> data = new HashMap<String, String>();
         data.put("body", "SpringCloud Alibaba商城");

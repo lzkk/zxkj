@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.mapper.CategoryAttrMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.entity.CategoryAttr">
+        <id column="category_id" property="categoryId" jdbcType="INTEGER"/>
+        <id column="attr_id" property="attrId" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        category_id, attr_id
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.entity.CategoryAttr" >
+        insert into category_attr
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.categoryId, jdbcType=INTEGER},
+                #{param.attrId, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

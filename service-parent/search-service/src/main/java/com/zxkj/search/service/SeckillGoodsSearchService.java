@@ -1,6 +1,6 @@
 package com.zxkj.search.service;
 
-import com.zxkj.search.model.SeckillGoodsEs;
+import com.zxkj.search.entity.SeckillGoodsEs;
 
 public interface SeckillGoodsSearchService {
 

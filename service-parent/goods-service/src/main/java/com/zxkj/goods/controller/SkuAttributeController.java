@@ -1,8 +1,8 @@
 package com.zxkj.goods.controller;
 
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.model.SkuAttribute;
 import com.zxkj.goods.service.SkuAttributeService;
+import com.zxkj.goods.vo.SkuAttributeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +22,8 @@ public class SkuAttributeController {
      * 根据分类ID查询属性集合
      */
     @GetMapping(value = "/category/{id}")
-    public RespResult<List<SkuAttribute>> categorySkuAttributeList(@PathVariable(value = "id") Integer id) {
-        List<SkuAttribute> skuAttributes = skuAttributeService.queryList(id);
+    public RespResult<List<SkuAttributeVo>> categorySkuAttributeList(@PathVariable(value = "id") Integer id) {
+        List<SkuAttributeVo> skuAttributes = skuAttributeService.queryList(id);
         return RespResult.ok(skuAttributes);
     }
 }

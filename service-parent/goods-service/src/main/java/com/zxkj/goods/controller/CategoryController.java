@@ -1,8 +1,9 @@
 package com.zxkj.goods.controller;
 
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.model.Category;
+import com.zxkj.goods.entity.Category;
 import com.zxkj.goods.service.CategoryService;
+import com.zxkj.goods.vo.CategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public class CategoryController {
      * 根据分类父ID查询子分类
      */
     @GetMapping(value = "/parent/{id}")
-    public RespResult<List<Category>> findByParentId(@PathVariable("id") Integer id) {
+    public RespResult<List<CategoryVo>> findByParentId(@PathVariable("id") Integer id) {
         return RespResult.ok(categoryService.findByParentId(id));
     }
 

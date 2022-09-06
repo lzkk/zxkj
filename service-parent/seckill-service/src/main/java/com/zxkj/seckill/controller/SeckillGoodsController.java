@@ -1,13 +1,15 @@
 package com.zxkj.seckill.controller;
 
+import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.seckill.feign.SeckillGoodsFeign;
-import com.zxkj.seckill.model.SeckillGoods;
 import com.zxkj.seckill.service.SeckillGoodsService;
+import com.zxkj.seckill.vo.SeckillGoodsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,8 +26,8 @@ public class SeckillGoodsController implements SeckillGoodsFeign {
      * @param acid
      * @return
      */
-    public RespResult<List<SeckillGoods>> actGoods(@PathVariable("acid") String acid) {
-        List<SeckillGoods> seckillGoods = seckillGoodsService.actGoods(acid);
+    public RespResult<List<SeckillGoodsVo>> actGoods(@PathVariable("acid") String acid) {
+        List<SeckillGoodsVo> seckillGoods = seckillGoodsService.actGoods(acid);
         return RespResult.ok(seckillGoods);
     }
 
@@ -34,8 +36,8 @@ public class SeckillGoodsController implements SeckillGoodsFeign {
      * @param id
      * @return
      */
-    public RespResult<SeckillGoods> one(@PathVariable("id") String id) {
-        SeckillGoods seckillGoods = seckillGoodsService.getById(id);
+    public RespResult<SeckillGoodsVo> one(@PathVariable("id") String id) {
+        SeckillGoodsVo seckillGoods = BeanUtil.copyObject(seckillGoodsService.getById(id), SeckillGoodsVo.class);
         log.info("seckillGoods--" + JsonUtil.toJsonString(seckillGoods));
         return RespResult.ok(seckillGoods);
     }

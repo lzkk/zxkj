@@ -2,20 +2,30 @@ package com.zxkj.seckill.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zxkj.common.cache.redis.Cache;
+import com.zxkj.seckill.entity.SeckillGoods;
+import com.zxkj.seckill.entity.SeckillOrder;
 import com.zxkj.seckill.mapper.SeckillGoodsMapper;
 import com.zxkj.seckill.mapper.SeckillOrderMapper;
-import com.zxkj.seckill.model.SeckillGoods;
-import com.zxkj.seckill.model.SeckillOrder;
 import com.zxkj.seckill.service.SeckillOrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * @author yuhui
+ * @version 1.0
+ * @desc 服务实现
+ * @date 2022-09-05 14:37:18
+ */
 @Service
+@Slf4j
 public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, SeckillOrder> implements SeckillOrderService {
 
     //库存不足
@@ -23,19 +33,25 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
     //库存足够下单成功
     public static final int STORE_FULL_ORDER_SUCCESS = 1;
 
-
-    @Autowired
-    private SeckillOrderMapper seckillOrderMapper;
-
     @Autowired
     private Cache cache;
 
-    @Autowired
+    @Resource
     private SeckillGoodsMapper seckillGoodsMapper;
 
     @Autowired
     private RedissonClient redissonClient;
 
+    /**
+     * 批量新增重写
+     *
+     * @param param model集合
+     * @return Boolean
+     */
+    @Override
+    public Boolean saveBatch(List<SeckillOrder> param) {
+        return this.getBaseMapper().insertAll(param);
+    }
 
     /***
      * 热门商品抢单实现
@@ -78,7 +94,7 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
             seckillOrder.setMoney(seckillGoods.getSeckillPrice() * num);
             seckillOrder.setNum(num);
             seckillOrder.setStatus(0);  //下单了
-            seckillOrderMapper.insert(seckillOrder);
+            this.getBaseMapper().insert(seckillOrder);
 
             /*****
              * 库存递减
@@ -103,4 +119,5 @@ public class SeckillOrderServiceImpl extends ServiceImpl<SeckillOrderMapper, Sec
         }
         return STORE_FULL_ORDER_SUCCESS;
     }
+
 }

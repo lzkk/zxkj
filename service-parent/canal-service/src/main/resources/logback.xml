@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5t %5p %replace(%caller{1}){'\t|Caller.{1}0|\n|\r\n', ''} - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>/opt/logs/canal-service.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/opt/logs/canal-service.log.%d{yyyy-MM-dd}</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5t %5p %replace(%caller{1}){'\t|Caller.{1}0|\n|\r\n', ''} - %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="com.zxkj.canal.listener" level="INFO" />
+	<logger name="top.javatool.canal.client.client" level="WARN" />
+	<logger name="org.apache.kafka" level="WARN" />
+	<logger name="com.zxkj.common.cache.redis" level="WARN" />
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

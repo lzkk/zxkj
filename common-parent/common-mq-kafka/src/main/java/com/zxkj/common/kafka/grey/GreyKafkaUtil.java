@@ -13,9 +13,9 @@ public class GreyKafkaUtil {
      */
     public static String generateGreySuffix() {
         String suffix = "";
-        String greyPublish = System.getProperty("mqSuffix");
-        if (greyPublish != null && greyPublish.trim().length() > 0) {
-            suffix += "_g" + greyPublish;
+        String mqStr = System.getProperty("mqSuffix");
+        if (mqStr != null && mqStr.trim().length() > 0) {
+            suffix += "_g" + mqStr;
         }
         return suffix;
     }

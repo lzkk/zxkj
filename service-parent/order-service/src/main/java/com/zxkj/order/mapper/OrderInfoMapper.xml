@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.order.mapper.OrderInfoMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.order.entity.OrderInfo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="total_num" property="totalNum" jdbcType="INTEGER"/>
+        <result column="moneys" property="moneys" jdbcType="INTEGER"/>
+        <result column="pay_type" property="payType" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="consign_time" property="consignTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="recipients" property="recipients" jdbcType="VARCHAR"/>
+        <result column="recipients_mobile" property="recipientsMobile" jdbcType="VARCHAR"/>
+        <result column="recipients_address" property="recipientsAddress" jdbcType="VARCHAR"/>
+        <result column="weixin_transaction_id" property="weixinTransactionId" jdbcType="VARCHAR"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="pay_status" property="payStatus" jdbcType="INTEGER"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, total_num, moneys, pay_type, create_time, update_time, pay_time, consign_time, end_time, username, recipients, recipients_mobile, recipients_address, weixin_transaction_id, order_status, pay_status, is_delete
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.order.entity.OrderInfo" >
+        insert into order_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            total_num,
+            moneys,
+            pay_type,
+            create_time,
+            update_time,
+            pay_time,
+            consign_time,
+            end_time,
+            username,
+            recipients,
+            recipients_mobile,
+            recipients_address,
+            weixin_transaction_id,
+            order_status,
+            pay_status,
+            is_delete,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.totalNum, jdbcType=INTEGER},
+                #{param.moneys, jdbcType=INTEGER},
+                #{param.payType, jdbcType=VARCHAR},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.updateTime, jdbcType=TIMESTAMP},
+                #{param.payTime, jdbcType=TIMESTAMP},
+                #{param.consignTime, jdbcType=TIMESTAMP},
+                #{param.endTime, jdbcType=TIMESTAMP},
+                #{param.username, jdbcType=VARCHAR},
+                #{param.recipients, jdbcType=VARCHAR},
+                #{param.recipientsMobile, jdbcType=VARCHAR},
+                #{param.recipientsAddress, jdbcType=VARCHAR},
+                #{param.weixinTransactionId, jdbcType=VARCHAR},
+                #{param.orderStatus, jdbcType=INTEGER},
+                #{param.payStatus, jdbcType=INTEGER},
+                #{param.isDelete, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

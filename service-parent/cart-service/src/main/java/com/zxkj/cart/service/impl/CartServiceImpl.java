@@ -1,27 +1,27 @@
 package com.zxkj.cart.service.impl;
 
-import com.zxkj.cart.model.Cart;
+import com.zxkj.cart.entity.Cart;
 import com.zxkj.cart.service.CartService;
 import com.zxkj.cart.vo.CartVo;
 import com.zxkj.common.mongo.base.BaseMongoImpl;
 import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.feign.SkuFeign;
-import com.zxkj.goods.model.Sku;
+import com.zxkj.goods.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Slf4j
 @Service
 public class CartServiceImpl extends BaseMongoImpl<Cart> implements CartService {
 
-    @Autowired
+    @Resource
     private SkuFeign skuFeign;
 
     /***
@@ -47,10 +47,10 @@ public class CartServiceImpl extends BaseMongoImpl<Cart> implements CartService 
 
         if (num > 0) {
             //2）根据ID查询Sku详情
-            RespResult<Sku> skuResp = skuFeign.one(id);
+            RespResult<SkuVo> skuResp = skuFeign.one(id);
 
             //3)将当前ID商品对应的数据加入购物车（存入到MongoDB）
-            Sku sku = skuResp.getData();
+            SkuVo sku = skuResp.getData();
             Cart cart = new Cart(userName + id, userName, sku.getName(), sku.getPrice(), sku.getImage(), id, num);
             save(cart);
         }

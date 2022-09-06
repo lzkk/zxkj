@@ -1,7 +1,7 @@
 package com.zxkj.search.service.impl;
 
 import com.zxkj.search.mapper.SeckillGoodsSearchMapper;
-import com.zxkj.search.model.SeckillGoodsEs;
+import com.zxkj.search.entity.SeckillGoodsEs;
 import com.zxkj.search.service.SeckillGoodsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

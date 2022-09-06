@@ -1,11 +1,9 @@
 package com.zxkj.search.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.search.condition.SeckillGoodsEsCondition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,17 +34,14 @@ public interface SeckillGoodsSearchFeign {
 
 @Component
 class SeckillGoodsSearchFeignFallback extends CustomFallbackFactory implements SeckillGoodsSearchFeign {
-    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.search.feign.SeckillGoodsSearchFeignFallback.class);
 
     @Override
     public RespResult<Boolean> add(SeckillGoodsEsCondition seckillGoodsEsCondition) {
-        logger.error("SeckillGoodsSearchFeignFallback -> add错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult<Boolean> del(String id) {
-        logger.error("SeckillGoodsSearchFeignFallback -> del错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 }

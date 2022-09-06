@@ -1,15 +1,27 @@
 package com.zxkj.goods.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zxkj.goods.model.Brand;
-import org.apache.ibatis.annotations.Select;
+import com.zxkj.goods.entity.Brand;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * @desc 品牌表 Mapper
+ *
+ * @author yuhui
+ * @version 1.0
+ * @date 2022-09-02 16:35:52
+ */
 public interface BrandMapper extends BaseMapper<Brand> {
-    /****
-     * 1、根据分类ID查询品牌ID集合
+
+    /**
+     * 品牌表 批量插入数据集
+     * @param param
+     * @return Boolean
      */
-    @Select("SELECT brand_id FROM category_brand WHERE category_id=#{id}")
-    List<Integer> queryBrandIds(Integer id);
+    Boolean insertAll(@Param("paramList") List<Brand> param);
+
+
+
 }

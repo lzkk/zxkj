@@ -1,9 +1,11 @@
 package com.zxkj.goods.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageInfo;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.model.Brand;
+import com.zxkj.goods.condition.BrandCondition;
+import com.zxkj.goods.entity.Brand;
 import com.zxkj.goods.service.BrandService;
+import com.zxkj.goods.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,8 +50,8 @@ public class BrandController {
      * 条件查询
      */
     @PostMapping(value = "/search")
-    public RespResult<List<Brand>> queryList(@RequestBody Brand brand) {
-        List<Brand> brands = brandService.queryList(brand);
+    public RespResult<List<BrandVo>> queryList(@RequestBody BrandCondition brand) {
+        List<BrandVo> brands = brandService.queryList(brand);
         return RespResult.ok(brands);
     }
 
@@ -57,11 +59,13 @@ public class BrandController {
      * 条件查询
      */
     @PostMapping(value = "/search/{page}/{size}")
-    public RespResult<Page<Brand>> queryPageList(
-            @PathVariable(value = "page") Long page,
-            @PathVariable(value = "size") Long size,
-            @RequestBody Brand brand) {
-        Page<Brand> pageInfo = brandService.queryPageList(brand, page, size);
+    public RespResult<PageInfo<BrandVo>> queryPageList(
+            @PathVariable(value = "page") Integer page,
+            @PathVariable(value = "size") Integer size,
+            @RequestBody BrandCondition brand) {
+        brand.setPageNum(page);
+        brand.setPageSize(size);
+        PageInfo<BrandVo> pageInfo = brandService.queryPageList(brand);
         return RespResult.ok(pageInfo);
     }
 
@@ -71,9 +75,9 @@ public class BrandController {
      * http://192.168.100.130/msitems/1.html
      */
     @GetMapping(value = "/category/{pid}")
-    public RespResult<List<Brand>> categoryBrands(@PathVariable(value = "pid") Integer pid) throws InterruptedException {
+    public RespResult<List<BrandVo>> categoryBrands(@PathVariable(value = "pid") Integer pid) throws InterruptedException {
         System.out.println("执行查询开始，，，，");
-        List<Brand> brands = brandService.queryByCategoryId(pid);
+        List<BrandVo> brands = brandService.queryByCategoryId(pid);
         TimeUnit.SECONDS.sleep(10);
         System.out.println("执行查询完成，，，，");
         return RespResult.ok(brands);

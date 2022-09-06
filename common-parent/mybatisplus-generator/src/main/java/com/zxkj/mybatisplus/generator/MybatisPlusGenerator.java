@@ -8,12 +8,10 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.function.BiConsumer;
 
 /**
@@ -28,12 +26,12 @@ public class MybatisPlusGenerator {
         //模块名称(不用填写，通过包名来区分)
         String moduleName = "";
         //包名
-        String packageName = "com.zxkj.order";
+        String packageName = "com.zxkj.seckill";
         //实体包名 默认:entity
         String entityName = "entity";
         //表名,表名（多个用英文逗号分隔）
 //        String tableNames = "BASE_USER,CRM_WS_ORDER";
-        String tableNames = "order_info";
+        String tableNames = "seckill_goods,seckill_order,seckill_activity";
         generator(author, date, moduleName, packageName, tableNames, entityName);
         System.out.println("执行完成！");
     }
@@ -46,7 +44,7 @@ public class MybatisPlusGenerator {
         String url = (MybatisPlusGenerator.class.getResource("/").getFile() + "").replace("target/classes/", "src/main/java");
         // 代码生成器
 //        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:sqlserver://192.168.10.32:1433;DatabaseName=CRM_Retail_Uat", "Retail_Uat", "T4wYGypz#(9::/Mq")))
-        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/shop_order?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456")))
+        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/shop_seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456")))
                 // 全局配置
                 .global(configBuilder(new GlobalConfig.Builder()
                         // 覆盖已生成文件，默认 false
@@ -63,6 +61,7 @@ public class MybatisPlusGenerator {
                         .enableSwagger()
                         //日期格式 java.util.date
                         .dateType(DateType.ONLY_DATE)
+
 
                 ))
                 // 包配置
@@ -106,17 +105,19 @@ public class MybatisPlusGenerator {
                                 .controllerBuilder()
                                 // 生成 @RestController 注解
                                 .enableRestStyle()
+                                // serviceName 去掉I
+                                .serviceBuilder().convertServiceFileName((serName) -> "" + serName + ConstVal.SERVICE)
 //                        // 父类
 //                        .superClass(BaseController.class)
                 ))
-                // 模板配置
+        // 模板配置
                 .template(configBuilder(new TemplateConfig.Builder()
-                        .entity("/template/entity.java")
-                        .mapper("/template/mapper.java")
-                        .mapperXml("/template/mapper.xml")
-                        .service("/template/service.java", "/template/serviceImpl.java")
-                        .controller("/template/controller.java")
-                ))
+                .entity("/template/entity.java")
+                .mapper("/template/mapper.java")
+                .mapperXml("/template/mapper.xml")
+                .service("/template/service.java", "/template/serviceImpl.java")
+                .controller("/template/controller.java")
+        ))
                 // 执行并指定模板引擎
                 .execute(new FreemarkerTemplateEngine());
     }

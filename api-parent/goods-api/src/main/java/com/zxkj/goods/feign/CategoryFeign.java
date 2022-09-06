@@ -1,9 +1,9 @@
 package com.zxkj.goods.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
-import com.zxkj.goods.model.Category;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
+import com.zxkj.goods.vo.CategoryVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -22,17 +22,16 @@ public interface CategoryFeign {
      * 根据分类查询分类信息
      */
     @GetMapping(value = "/category/{id}")
-    RespResult<Category> one(@PathVariable(value = "id") Integer id);
+    RespResult<CategoryVo> one(@PathVariable(value = "id") Integer id);
 
 }
 
 @Component
 class CategoryFeignFallback extends CustomFallbackFactory implements CategoryFeign {
-    private static final Logger logger = LoggerFactory.getLogger(com.zxkj.goods.feign.CategoryFeignFallback.class);
+    protected static final Logger logger = LoggerFactory.getLogger(CategoryFeignFallback.class);
 
     @Override
-    public RespResult<Category> one(Integer id) {
-        logger.error("CategoryFeignFallback -> one错误信息：{}", throwable.getMessage());
+    public RespResult<CategoryVo> one(Integer id) {
         return RespResult.error(throwable.getMessage());
     }
 

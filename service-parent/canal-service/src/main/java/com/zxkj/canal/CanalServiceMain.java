@@ -1,5 +1,6 @@
 package com.zxkj.canal;
 
+import com.baomidou.mybatisplus.autoconfigure.IdentifierGeneratorAutoConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  ****/
 @EnableFeignClients(basePackages = {"com.zxkj.*.feign"})
 @ComponentScan(basePackages = {"com.zxkj"})
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, IdentifierGeneratorAutoConfiguration.class})
 public class CanalServiceMain implements CommandLineRunner {
 
     public static void main(String[] args) {

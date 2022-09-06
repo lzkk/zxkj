@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.mapper.SkuMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.entity.Sku">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="INTEGER"/>
+        <result column="num" property="num" jdbcType="INTEGER"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="images" property="images" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="spu_id" property="spuId" jdbcType="VARCHAR"/>
+        <result column="category_id" property="categoryId" jdbcType="INTEGER"/>
+        <result column="category_name" property="categoryName" jdbcType="VARCHAR"/>
+        <result column="brand_id" property="brandId" jdbcType="INTEGER"/>
+        <result column="brand_name" property="brandName" jdbcType="VARCHAR"/>
+        <result column="sku_attribute" property="skuAttribute" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, price, num, image, images, create_time, update_time, spu_id, category_id, category_name, brand_id, brand_name, sku_attribute, status
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.entity.Sku" >
+        insert into sku
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            name,
+            price,
+            num,
+            image,
+            images,
+            create_time,
+            update_time,
+            spu_id,
+            category_id,
+            category_name,
+            brand_id,
+            brand_name,
+            sku_attribute,
+            status,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=VARCHAR},
+                #{param.name, jdbcType=VARCHAR},
+                #{param.price, jdbcType=INTEGER},
+                #{param.num, jdbcType=INTEGER},
+                #{param.image, jdbcType=VARCHAR},
+                #{param.images, jdbcType=VARCHAR},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.updateTime, jdbcType=TIMESTAMP},
+                #{param.spuId, jdbcType=VARCHAR},
+                #{param.categoryId, jdbcType=INTEGER},
+                #{param.categoryName, jdbcType=VARCHAR},
+                #{param.brandId, jdbcType=INTEGER},
+                #{param.brandName, jdbcType=VARCHAR},
+                #{param.skuAttribute, jdbcType=VARCHAR},
+                #{param.status, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+    
+    <update id="dcount">
+        update sku set num=num-#{num, jdbcType=INTEGER} where id=#{id, jdbcType=VARCHAR} and num>=#{num, jdbcType=INTEGER}
+    </update>
+</mapper>

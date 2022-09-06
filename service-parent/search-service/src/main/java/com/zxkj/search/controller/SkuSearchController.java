@@ -4,7 +4,7 @@ import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.search.condition.SkuEsCondition;
 import com.zxkj.search.feign.SkuSearchFeign;
-import com.zxkj.search.model.SkuEs;
+import com.zxkj.search.entity.SkuEs;
 import com.zxkj.search.service.SkuSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,10 +1,8 @@
 package com.zxkj.page.feign;
 
 import com.zxkj.common.constant.ServiceIdConstant;
-import com.zxkj.feign.fallback.CustomFallbackFactory;
 import com.zxkj.common.web.RespResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zxkj.feign.fallback.CustomFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,17 +27,14 @@ public interface SeckillPageFeign {
 
 @Component
 class SeckillPageFeignFallback extends CustomFallbackFactory implements SeckillPageFeign {
-    private static final Logger logger = LoggerFactory.getLogger(SeckillPageFeignFallback.class);
 
     @Override
     public RespResult page(String id) throws Exception {
-        logger.error("SeckillPageFeignFallback -> page错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 
     @Override
     public RespResult deleByAct(String acid) {
-        logger.error("SeckillPageFeignFallback -> deleByAct错误信息：{}", throwable.getMessage());
         return RespResult.error(throwable.getMessage());
     }
 }

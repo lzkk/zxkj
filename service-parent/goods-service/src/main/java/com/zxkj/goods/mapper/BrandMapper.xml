@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.mapper.BrandMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.entity.Brand">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="initial" property="initial" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, image, initial, sort
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.entity.Brand" >
+        insert into brand
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            name,
+            image,
+            initial,
+            sort,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=INTEGER},
+                #{param.name, jdbcType=VARCHAR},
+                #{param.image, jdbcType=VARCHAR},
+                #{param.initial, jdbcType=VARCHAR},
+                #{param.sort, jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

@@ -41,7 +41,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
 		</dependency>
 
 		<!-- javax.annotation-api -->
@@ -85,6 +84,12 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.zxkj</groupId>
+			<artifactId>common-web</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
