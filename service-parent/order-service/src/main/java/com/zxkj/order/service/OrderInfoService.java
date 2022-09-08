@@ -1,9 +1,9 @@
 package com.zxkj.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zxkj.goods.vo.SkuVo;
 import com.zxkj.order.condition.OrderInfoCondition;
 import com.zxkj.order.entity.OrderInfo;
-import com.zxkj.order.entity.OrderRefund;
 import com.zxkj.order.vo.OrderInfoVo;
 import com.zxkj.order.vo.OrderSkuVo;
 
@@ -43,6 +43,6 @@ public interface OrderInfoService extends IService<OrderInfo> {
 
     List<OrderSkuVo> getCart(List<String> ids);
 
-    void ribbonTest();
+    SkuVo ribbonTest(String skuId);
 
 }

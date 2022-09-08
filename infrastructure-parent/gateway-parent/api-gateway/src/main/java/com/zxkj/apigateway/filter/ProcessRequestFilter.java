@@ -1,10 +1,10 @@
 package com.zxkj.apigateway.filter;
 
+import com.zxkj.apigateway.hot.HotQueue;
 import com.zxkj.apigateway.permission.AuthorizationInterceptor;
 import com.zxkj.common.context.constants.ContextConstant;
 import com.zxkj.common.context.domain.ContextInfo;
-import com.zxkj.common.exception.gateway.GatewayExceptionCodes;
-import com.zxkj.apigateway.hot.HotQueue;
+import com.zxkj.common.exception.BusinessExceptionCodes;
 import com.zxkj.gateway.grey.GreyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         ServerHttpRequest request = exchange.getRequest();
         String uri = request.getURI().getPath();
-        log.info("请求uri:{}", uri);
+        log.info("请求uri:{}", request.getURI().toString());
         //uri是否有效
         if (!authorizationInterceptor.isValid(uri)) {
             return error(exchange, 404, "url bad");
@@ -76,11 +76,14 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
         if (!shouldFilter) {
             return chain.filter(exchange);
         }
+        if (uri.startsWith("/api-")) {
+            return chain.filter(exchange);
+        }
         //秒杀过滤
         if (uri.equals("/seckill/order")) {
             boolean isHot = secKillFilter(exchange, request, resultMap.get("username").toString());
             if (isHot) {
-                return error(exchange, 0, "秒杀抢购处理中");
+                return error(exchange, 1, "秒杀抢购处理中");
             }
         }
         HttpHeaders newHttpHeader = new HttpHeaders();
@@ -94,7 +97,7 @@ public class ProcessRequestFilter extends BaseFilter implements GlobalFilter, Or
             }
         } catch (Exception e) {
             log.error("数据解密错误", e);
-            return error(exchange, GatewayExceptionCodes.CODE_10000, "服务器内部错误");
+            return error(exchange, BusinessExceptionCodes.CODE_10000, "服务器内部错误");
         }
     }
 

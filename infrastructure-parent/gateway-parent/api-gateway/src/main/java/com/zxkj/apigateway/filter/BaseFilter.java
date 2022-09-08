@@ -3,6 +3,7 @@ package com.zxkj.apigateway.filter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zxkj.common.exception.BusinessException;
+import com.zxkj.common.web.RespResult;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author yuhui
@@ -50,20 +49,15 @@ public abstract class BaseFilter {
      * 返回response
      *
      * @param exchange
-     * @param status   data中的status
+     * @param code     data中的code
      * @param message  异常信息
      * @return
      */
-    public static Mono<Void> error(ServerWebExchange exchange, Integer status, String message) {
-        // 自定义返回格式
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("returnCode", status);
-        resultMap.put("message", message);
-        resultMap.put("result", null);
+    public static Mono<Void> error(ServerWebExchange exchange, Integer code, String message) {
         return Mono.defer(() -> {
             byte[] bytes;
             try {
-                bytes = new ObjectMapper().writeValueAsBytes(resultMap);
+                bytes = new ObjectMapper().writeValueAsBytes(RespResult.error(code, message));
             } catch (JsonProcessingException e) {
                 throw new BusinessException("信息序列化异常");
             } catch (Exception e) {

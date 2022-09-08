@@ -117,17 +117,21 @@ public class MicroServiceConfig {
          */
         @ExceptionHandler(value = BusinessException.class)
         public RespResult handleBusinessException(BusinessException e) {
-            String message;
+            int code = e.getErrorCode() == null ? RespCodeEnum.FAIL.getCode() : e.getErrorCode();
+            String message = e.getMessage() == null ? RespCodeEnum.FAIL.getMessage() : e.getMessage();
             if (e.getMessage() == null && e.getErrorCode() != null) {
-                message = messageSource.getMessage(String.valueOf(e.getErrorCode()), null, null);
-                if (message == null) {
-                    message = RespCodeEnum.FAIL.getMessage();
+                try {
+                    if (RespCodeEnum.FAIL.getCode() == e.getErrorCode()) {
+                        message = RespCodeEnum.FAIL.getMessage();
+                    } else {
+                        message = messageSource.getMessage(String.valueOf(e.getErrorCode()), null, null);
+                    }
+                } catch (Exception exception) {
+                    log.error("异常编码未定义，请及时将异常编码 [{}] 添加到i18n/codes.properties", e.getErrorCode());
                 }
-            } else {
-                message = e.getMessage() == null ? RespCodeEnum.FAIL.getMessage() : e.getMessage();
             }
             log.error("handleBusinessException:{}", message, e);
-            return RespResult.error(message);
+            return RespResult.error(code, message);
         }
 
         /**
@@ -139,7 +143,7 @@ public class MicroServiceConfig {
         @ExceptionHandler(value = Exception.class)
         public RespResult handleException(Exception e) {
             log.error("发生自定义异常", e);
-            return RespResult.error(RespCodeEnum.ERROR.getMessage());
+            return RespResult.error(RespCodeEnum.ERROR.getCode(), RespCodeEnum.ERROR.getMessage());
         }
 
     }

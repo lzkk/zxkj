@@ -177,25 +177,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public void ribbonTest() {
-        RespResult<SkuVo> respResult1 = skuFeign.one("1318596430360813570");
+    public SkuVo ribbonTest(String skuId) {
+        RespResult<SkuVo> respResult1 = skuFeign.one(skuId);
         log.info("1--" + JsonUtil.toJsonString(respResult1));
 
-        Thread t = new Thread(() -> {
-            RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gp1318596430398562305"));
-            log.info("2--" + JsonUtil.toJsonString(respResult2));
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.execute((Runnable) () -> {
-            RespResult<SeckillGoodsVo> respResult3 = seckillGoodsFeign.one("111");
-            log.info("3--" + JsonUtil.toJsonString(respResult3));
-        });
-
+//        Thread t = new Thread(() -> {
+//            RespResult<List<CartVo>> respResult2 = cartFeign.list(Arrays.asList("gp1318596430398562305"));
+//            log.info("2--" + JsonUtil.toJsonString(respResult2));
+//        });
+//        t.start();
+//        try {
+//            t.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        executor.execute((Runnable) () -> {
+//            RespResult<SeckillGoodsVo> respResult3 = seckillGoodsFeign.one("111");
+//            log.info("3--" + JsonUtil.toJsonString(respResult3));
+//        });
+        return respResult1.getDataWithException();
     }
 }

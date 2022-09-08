@@ -90,6 +90,13 @@ public class RespResult<T> implements Serializable {
         return respResult;
     }
 
+    public static <T> RespResult<T> error(int code, String message) {
+        RespResult respResult = new RespResult();
+        respResult.setCode(code);
+        respResult.setMessage(message);
+        return respResult;
+    }
+
     @JsonIgnore
     public T getDataWithException() {
         if (code != RespCodeEnum.SUCCESS.getCode()) {

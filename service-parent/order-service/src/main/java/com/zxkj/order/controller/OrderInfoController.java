@@ -2,11 +2,13 @@ package com.zxkj.order.controller;
 
 import com.zxkj.common.exception.BusinessException;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.goods.vo.SkuVo;
 import com.zxkj.order.condition.OrderInfoCondition;
 import com.zxkj.order.feign.OrderInfoFeign;
 import com.zxkj.order.service.OrderInfoService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -25,9 +27,8 @@ public class OrderInfoController implements OrderInfoFeign {
     @Resource
     private OrderInfoService orderInfoService;
 
-    public RespResult<Boolean> ribbonTest() {
-        orderInfoService.ribbonTest();
-        return RespResult.ok(true);
+    public RespResult<SkuVo> ribbonTest(@RequestParam(value = "id") String id) {
+        return RespResult.ok(orderInfoService.ribbonTest(id));
     }
 
     public RespResult<Boolean> ribbonTest2(@RequestBody @Valid OrderInfoCondition condition) {

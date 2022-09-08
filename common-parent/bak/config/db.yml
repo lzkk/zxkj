@@ -1,46 +1,54 @@
-spring:
+common:
   datasource:
     ##spring.datasource.maxIdle=30
+    initialSize: 5
     minIdle: 5
     maxActive: 100
-    initialSize: 30
     maxWait: 60000
+    maxLifeTime: 600000
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
     validationQuery: select 1
-    removeAbandoned: true
-    removeAbandonedTimeout: 1800
-    logAbandoned: true
     testWhileIdle: true
     testOnBorrow: false
     testOnReturn: false
     poolPreparedStatements: true
     maxPoolPreparedStatementPerConnectionSize: 50
-    filters: stat # ,wall,log4j
-    connectionProperties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=5000
-    useGlobalDataSourceStat: true
-    druidLoginName: dmcp
-    druidPassword: dmcp
-    type: com.alibaba.druid.pool.DruidDataSource
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+    logAbandoned: true
 
-## order-service
-order-service:
+## xxl-job-mysql
+xxl-job-mysql:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/shop_order?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123456
-## goods-service
-goods-service:
+    password: Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==
+## order-mysql
+order-mysql:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/shop_goods?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://172.17.53.138:3306/shop_order?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123456
-## seckill-service
-seckill-service:
+    password: Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==
+## goods-mysql
+goods-mysql:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.17.53.138:3306/shop_goods?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==
+  readonly:
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://172.17.53.138:3306/shop_goods_slave?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      username: root
+      password: Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==
+## seckill-mysql
+seckill-mysql:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/shop_seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123456
+    password: Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==

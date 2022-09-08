@@ -2,8 +2,10 @@ package com.zxkj.goods.controller;
 
 import com.zxkj.cart.condition.CartCondition;
 import com.zxkj.common.datasource.support.Readonly;
+import com.zxkj.common.exception.BusinessException;
 import com.zxkj.common.web.JsonUtil;
 import com.zxkj.common.web.RespResult;
+import com.zxkj.goods.common.exception.GoodsExceptionCodes;
 import com.zxkj.goods.feign.SkuFeign;
 import com.zxkj.goods.service.SkuService;
 import com.zxkj.goods.vo.SkuVo;
@@ -36,6 +38,13 @@ public class SkuController implements SkuFeign {
      */
     public RespResult<SkuVo> one(@PathVariable(value = "id") String id) {
         SkuVo sku = skuService.selectOne(id);
+        if (sku == null) {
+            throw new BusinessException("无效的skuId:" + id);
+        } else {
+            if (sku.getId().endsWith("88")) {
+                throw new BusinessException(GoodsExceptionCodes.CODE_10001);
+            }
+        }
         log.info("sku:" + JsonUtil.toJsonString(sku));
         return RespResult.ok(sku);
     }

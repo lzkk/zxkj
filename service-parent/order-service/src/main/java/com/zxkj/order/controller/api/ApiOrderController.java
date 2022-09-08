@@ -1,6 +1,7 @@
 package com.zxkj.order.controller.api;
 
 import com.zxkj.common.web.RespResult;
+import com.zxkj.goods.vo.SkuVo;
 import com.zxkj.order.condition.OrderInfoCondition;
 import com.zxkj.order.service.OrderInfoService;
 import com.zxkj.order.service.pay.WeixinPayParam;
@@ -144,9 +145,8 @@ public class ApiOrderController {
     }
 
     @GetMapping(value = "/order/ribbonTest")
-    public RespResult<Boolean> ribbonTest() {
-        orderInfoService.ribbonTest();
-        return RespResult.ok(true);
+    public RespResult<SkuVo> ribbonTest(@RequestParam(value = "skuId") String skuId) {
+        return RespResult.ok(orderInfoService.ribbonTest(skuId));
     }
 
 }

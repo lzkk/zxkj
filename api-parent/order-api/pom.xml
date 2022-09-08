@@ -11,5 +11,12 @@
 
     <artifactId>order-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.zxkj</groupId>
+            <artifactId>goods-api</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>

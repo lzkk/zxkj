@@ -15,16 +15,12 @@ logging:
   level:
     com.alibaba.nacos.client.config.impl: WARN
 
-# ====================MybatisPlus====================
-mybatis:
-  mapper-locations: "classpath*:com/zxkj/**/mapper/*.xml"
-
 ##feign sentinel
 feign:
   sentinel:
-    enabled: false
-  hystrix:
     enabled: true
+  hystrix:
+    enabled: false
   httpclient:
     enabled: false
     max-connections: 200
@@ -65,6 +61,11 @@ ribbon:
   MaxTotalConnections: 50000
 
 spring:
+  ##下面两个配置当资源找不到时返回json格式数据，不再是404页面
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
   client:
     healthcheck:
       enabled: true #开启健康检查（需要spring-boot-starter-actuator依赖）
@@ -122,7 +123,10 @@ spring:
     kafka:
       topic: myZipkin
   sleuth:
-    enabled: false
+    enabled: true
+    async:
+      configurer:
+        enabled: true
     messaging:
       jms:
         enabled: false
@@ -152,7 +156,6 @@ spring:
         retry:
           enabled: true
           max-attempts: 3
-
 
   ###kafka
   kafka:
