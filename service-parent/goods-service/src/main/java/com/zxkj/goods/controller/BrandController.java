@@ -1,6 +1,6 @@
 package com.zxkj.goods.controller;
 
-import com.github.pagehelper.PageInfo;
+import com.zxkj.common.page.PagedList;
 import com.zxkj.common.web.RespResult;
 import com.zxkj.goods.condition.BrandCondition;
 import com.zxkj.goods.entity.Brand;
@@ -49,23 +49,18 @@ public class BrandController {
     /****
      * 条件查询
      */
-    @PostMapping(value = "/search")
-    public RespResult<List<BrandVo>> queryList(@RequestBody BrandCondition brand) {
-        List<BrandVo> brands = brandService.queryList(brand);
-        return RespResult.ok(brands);
+    @PostMapping(value = "/search/mybatisPlus")
+    public RespResult<PagedList<BrandVo>> queryList(@RequestBody BrandCondition brand) {
+        PagedList<BrandVo> pagedList = brandService.queryList(brand);
+        return RespResult.ok(pagedList);
     }
 
     /****
      * 条件查询
      */
-    @PostMapping(value = "/search/{page}/{size}")
-    public RespResult<PageInfo<BrandVo>> queryPageList(
-            @PathVariable(value = "page") Integer page,
-            @PathVariable(value = "size") Integer size,
-            @RequestBody BrandCondition brand) {
-        brand.setPageNum(page);
-        brand.setPageSize(size);
-        PageInfo<BrandVo> pageInfo = brandService.queryPageList(brand);
+    @PostMapping(value = "/search/pageHelper")
+    public RespResult<PagedList<BrandVo>> queryPageList(@RequestBody BrandCondition brand) {
+        PagedList<BrandVo> pageInfo = brandService.queryPageList(brand);
         return RespResult.ok(pageInfo);
     }
 
@@ -76,10 +71,7 @@ public class BrandController {
      */
     @GetMapping(value = "/category/{pid}")
     public RespResult<List<BrandVo>> categoryBrands(@PathVariable(value = "pid") Integer pid) throws InterruptedException {
-        System.out.println("执行查询开始，，，，");
         List<BrandVo> brands = brandService.queryByCategoryId(pid);
-        TimeUnit.SECONDS.sleep(10);
-        System.out.println("执行查询完成，，，，");
         return RespResult.ok(brands);
     }
 }

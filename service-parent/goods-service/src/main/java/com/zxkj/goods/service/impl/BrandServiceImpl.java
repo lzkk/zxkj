@@ -1,9 +1,10 @@
 package com.zxkj.goods.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.zxkj.common.page.PagedList;
 import com.zxkj.common.util.bean.BeanUtil;
 import com.zxkj.goods.condition.BrandCondition;
 import com.zxkj.goods.entity.Brand;
@@ -44,34 +45,32 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     /****
-     * 条件查询
+     * 条件查询(mybatisPlus分页)
      * return List<Brand>
      */
     @Override
-    public List<BrandVo> queryList(BrandCondition condition) {
+    public PagedList<BrandVo> queryList(BrandCondition condition) {
         //条件包装对象
         QueryWrapper<Brand> queryWrapper = new QueryWrapper<>();
         //根据name查询品牌
         queryWrapper.like("name", condition.getName());
-        //根据initial查询
-        queryWrapper.eq("initial", condition.getInitial());
-        List<Brand> brands = this.getBaseMapper().selectList(queryWrapper);
-        return BeanUtil.copyList(brands, BrandVo.class);
+        Page<Brand> selectPage = getBaseMapper().selectPage(new Page(condition.getPageNum(), condition.getPageSize()), queryWrapper);
+        return new PagedList<>(selectPage.getCurrent(), selectPage.getSize(), selectPage.getTotal(), BeanUtil.copyList(selectPage.getRecords(), BrandVo.class));
     }
 
     /****
-     * 条件分页查询
+     * 条件查询(pageHelper分页)
      * return Page<Brand>
      */
     @Override
-    public PageInfo<BrandVo> queryPageList(BrandCondition condition) {
-        return PageHelper.startPage(condition.getPageNum(), condition.getPageSize()).doSelectPageInfo(() -> {
-            //条件包装对象
-            QueryWrapper<Brand> queryWrapper = new QueryWrapper<>();
-            //根据name查询品牌
-            queryWrapper.like("name", condition.getName());
-            BeanUtil.copyList(getBaseMapper().selectList(queryWrapper), BrandVo.class);
-        });
+    public PagedList<BrandVo> queryPageList(BrandCondition condition) {
+        com.github.pagehelper.Page page = PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
+        //条件包装对象
+        QueryWrapper<Brand> queryWrapper = new QueryWrapper<>();
+        //根据name查询品牌
+        queryWrapper.like("name", condition.getName());
+        List<Brand> brandList = getBaseMapper().selectList(queryWrapper);
+        return new PagedList<>(page, BeanUtil.copyList(brandList, BrandVo.class));
     }
 
     /****

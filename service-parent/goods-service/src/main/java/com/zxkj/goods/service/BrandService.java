@@ -1,7 +1,7 @@
 package com.zxkj.goods.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.pagehelper.PageInfo;
+import com.zxkj.common.page.PagedList;
 import com.zxkj.goods.condition.BrandCondition;
 import com.zxkj.goods.entity.Brand;
 import com.zxkj.goods.vo.BrandVo;
@@ -24,9 +24,9 @@ public interface BrandService extends IService<Brand> {
      */
     Boolean saveBatch(List<Brand> param);
 
-    List<BrandVo> queryList(BrandCondition condition);
+    PagedList<BrandVo> queryList(BrandCondition condition);
 
-    PageInfo<BrandVo> queryPageList(BrandCondition condition);
+    PagedList<BrandVo> queryPageList(BrandCondition condition);
 
     List<BrandVo> queryByCategoryId(Integer id);
 

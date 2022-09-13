@@ -44,20 +44,20 @@ public class MyZoneAvoidanceRule extends ZoneAvoidanceRule {
 
     public Server choose(Object key) {
         ILoadBalancer lb = this.getLoadBalancer();
-        List<Server> serverList = new ArrayList<>();
+//        List<Server> serverList = new ArrayList<>();
         if (lb instanceof ZoneAwareLoadBalancer) {
             ZoneAwareLoadBalancer zoneAwareLoadBalancer = (ZoneAwareLoadBalancer) lb;
             String clientName = zoneAwareLoadBalancer.getName();
             if (this.clientName == null) {
                 this.clientName = clientName;
             }
-            serverList = getServerListByClientName(zoneAwareLoadBalancer, clientName);
-            if (localServerList.hashCode() != serverList.hashCode()) {
-                log.info("node:{} current serverList:{}", clientName, serverList);
-                localServerList = serverList;
-            }
+//            serverList = getServerListByClientName(zoneAwareLoadBalancer, clientName);
+//            if (localServerList.hashCode() != serverList.hashCode()) {
+//                log.info("node:{} current serverList:{}", clientName, serverList);
+//                localServerList = serverList;
+//            }
         }
-        Optional<Server> server = this.getPredicate().chooseRoundRobinAfterFiltering(serverList, key);
+        Optional<Server> server = this.getPredicate().chooseRoundRobinAfterFiltering(lb.getAllServers(), key);
         return server.isPresent() ? server.get() : null;
     }
 

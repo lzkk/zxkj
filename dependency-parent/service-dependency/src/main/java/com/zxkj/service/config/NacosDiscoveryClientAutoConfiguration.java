@@ -58,11 +58,9 @@ public class NacosDiscoveryClientAutoConfiguration {
         nacosDiscoveryProperties.getMetadata().put("startup.time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 //        // 设置心跳的周期，单位为秒
 //        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, heartBeatInterval);
-//        // 设置心跳超时时间，单位为秒
-//        // 即服务端6秒收不到客户端心跳，会将该客户端注册的实例设为不健康：
+//        // 设置心跳超时时间，单位为秒，即服务端配置秒收不到客户端心跳，会将该客户端注册的实例设为不健康：
 //        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, heartBeatTimeout);
-//        // 设置实例删除的超时时间，单位为秒
-//        // 即服务端9秒收不到客户端心跳，会将该客户端注册的实例删除：
+//        // 设置实例删除的超时时间，单位为秒，即服务端配置秒收不到客户端心跳，会将该客户端注册的实例删除：
 //        nacosDiscoveryProperties.getMetadata().put(PreservedMetadataKeys.IP_DELETE_TIMEOUT, ipDeleteTimeout);
         return new NacosWatch(nacosDiscoveryProperties);
     }

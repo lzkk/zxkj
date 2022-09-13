@@ -1,6 +1,8 @@
 package com.zxkj.common.page;
 
 
+import com.github.pagehelper.Page;
+
 import java.util.List;
 
 /**
@@ -17,23 +19,25 @@ public class PagedList<T> {
     private List<T> data;
 
     public PagedList() {
-        super();
     }
 
     public PagedList(long totalRows, List<T> data) {
-        super();
         this.totalRows = totalRows;
         this.data = data;
     }
 
-    public PagedList(long pageNo, long totalRows, List<T> data) {
-        this(totalRows, data);
+    public PagedList(long pageNo, long pageSize, long totalRows, List<T> data) {
+        this.pageNo = pageNo;
+        this.pageSize = pageSize;
+        this.totalRows = totalRows;
         this.data = data;
     }
 
-    public PagedList(long pageNo, long pageSize, long totalRows, List<T> data) {
-        this(pageNo, totalRows, data);
-        this.pageSize = pageSize;
+    public PagedList(Page page, List<T> data) {
+        this.pageNo = page.getPageNum();
+        this.pageSize = page.getPageSize();
+        this.totalRows = page.getTotal();
+        this.data = data;
     }
 
     public long getTotalPages() {
