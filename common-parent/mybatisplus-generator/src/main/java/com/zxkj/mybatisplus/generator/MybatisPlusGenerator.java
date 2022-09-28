@@ -26,12 +26,12 @@ public class MybatisPlusGenerator {
         //模块名称(不用填写，通过包名来区分)
         String moduleName = "";
         //包名
-        String packageName = "com.zxkj.seckill";
+        String packageName = "com.zxkj.goods.foreign";
         //实体包名 默认:entity
         String entityName = "entity";
         //表名,表名（多个用英文逗号分隔）
 //        String tableNames = "BASE_USER,CRM_WS_ORDER";
-        String tableNames = "seckill_goods,seckill_order,seckill_activity";
+        String tableNames = "language,product,product_translation";
         generator(author, date, moduleName, packageName, tableNames, entityName);
         System.out.println("执行完成！");
     }
@@ -44,7 +44,7 @@ public class MybatisPlusGenerator {
         String url = (MybatisPlusGenerator.class.getResource("/").getFile() + "").replace("target/classes/", "src/main/java");
         // 代码生成器
 //        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:sqlserver://192.168.10.32:1433;DatabaseName=CRM_Retail_Uat", "Retail_Uat", "T4wYGypz#(9::/Mq")))
-        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/shop_seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456")))
+        new AutoGenerator(configBuilder(new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/fgxm?useUnicode=true&serverTimezone=Asia/Shanghai", "root", "123456")))
                 // 全局配置
                 .global(configBuilder(new GlobalConfig.Builder()
                         // 覆盖已生成文件，默认 false

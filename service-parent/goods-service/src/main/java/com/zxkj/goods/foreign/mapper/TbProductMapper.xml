@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.foreign.mapper.TbProductMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.foreign.entity.TbProduct">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, price
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.foreign.entity.TbProduct" >
+        insert into tb_product
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            create_time,
+            price,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.id, jdbcType=BIGINT},
+                #{param.createTime, jdbcType=TIMESTAMP},
+                #{param.price, jdbcType=DECIMAL},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

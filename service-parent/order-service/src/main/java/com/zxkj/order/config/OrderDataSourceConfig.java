@@ -1,4 +1,4 @@
-package com.zxkj.goods.config;
+package com.zxkj.order.config;
 
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
@@ -23,15 +23,14 @@ import javax.sql.DataSource;
  * mybatis配置
  */
 @Configuration
-@MapperScan(basePackages = MybatisConfig.PACKAGE)
-public class MybatisConfig extends DataSourceConfig {
-
-    private static final String SIGN = "goods-mysql";
+@MapperScan(basePackages = OrderDataSourceConfig.PACKAGE, sqlSessionFactoryRef = OrderDataSourceConfig.SQL_SESSION_FACTORY)
+public class OrderDataSourceConfig extends DataSourceConfig {
+    private static final String SIGN = "order-mysql";
     private static final String DATASOURCE = SIGN + "Datasource";
     private static final String TRANSACTION_MANAGER = SIGN + "TransactionManager";
-    private static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
-    public static final String PACKAGE = "com.zxkj.goods.mapper";
-    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/goods/mapper/**/*.xml";
+    public static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
+    public static final String PACKAGE = "com.zxkj.order.mapper";
+    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/order/mapper/**/*.xml";
 
     @Bean(name = DATASOURCE)
     public DataSource dataSource() {
@@ -89,4 +88,5 @@ public class MybatisConfig extends DataSourceConfig {
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,");
         return filterRegistrationBean;
     }
+
 }

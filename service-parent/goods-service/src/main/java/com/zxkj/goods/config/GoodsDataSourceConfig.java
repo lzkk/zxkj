@@ -1,4 +1,4 @@
-package com.zxkj.order.config;
+package com.zxkj.goods.config;
 
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.zxkj.common.datasource.DataSourceConfig;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -23,20 +25,24 @@ import javax.sql.DataSource;
  * mybatis配置
  */
 @Configuration
-@MapperScan(basePackages = MybatisConfig.PACKAGE)
-public class MybatisConfig extends DataSourceConfig {
-    private static final String SIGN = "order-mysql";
+@MapperScan(basePackages = GoodsDataSourceConfig.PACKAGE, sqlSessionFactoryRef = GoodsDataSourceConfig.SQL_SESSION_FACTORY)
+public class GoodsDataSourceConfig extends DataSourceConfig {
+
+    private static final String SIGN = "goods-mysql";
     private static final String DATASOURCE = SIGN + "Datasource";
     private static final String TRANSACTION_MANAGER = SIGN + "TransactionManager";
-    private static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
-    public static final String PACKAGE = "com.zxkj.order.mapper";
-    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/order/mapper/**/*.xml";
+    private static final String MYBATISPLUS_INTERCEPTOR = SIGN + "mybatisPlusInterceptor";
+    public static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
+    public static final String PACKAGE = "com.zxkj.goods.mapper";
+    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/goods/mapper/**/*.xml";
 
+    @Primary
     @Bean(name = DATASOURCE)
     public DataSource dataSource() {
         return createDynamicDruidDataSource(SIGN);
     }
 
+    @Primary
     @Bean(name = SQL_SESSION_FACTORY)
     public SqlSessionFactory sqlSessionFactoryBean(@Qualifier(DATASOURCE) DataSource dataSource) throws Exception {
         //这里用 MybatisSqlSessionFactoryBean 代替了 SqlSessionFactoryBean，否则 MyBatisPlus 不会生效
@@ -47,16 +53,17 @@ public class MybatisConfig extends DataSourceConfig {
         return sessionFactoryBean.getObject();
     }
 
-    @Bean
+    @Primary
+    @Bean(name = TRANSACTION_MANAGER)
+    public DataSourceTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
+
+    @Bean(name = MYBATISPLUS_INTERCEPTOR)
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
-    }
-
-    @Bean(name = TRANSACTION_MANAGER)
-    public DataSourceTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
     }
 
     @Bean
@@ -88,5 +95,4 @@ public class MybatisConfig extends DataSourceConfig {
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,");
         return filterRegistrationBean;
     }
-
 }

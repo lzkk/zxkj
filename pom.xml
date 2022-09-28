@@ -37,6 +37,11 @@
             </dependency>
             <dependency>
                 <groupId>com.zxkj</groupId>
+                <artifactId>customer-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zxkj</groupId>
                 <artifactId>goods-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -68,11 +73,6 @@
             <dependency>
                 <groupId>com.zxkj</groupId>
                 <artifactId>sys-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zxkj</groupId>
-                <artifactId>customer-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

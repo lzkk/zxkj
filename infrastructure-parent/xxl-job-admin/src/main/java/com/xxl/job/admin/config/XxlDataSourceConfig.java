@@ -13,7 +13,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages = XxlDataSourceConfig.PACKAGE)
+@MapperScan(basePackages = XxlDataSourceConfig.PACKAGE, sqlSessionFactoryRef = XxlDataSourceConfig.SQL_SESSION_FACTORY)
 public class XxlDataSourceConfig extends DataSourceConfig {
     // 唯一标识
     public static final String SIGN = "xxl-job-mysql";

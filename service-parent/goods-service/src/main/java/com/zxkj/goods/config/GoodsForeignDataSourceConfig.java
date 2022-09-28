@@ -1,14 +1,10 @@
-package com.zxkj.seckill.config;
+package com.zxkj.goods.config;
 
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.zxkj.common.datasource.DataSourceConfig;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -20,17 +16,18 @@ import javax.sql.DataSource;
  * mybatis配置
  */
 @Configuration
-@MapperScan(basePackages = MybatisConfig.PACKAGE)
-public class MybatisConfig extends DataSourceConfig {
-    private static final String SIGN = "seckill-mysql";
+@MapperScan(basePackages = GoodsForeignDataSourceConfig.PACKAGE, sqlSessionFactoryRef = GoodsForeignDataSourceConfig.SQL_SESSION_FACTORY)
+public class GoodsForeignDataSourceConfig extends DataSourceConfig {
+
+    private static final String SIGN = "goods-mysql-foreign";
     private static final String DATASOURCE = SIGN + "Datasource";
     private static final String TRANSACTION_MANAGER = SIGN + "TransactionManager";
-    private static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
-    public static final String PACKAGE = "com.zxkj.seckill.mapper";
-    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/seckill/mapper/**/*.xml";
+    public static final String SQL_SESSION_FACTORY = SIGN + "SqlSessionFactory";
+    public static final String PACKAGE = "com.zxkj.goods.foreign.mapper";
+    private static final String MAPPER_LOCATION = "classpath*:com/zxkj/goods/foreign/mapper/**/*.xml";
 
     @Bean(name = DATASOURCE)
-    public DataSource druidDataSource() {
+    public DataSource dataSource() {
         return createDynamicDruidDataSource(SIGN);
     }
 
@@ -40,20 +37,12 @@ public class MybatisConfig extends DataSourceConfig {
         MybatisSqlSessionFactoryBean sessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
         sessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(MAPPER_LOCATION));
-        sessionFactoryBean.setPlugins(mybatisPlusInterceptor());
         return sessionFactoryBean.getObject();
-    }
-
-    @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return interceptor;
     }
 
     @Bean(name = TRANSACTION_MANAGER)
     public DataSourceTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(druidDataSource());
+        return new DataSourceTransactionManager(dataSource());
     }
 
 }

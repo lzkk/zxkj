@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.goods.foreign.mapper.TbLanguageMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zxkj.goods.foreign.entity.TbLanguage">
+        <id column="code" property="code" jdbcType="CHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        code, name
+    </sql>
+    <insert id="insertAll" parameterType="com.zxkj.goods.foreign.entity.TbLanguage" >
+        insert into tb_language
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            name,
+        </trim>
+        VALUES
+        <foreach collection="paramList" separator="," item="param" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides="," >
+                #{param.code, jdbcType=CHAR},
+                #{param.name, jdbcType=VARCHAR},
+            </trim>
+        </foreach>
+    </insert>
+</mapper>
